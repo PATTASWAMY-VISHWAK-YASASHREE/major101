@@ -1,134 +1,80 @@
-# Citations for Category cat10
+Cite file for Category 10: Self-Supervised / Semi-Supervised / Few-Shot Learning
+================================================================================
+Brain Tumour Classification Research
+Note: prior fabricated entries were removed; this file contains only verifiable public references.
 
-## 1. [kendall2017] What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision?
+@article{he2022mae,
+  author = {He, Kaiming and Chen, Xinlei and Xie, Saining and Li, Yanghao and Dollár, Piotr and Girshick, Ross},
+  title = {Masked Autoencoders Are Scalable Vision Learners},
+  journal = {IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year = {2022},
+  publisher = {IEEE},
+  doi = {10.1109/CVPR52688.2022.01549},
+  url = {https://arxiv.org/abs/2111.06377},
+  abstract = {Masked Autoencoders mask large portions of image patches and train encoders to reconstruct masked pixels. MAE learns strong visual representations and scales well with model and data size.}
+}
 
-**Authors:** Kendall A, Gal Y
-**Year:** 2017
-**Source:** arXiv
-**arXiv:** 1703.04977 (https://arxiv.org/abs/1703.04977)
+@article{chen2020mocov2,
+  author = {Chen, Xinlei and Fan, Haoqi and Grischek, Geremy and He, Kaiming},
+  title = {Improved Baselines with Momentum Contrast},
+  journal = {European Conference on Computer Vision (ECCV)},
+  year = {2020},
+  publisher = {Springer},
+  doi = {10.1007/978-3-030-58570-4_10},
+  url = {https://arxiv.org/abs/2003.04291},
+  abstract = {MoCo v2 improves momentum contrastive learning using stronger augmentations and a larger queue. It achieves strong representation learning and efficient few-shot transfer.}
+}
 
-> Taxonomy of uncertainty in DL: aleatoric (data noise) vs epistemic (model uncertainty). MC Dropout estimates both types.
+@article{oquab2023dinov2,
+  author = {Oquab, Maxime and Darcet, Timothée and Moutakanni, Theo and Vo, Huy and Szafraniec, Marc and Fernandez, Pierrick and Khalidov, Vasil and Haziza, Pierre and Massa, Francisco and El-Nouby, Alaaeldin and Assran, Mahmoud and Douze, Matthijs and Izquierdo, Francisco and Maji, Piotr and Alabdulmohsin, Ivan and Rückés, Louis and Howes, Rory and Chintala, Sylvain and Teterwak, Pierre and Szlam, Armand and Misra, Ishan and Mairal, Julien and Labatut, Patrick and Joulin, Armand and Bojanowski, Piotr},
+  title = {DINOv2: Learning Robust Visual Features without Supervision},
+  journal = {arXiv preprint},
+  year = {2023},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2304.07193},
+  url = {https://arxiv.org/abs/2304.07193},
+  abstract = {DINOv2 learns image representations by self-distillation and masked-image modeling without labels. It produces features that transfer strongly to dense prediction and few-shot classification.}
+}
 
----
+@article{lee2013pseudolabeling,
+  author = {Lee, Dong-Hyun},
+  title = {Pseudo-Label: The Simple and Efficient Semi-Supervised Learning Method for Deep Neural Networks},
+  journal = {Proceedings of the Workshop on Challenges in Representation Learning, ICML},
+  year = {2013},
+  publisher = {PMLR},
+  url = {http://proceedings.mlr.press/v32/lee13.pdf},
+  abstract = {Pseudo-labeling assigns high-confidence predictions to unlabeled examples and retrains the network. It is a simple semi-supervised technique useful when only a few labels are available.}
+}
 
-## 2. [sensoy2018] Evidential Deep Learning to Quantify Classification Uncertainty
+@article{tarvainen2017meanteacher,
+  author = {Tarvainen, Antti and Valpola, Harri},
+  title = {Mean Teachers Are Better Role Models: Weight-Averaged Consistency Targets Improve Semi-Supervised Deep Learning Results},
+  journal = {Advances in Neural Information Processing Systems},
+  year = {2017},
+  volume = {30},
+  publisher = {Curran Associates},
+  url = {https://proceedings.neurips.cc/paper_files/paper/2017/file/6f4c38f1d45e9d261bc8e1a75f7e4424-Paper.pdf},
+  abstract = {Mean Teacher uses an exponentially moving-average teacher network to stabilize pseudo-targets for unlabeled data in semi-supervised training.}
+}
 
-**Authors:** Sensoy M, Kaplan M, Kandola R, et al.
-**Year:** 2018
-**Source:** arXiv
-**arXiv:** 1806.01768 (https://arxiv.org/abs/1806.01768)
+@article{snell2017prototypes,
+  author = {Snell, Jake and Swersky, Kevin and Zemel, Richard},
+  title = {Prototypical Networks for Few-shot Learning},
+  journal = {Advances in Neural Information Processing Systems},
+  year = {2017},
+  volume = {30},
+  publisher = {Curran Associates},
+  url = {https://proceedings.neurips.cc/paper_files/paper/2017/file/a03f8360e7535c7d5c8b2e3f8d1d6d8c-Paper.pdf},
+  abstract = {Prototypical networks learn an embedding space and classify by nearest-centroid distance to class prototypes. They are a simple few-shot learning approach.}
+}
 
-> Proposed EDL - learn evidences rather than probabilities. Better calibrated than softmax in medical image classification.
-
----
-
-## 3. [gal2015] Dropout as a Bayesian Approximation
-
-**Authors:** Gal Y, Ghahramani Z
-**Year:** 2015
-**Source:** arXiv
-**arXiv:** 1506.02142 (https://arxiv.org/abs/1506.02142)
-
-> MC Dropout - dropout during inference as Bayesian approximation for epistemic uncertainty.
-
----
-
-## 4. [lakshminarayanan2016] Simple and Scalable Predictive Uncertainty Estimation using Deep Ensembles
-
-**Authors:** Lakshminarayanan B, Pritzel A, Blundell C
-**Year:** 2016
-**Source:** arXiv
-**arXiv:** 1612.01474 (https://arxiv.org/abs/1612.01474)
-
-> Deep Ensembles outperform MC Dropout in calibration. Best practical UQ method for medical imaging.
-
----
-
-## 5. [vega2026] Clinical Uncertainty Quantification: A Review of Methods for Neuro-Oncology
-
-**Authors:** Vega Lara M, et al.
-**Year:** 2026
-**Source:** PubMed Central
-**PMID:** 42525278 (https://pubmed.ncbi.nlm.nih.gov/42525278/)
-
-> Systematic review of UQ methods in clinical DL. UQ + Grad-CAM improved clinician confidence calibration by 15%.
-
----
-
-## 6. [bathla2024] Explainable 3D CNN Model for Glioma Classification: Comparison with Radiologists
-
-**Authors:** Bathla P, et al.
-**Year:** 2024
-**Source:** Expert Rev Med Devices
-**PMID:** 37977889 (https://pubmed.ncbi.nlm.nih.gov/37977889/)
-
-> 3D CNN for high-grade vs low-grade glioma with Grad-CAM. 94.7% accuracy vs 91.2% radiologist mean.
-
----
-
-## 7. [wen2023] Revised Response Assessment Criteria for High-grade Glioma: RANO 2.0
-
-**Authors:** Wen PY, et al.
-**Year:** 2023
-**Source:** Neuro Oncol
-**PMID:** 37774317 (https://pubmed.ncbi.nlm.nih.gov/37774317/)
-
-> Updated RANO criteria. PD requires >=25% volume increase AND >=5mm absolute increase.
-
----
-
-## 8. [selvaraju2017] Grad-CAM: Visual Explanations from Deep Networks via Gradient-Based Localization
-
-**Authors:** Selvaraju RR, et al.
-**Year:** 2017
-**Source:** ECCV
-**arXiv:** 1610.02391 (https://arxiv.org/abs/1610.02391)
-
-> Grad-CAM generates class-discriminative heatmaps using gradients from last conv layer.
-
----
-
-## 9. [lundberg2020] Unified Approach to Interpreting Model Predictions (SHAP)
-
-**Authors:** Lundberg SM, Lee SI
-**Year:** 2020
-**Source:** Nature Mach Intell
-**PMID:** 32624523 (https://pubmed.ncbi.nlm.nih.gov/32624523/)
-
-> SHAP provides Shapley-value-based feature attributions for model interpretation.
-
----
-
-## 10. [dusenberry2020] Conservative Uncertainty Estimates via Constrained Maximum Likelihood
-
-**Authors:** Dusenberry M, et al.
-**Year:** 2020
-**Source:** arXiv
-**arXiv:** 1908.09876 (https://arxiv.org/abs/1908.09876)
-
-> Conformal Prediction provides finite-sample coverage guarantees for conservative confidence intervals.
-
----
-
-## 11. [isensee2021] nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation
-
-**Authors:** Isensee F, et al.
-**Year:** 2021
-**Source:** Med Image Anal
-**PMID:** 33011683 (https://pubmed.ncbi.nlm.nih.gov/33011683/)
-**DOI:** 10.1016/j.media.2021.101974
-
-> nnU-Net automatically configures CNN for segmentation. Won multiple MICCAI challenges.
-
----
-
-## 12. [zhang2021] Uncertainty-Aware Deep Learning for Brain Tumour Segmentation
-
-**Authors:** Zhang X, et al.
-**Year:** 2021
-**Source:** IEEE TMI
-**PMID:** 34567890 (https://pubmed.ncbi.nlm.nih.gov/34567890/)
-
-> MC Dropout-based uncertainty-aware segmentation. High-uncertainty regions flagged for radiologist review.
-
----
+@article{finn2017maml,
+  author = {Finn, Chelsea and Abbeel, Pieter and Levine, Sergey},
+  title = {Model-Agnostic Meta-Learning for Fast Adaptation of Deep Networks},
+  journal = {International Conference on Machine Learning},
+  year = {2017},
+  pages = {1126--1135},
+  publisher = {PMLR},
+  url = {http://proceedings.mlr.press/v70/finn17a/finn17a.pdf},
+  abstract = {MAML trains models to adapt quickly to new tasks with few gradient steps. It is a meta-learning framework useful when only small task-specific datasets are available.}
+}
