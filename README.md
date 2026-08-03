@@ -1,9 +1,12 @@
 # Major101 — Brain Tumour Classification via CT+MRI Multimodal Fusion
 
 **Global Goal:** Build a longitudinal volumetric deep learning pipeline that fuses
-MRI and CT brain scans for tumour detection, grading, and survival prediction —
-addressing a documented gap in the literature where CT+MRI fusion for brain
-tumours lags far behind MRI-only methods.
+MRI and CT brain scans for tumour detection, grading, progression tracking, and
+survival prediction — addressing three documented gaps:
+
+1. **No CT+MRI fusion benchmark for brain tumours** (BraTS is MRI-only)
+2. **No automated AI-assisted RANO progression monitoring** (manual, error-prone)
+3. **No survival prediction from fused CT+MRI data** (DeepHit uses MRI only)
 
 ## Why this matters
 
@@ -25,11 +28,12 @@ repo must be validated against this limitation — that's the research problem.
 
 ```
 MRI (T1/T1c/T2/FLAIR) ──┐
-                         ├──► Fusion Layer ──► Classifier ──► Grade + Survival
-CT (enhanced)    ────────┘         │
-                                   │
-                         Self-Supervised Pretrain (MAE/DINOv2)
-                         on available MRI volumes
+                         ├──► Fusion Layer ──► ┌─► Classification ──► Grade
+CT (enhanced)    ────────┘                     │
+                                              ├─► Longitudinal Track ──► RANO AI
+                                              │                         (progression,
+                                              │                          pseudoprogression)
+                                              └─► Survival Head ──► Overall Survival
 ```
 
 ## Quick start
@@ -85,6 +89,19 @@ Swap in `DenseNet3D` or `ConvNeXt3D` from MONAI when validation plateaus.
 | MRI-to-CT translation | 🔬 Prototype | Chen 2026 |
 | Survival from MRI+CT | 🔬 Unexplored | DeepHit (MRI only) |
 | Public CT+MRI dataset | ❌ None exists | IBSR (partial, other pathology) |
+
+## Longitudinal AI Assistant
+
+The pipeline tracks tumours over time — not just single scans. Two sub-goals:
+
+**AI-assisted RANO monitoring:**
+- Automate RANO 2.0 measurements (enhancing + non-enhancing tumour burden)
+- Flag pseudoprogression vs true progression (CT adds bone/hemorrhage info MRI can't)
+- Time-series feature extractor (Temporal Transformer, per `05_longitudinal_analysis.md`)
+
+**Survival prediction:**
+- DeepHit-style Cox survival head on fused CT+MRI features
+- Currently no public data supports this — it's the research frontier
 
 ## Outputs
 

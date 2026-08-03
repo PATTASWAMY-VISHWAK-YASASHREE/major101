@@ -41,7 +41,7 @@ MRI-only).
 | 1 | `research_plan.md` | Start here | ✅ |
 | 2 | `executive_summary.md` | After plan | ✅ |
 | 3 | `cat1_brain_tumour_imaging_basics.md` | MRI/CT physics | ✅ |
-| 4 | `cat2_tumour_progression_monitoring.md` | What you're measuring | ✅ |
+| 4 | `cat2_tumour_progression_monitoring.md` | RANO, progression, pseudoprogression | ✅ **CORE** |
 | 5 | `cat3_deep_learning_medical_imaging.md` | DL overview | ✅ |
 
 ## Phase 2: Core Methods (CT+MRI focused)
@@ -58,6 +58,9 @@ MRI-only).
 | 13 | `cat11_explainable_ai.md` | Grad-CAM, SHAP | ✅ Use (interpretability) |
 | 14 | `cat12_data_augmentation.md` | Geometric, intensity, GAN | ✅ Use (scarce data) |
 | 15 | `cat13_transfer_learning.md` | Pretrained weights | ✅ Use (MRI→CT transfer) |
+| 16 | `05_longitudinal_analysis.md` | Temporal Transformer, CNN-LSTM | ✅ **CORE** (longitudinal tracking) |
+| 17 | `14_survival_analysis.md` | DeepSurv, DeepHit, Cox NN | ✅ **CORE** (survival from CT+MRI) |
+| 18 | `cat14_clinical_deployment.md` | Regulatory, clinical workflow | ✅ Use (AI-Radiologist integration) |
 
 ## Phase 3: Datasets & Data
 
@@ -127,13 +130,16 @@ research/
 │   ├── cat10_uncertainty_quantification.md      ← Calibration
 │   ├── cat11_explainable_ai.md                  ← Interpretability
 │   ├── cat17_evaluation_metrics_progression.md  ← Evaluation
-│   └── cat18_radiologist_comparison.md          ← Clinical validation
+│   ├── cat18_radiologist_comparison.md          ← Clinical validation
+│   ├── cat2_tumour_progression_monitoring.md    ← RANO, progression, AI assistant
+│   ├── 05_longitudinal_analysis.md              ← Temporal Transformer, CNN-LSTM
+│   ├── 14_survival_analysis.md                  ← DeepSurv, DeepHit, Cox NN
+│   ├── cat14_clinical_deployment.md             ← AI-Radiologist workflow
+│   └── 16d_longitudinal_datasets_deepdive.md    ← Longitudinal data sources
 │
 ├── 🟡 INDIRECTLY RELEVANT
 │   ├── cat1_brain_tumour_imaging_basics.md      ← MRI/CT physics
-│   ├── cat2_tumour_progression_monitoring.md    ← RANO criteria
 │   ├── cat3_deep_learning_medical_imaging.md    ← DL overview
-│   ├── cat14_clinical_deployment.md             ← Regulatory (when deploying)
 │   └── cat15_ethical_considerations.md          ← Ethics (when deploying)
 │
 ├── 🔴 SKIP (not relevant to CT+MRI goal)
@@ -149,11 +155,13 @@ research/
 ## 🔑 The Gap (Research Problem Statement)
 
 > **No public dataset or prior work combines CT+MRI+longitudinal+DL for brain
-> tumour classification or survival prediction.** Every verified paper uses
-> MRI only. The 8 CT+MRI fusion papers in our bibliography either address
-> different pathologies (MICE review), use synthetic or limited data, or are
-> early experimental prototypes (Gong 2025, Chen 2026, Islam 2026).
+> tumour classification, progression tracking, or survival prediction.** Every
+> verified paper uses MRI only. The 8 CT+MRI fusion papers in our bibliography
+> either address different pathologies (MICE review), use synthetic or limited
+> data, or are early experimental prototypes (Gong 2025, Chen 2026, Islam 2026).
 >
-> **This project's research contribution:** the first systematic DL pipeline
-> for CT+MRI brain tumour fusion with longitudinal progression and survival
-> prediction — validated against MRI-only baselines.
+> **This project's three research contributions:**
+> 1. First systematic DL pipeline for CT+MRI brain tumour fusion
+> 2. AI-assisted RANO progression monitoring (automated, not manual)
+> 3. Survival prediction from fused CT+MRI data (unexplored)
+> — all validated against MRI-only baselines.
