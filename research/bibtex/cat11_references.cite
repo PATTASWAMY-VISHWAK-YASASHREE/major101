@@ -1,0 +1,17 @@
+cat11_isola2017cycle
+Zhu J-Y, Park T, Isola P, Efros AA. Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks. CVPR. 2017:1125-1134.
+
+cat11_karras2019stylegan
+Karras T, Laine S, Aila T. A Style-Based Generator Architecture for GANs. CVPR. 2019:4401-4410. doi:10.1109/CVPR.2019.00453.
+
+cat11_ho2020ddpm
+Ho J, Jain A, Abbeel P. Denoising Diffusion Probabilistic Models. NeurIPS. 2020;33:6840-6851.
+
+cat11_rombach2022ldm
+Rombach R, Blattmann A, Lorenz D, et al. High-Resolution Image Synthesis with Latent Diffusion Models. CVPR. 2022:10684-10695. doi:10.1109/CVPR52688.2022.01042.
+
+cat11_ronneberger2015unet
+Ronneberger O, Fischer P, Brox T. U-Net: Convolutional Networks for Biomedical Image Segmentation. MICCAI. 2015:234-241. doi:10.1007/978-3-319-24574-4_28.
+
+cat11_li20223dgan
+Li H-Y, Liu S-F, Chou H-Y, et al. Progressive 3D GANs with Cascaded DDPMs. CVPR. 2022:1479-1488. doi:10.1109/CVPR52688.2022.00148.

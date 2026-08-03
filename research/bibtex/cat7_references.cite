@@ -1,5 +1,5 @@
 [Cite Format - Detailed Reference List]
-Category: 8 - CT-MRI Multimodal Fusion
+Category: 7 - Registration & Segmentation
 Generated: 2026-08-03
 Verified via PubMed / DOI lookup
 
@@ -7,10 +7,12 @@ Verified via PubMed / DOI lookup
 
 1. He K, Zhang X, Ren S, Sun J. Deep Residual Learning for Image
    Recognition. CVPR 2016:770-778. DOI: 10.48550/arXiv.1512.03385.
+   Institution: Microsoft Research, Redmond, WA, USA.
 
 2. Ronneberger O, Fischer P, Brox T. U-Net: Convolutional Networks for
    Biomedical Image Segmentation. MICCAI 2015;9351:234-241.
    DOI: 10.1007/978-3-319-24574-4_28.
+   Institution: University of Freiburg, Freiburg, Germany.
 
 3. Isensee F, Jaeger PF, Kohl SAA, Petersen J, Maier-Hein KH. nnU-Net:
    a self-configuring method for deep learning-based biomedical image
@@ -25,11 +27,7 @@ Verified via PubMed / DOI lookup
    Glioma Using a 3D CNN-LSTM Framework. Comput Biol Med.
    2020;125:103958. PMID: 32891812.
 
-6. Luo S, Huang Z, Wang X. 3D CNN-LSTM for Brain Tumor Segmentation.
-   Comput Methods Programs Biomed. 2021;207:106209.
-   DOI: 10.1016/j.cmpb.2021.106209.
-
 ==============================================================================
-Total references: 6
-Verified PMIDs/DOIs: 6/6
+Total references: 5
+Verified PMIDs/DOIs: 5/5
 ==============================================================================

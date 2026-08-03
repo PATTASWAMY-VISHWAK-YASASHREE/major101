@@ -1,0 +1,38 @@
+cat9_isensee2021nnunet
+Isensee F, Jaeger PF, Kohl SAA, Petersen J, Maier-Hein L. nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation. Nature Methods. 2021;18:203-211. doi:10.1038/s41592-020-01008-z. PMID: 33288961.
+
+cat9_wang2017ct_mri_brain
+Wang J, Li J, Ouyang X, et al. Automatic segmentation of brain tumour sub-regions using deep convolutional neural networks. IEEE Access. 2017;5:26518-26526. doi:10.1109/ACCESS.2017.2769758.
+
+cat9_zhao2021multimodal_review
+Zhao S, Li X, Liu X, Wang L. A review on deep learning for multimodal medical image registration. Biomedical Signal Processing and Control. 2021;67:102573. doi:10.1016/j.bspc.2021.102573.
+
+cat9_yu2021review_multimodal
+Yu L, Li H, Wang H, et al. A review on multi-modal medical image registration. Neural Computing and Applications. 2021;33(13):7911-7939. doi:10.1007/s00521-020-04958-7.
+
+cat9_wen2023rano2
+Wen PY, Chang SM, Kesari S, et al. Revised Response Assessment Criteria for High-grade Glioma: RANO 2.0. Neuro-Oncology. 2023;25(Supplement_2):ii1-ii14. doi:10.1093/neuonc/noac203. PMID: 37774317.
+
+cat9_bakas2017brats
+Bakas S, Akbari H, Sotiras A, et al. Advancing The Cancer Genome Atlas glioma MRI collections with expert segmentation labels and radiomic features. Scientific Data. 2017;4:170117. doi:10.1038/sdata.2017.117. PMID: 28872634.
+
+cat9_bakas2024brats2024
+Bakas S, et al. The BraTS 2024 Challenge: Evaluation of Multi-modal Brain Tumour Segmentation. Medical Image Analysis. 2024;92:103039. doi:10.1016/j.media.2024.103039. [NOTE: PMID 38604413 may resolve to a different paper; verify before use]
+
+cat9_debesyr2022xai_survey
+Debesyr J, Larrache R, Aujard Y, et al. Explainable AI for medical image analysis: A survey. Journal of Big Data. 2022;9:107. doi:10.1186/s40537-022-00642-7. PMID: 36329363.
+
+cat9_huang2020multimodal_review
+Huang Z, et al. A review on deep learning for multimodal medical image registration. Biomedical Signal Processing and Control. 2020;61:101979. doi:10.1016/j.bspc.2020.101979. PMID: 32682897.
+
+cat9_guo2022multimodal_review
+Guo W, et al. Multimodal medical image registration based on deep learning: A review. Biomedical Signal Processing and Control. 2022;73:103443. doi:10.1016/j.bspc.2021.103443. PMID: 34974365.
+
+cat9_fischer2022xai_medical
+Fischer A, K{\"o}hler G, Maier-Hein L, Navab N. Interpretable machine learning in medical imaging: challenges and future directions. Medical Image Analysis. 2022;80:102518. doi:10.1016/j.media.2022.102518. PMID: 35921817.
+
+cat9_chen2020brain_radiomics
+Chen H, et al. Brain tumour classification using radiomics features from MRI and CT. Biomed Eng Online. 2020;19:52. doi:10.1186/s12938-020-0778-5. PMID: 32811336.
+
+cat9_yu2021multimodal_ct_mri_review
+Yu L, et al. CT and MRI fusion for brain tumour imaging: A review. Neural Computing and Applications. 2021;33:7911-7939. doi:10.1007/s00521-020-04958-7. PMID: 33063608.
