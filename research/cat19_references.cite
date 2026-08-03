@@ -1,0 +1,33 @@
+1. Seenu A, Eepuri KK, Prasad BS, Kavya KCS, Ahammad SH, Eltayeb W, SirElkhatim M (2026). MANet: a multimodal attention CNN for brain tumour classification. Scientific Reports. DOI: 10.1038/s41598-026-52615-3. PMID: 42156952.
+
+2. Wu S, Cao Y, Li X, Liu Q, Ye Y, Liu X, Zeng L, Tian M (2023). Attention-guided multi-scale context aggregation network for multi-modal brain glioma segmentation. Medical Physics. DOI: 10.1002/mp.16452. PMID: 37151131.
+
+3. Lei B, Cai G, Zhu Y, Wang T, Dong L, Zhao C, Hu X, Zhu H, Lu L, Feng F, Feng M, Wang R (2025). Self-Supervised Multi-Scale Multi-Modal Graph Pool Transformer for Sellar Region Tumor Diagnosis. IEEE JBHI. DOI: 10.1109/JBHI.2024.3496700. PMID: 39527410.
+
+4. Kasliwal A, Sagaram S, Srivastava L, Seth P, Khan A (2023). ReFuSeg: Regularized Multi-Modal Fusion for Precise Brain Tumour Segmentation. arXiv:2308.13680.
+
+5. Islam W u, Yaqoob M, Khan J A, Steuber V (2026). Multimodal Brain Tumour Classification Using Feature Fusion. arXiv:2606.11107.
+
+6. Yang Z, Zhu H, Zhang R, Zhang H, Wang J, Wang C, Chen M, Yin F-F (2025). Embedding Radiomics into Vision Transformers for Multimodal Medical Image Classification. arXiv:2504.08909.
+
+7. Gong C, Wu Z, Huang Z, Meng G, Lei Z, Liu H (2025). MM2CT: MR-to-CT Translation for Multi-Modal Image Fusion with Mamba. arXiv (submitted Aug 2025).
+
+8. Zhou X, Wu J, Zhao K, He J, Zhao H, Chen L, Zhang S, Wang G (2025). DINOv3-Guided CrossFusion for Semantic-aware CT generation from MRI and CBCT. arXiv (submitted Nov 2025).
+
+9. Li X, Ma S, Tang J, Guo F (2022). TranSiam: Fusing Multimodal Visual Features Using Transformer for Medical Image Segmentation. arXiv (submitted Apr 2022).
+
+10. Abod Z A, Aziz F (2026). Brain MR Image Synthesis with 3D Multi-Contrast Self-Attention GAN. arXiv (submitted Apr 2026).
+
+11. Zhou M, Zhang Y, Xu X, Wang J, Khalvati F (2024). Edge-Enhanced Dilated Residual Attention Network for Multimodal Medical Image Fusion. arXiv (submitted Nov 2024).
+
+12. Kawahara et al. (2026). Multi-modality brain tumour segmentation using dual-attention GAN. Reports of Practical Oncology and Radiotherapy. DOI: 10.5603/rpor.110813. PMID: 42445713.
+
+13. Zhang et al. (2025). Multimodal Fusion at Three Tiers: Physics-Driven Data Generation and VLM Guidance for Brain Tumour Segmentation. arXiv:2507.09966.
+
+14. Liu X, Ding M, Sun Z, Li Z, Teng X (2026). CRFT: Consistent-Recurrent Feature Flow Transformer for Cross-Modal Image Registration. arXiv (submitted Apr 2026).
+
+15. Li et al. (2024). Simultaneous Tri-Modal Medical Image Fusion and Super-Resolution using Conditional Diffusion Model (TFS-Diff). arXiv:2404.17357.
+
+16. Oghenekaro E A (2025). Deep Learning-Based Computer Vision Models for Early Cancer Detection Using Multimodal Medical Imaging. arXiv (submitted Nov 2025).
+
+
