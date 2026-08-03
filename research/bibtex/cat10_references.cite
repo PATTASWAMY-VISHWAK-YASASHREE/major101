@@ -1,0 +1,20 @@
+cat10_he2022mae
+He K, Chen X, Xie S, et al. Masked Autoencoders Are Scalable Vision Learners. CVPR. 2022:15979-15988. doi:10.1109/CVPR52688.2022.01549.
+
+cat10_chen2020mocov2
+Chen X, Fan H, Grischek G, He K. Improved Baselines with Momentum Contrast. ECCV. 2020:150-166. doi:10.1007/978-3-030-58570-4_10.
+
+cat10_oquab2023dinov2
+Oquab M, Darcet T, Moutakanni T, et al. DINOv2: Learning Robust Visual Features without Supervision. arXiv. 2023. doi:10.48550/arXiv.2304.07193.
+
+cat10_lee2013pseudolabeling
+Lee D-H. Pseudo-Label: The Simple and Efficient Semi-Supervised Learning Method for Deep Neural Networks. ICML Workshop. 2013.
+
+cat10_tarvainen2017meanteacher
+Tarvainen A, Valpola H. Mean Teachers Are Better Role Models. NeurIPS. 2017;30.
+
+cat10_snell2017prototypes
+Snell J, Swersky K, Zemel R. Prototypical Networks for Few-shot Learning. NeurIPS. 2017;30.
+
+cat10_finn2017maml
+Finn C, Abbeel P, Levine S. Model-Agnostic Meta-Learning for Fast Adaptation of Deep Networks. ICML. 2017:1126-1135.

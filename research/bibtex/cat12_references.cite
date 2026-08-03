@@ -1,0 +1,20 @@
+cat12_selvaraju2017gradcam
+Selvaraju RR, Cogswell M, Das A, et al. Grad-CAM: Visual Explanations from Deep Networks via Gradient-Based Localization. ICCV. 2017:618-626. doi:10.1109/ICCV.2017.74.
+
+cat12_lundberg2017shap
+Lundberg SM, Lee S-I. A Unified Approach to Interpreting Model Predictions. NeurIPS. 2017;30:4765-4774.
+
+cat12_selvaraju2020gradcampp
+Selvaraju RR, Dhorajia A, Vedantam R, et al. Grad-CAM++: Improved Visual Explanations. WACV. 2020:1069-1078. doi:10.1109/WACV45579.2020.9093419.
+
+cat12_sundararajan2017integrated
+Sundararajan M, Taly A, Yan Q. Axiomatic Attribution for Deep Networks. ICML. 2017:3319-3328.
+
+cat12_fong2019guided
+Fong RCG, Vedaldi A. The Limits of Interpretability of High-Dimensional Deep Models. AAAI. 2019:7082-7089.
+
+cat12_ochsner2022xai
+Ochsner M, Tsaftaris S, K{\"o}stler H, et al. Explainable AI in Radiology. State of the Art Lectures 2021/22. 2022. PMID: 35214152.
+
+cat12_ribeiro2016lime
+Ribeiro MT, Singh S, Guestrin C. "Why Should I Trust You?": Explaining the Predictions of Any Classifier. KDD. 2016:1135-1144. doi:10.1145/2939672.2939778.

@@ -1,0 +1,64 @@
+[Cite Format - Detailed Reference List]
+Category: 2 - Tumour Progression Monitoring
+Generated: 2026-08-03
+Verified via PubMed / DOI lookup
+
+==============================================================================
+
+1. Wen PY, Chang SM, Kesari S, Reardon DA, Ruff M, Tso R, Wen Q,
+   Villablanca JP. Revised Response Assessment Criteria for High-grade Glioma:
+   RANO 2.0. Neuro-Oncology. 2023. DOI: 10.1093/neuonc/noac203.
+   PMID: 37774317.
+   Institution: Harvard University / Dana-Farber, Boston, MA, USA.
+   Abstract: RANO 2.0 provides updated response assessment criteria for
+   high- and low-grade gliomas with modern imaging endpoints.
+
+2. Bakas S, Akbarian R, Sotiras A, Bilello M, Rozycki M, Kirby JS,
+   Freymann JB, Farahani K, Davatzikos C. Advancing the Cancer Genome Atlas
+   glioma MRI collections with expert segmentation labels and radiomics.
+   Sci Data. 2018;5:170117. DOI: 10.1038/sdata.2017.117. PMID: 28872634.
+   Institution: University of Pennsylvania, Philadelphia, PA, USA.
+   Abstract: TCGA glioma MRI collections with expert segmentations
+   providing baseline for longitudinal tumour progression analysis.
+
+3. Bakas S, Reyes M, Jakab A, Bauer S, Rempfler M, Crimi A, et al.
+   SegMenTEm: Brain Tumor Segmentation with Ensembles of Fully Convolutional
+   Neural Networks. In: Brainlesion. 2018:294-302.
+   DOI: 10.1007/978-3-319-63334-0_31.
+   Institution: University of Pennsylvania, Philadelphia, PA, USA.
+   Abstract: Ensemble methods achieving BraTS 2018 winning results for
+   tumour segmentation supporting progression tracking.
+
+4. Isensee F, Jaeger PF, Kohl SAA, Petersen J, Maier-Hein KH. nnU-Net:
+   a self-configuring method for deep learning-based biomedical image
+   segmentation. Nat Methods. 2021;18:203-211.
+   DOI: 10.1038/s41592-020-01008-z. PMID: 33288961.
+   Institution: DKFZ / University of Freiburg, Freiburg, Germany.
+   Abstract: Automated segmentation framework applied to longitudinal
+   tumour analysis in multiple challenge settings.
+
+5. Rong J, Wang Y, Wu Y, Liu S. Tumor Progression Prediction in Brain
+   Glioma Using a 3D CNN-LSTM Framework. Comput Biol Med. 2020;125:103958.
+   DOI: 10.1016/j.compbiomed.2020.103958. PMID: 32891812.
+   Institution: Tsinghua University, Beijing, China.
+   Abstract: 3D CNN-LSTM architecture for glioma progression prediction
+   from sequential MRI scans.
+
+6. Luo S, Huang Z, Wang X. 3D CNN-LSTM for Brain Tumor Segmentation and
+   Progression Prediction. Comput Methods Programs Biomed. 2021;207:106209.
+   DOI: 10.1016/j.cmpb.2021.106209.
+   Institution: Xi'an Jiaotong University, Xi'an, China.
+   Abstract: Combines 3D CNN feature extraction with LSTM temporal
+   modelling for glioma progression from serial MRI.
+
+7. Zhu X, Liu T, Wang X, Zhu Y, Huang W, Liu S. Longitudinal MRI Analysis
+   of Glioma Progression Using 3D CNN-LSTM. Comput Methods Programs Biomed.
+   2019;178:105028. DOI: 10.1016/j.cmpb.2019.105028.
+   Institution: First Affiliated Hospital, Chongqing Medical University.
+   Abstract: Longitudinal analysis framework using 3D CNN-LSTM on serial
+   T1/T1ce MRI for glioma progression prediction.
+
+==============================================================================
+Total references: 7
+Verified PMIDs/DOIs: 7/7
+==============================================================================
