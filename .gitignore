@@ -5,10 +5,10 @@ dist/
 build/
 *.nii.gz
 *.npz
-outputs/
 .wandb/
 .ipynb_checkpoints/
 data/
 .vscode/
 .idea/
 research/_parsed_papers.json
+
