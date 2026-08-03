@@ -1,0 +1,24 @@
+Dataset,Category,Year,Access,Licensing,Size,CT,MRI,Timepoints,Brain_Tumor,Longitudinal,Relevance,Sources
+BraTS 2024,C04-Longitudinal+Tumor,2024,Public (Synapse),Open Access (challenge),4047+100,0,1,1,No,3/5,https://www.synapse.org/Synapse:syn2582906;https://www.synapse.org/Synapse:syn2582907
+BraTS 2023,C04-Longitudinal+Tumor,2023,Public (Synapse),Open Access (challenge),2948,0,1,1,No,3/5,https://www.synapse.org/Synapse:syn2582906
+BraTS 2022,C04-Longitudinal+Tumor,2022,Public (Synapse),Open Access (challenge),2151,0,1,1,No,3/5,https://www.synapse.org/Synapse:syn2582906
+BraTS 2021,C04-Longitudinal+Tumor,2021,Public (Synapse),Open Access (challenge),1251,0,1,1,No,3/5,https://www.synapse.org/Synapse:syn2582906
+BraTS 2020,C04-Longitudinal+Tumor,2020,Public (Synapse),Open Access (challenge),335,0,1,1,No,3/5,https://www.synapse.org/Synapse:syn2582906
+BraTS 2018,C04-Longitudinal+Tumor,2018,Public (Synapse),Open Access (challenge),229+105,0,1,2,Yes,3/5,https://www.synapse.org/Synapse:syn2582906
+BraTS 2012,C04-Longitudinal+Tumor,2012,Public (Synapse),Open Access (challenge),227+145,0,1,2,Yes,3/5,https://www.synapse.org/Synapse:syn2582906
+TCIA HGG,C14-Tumor,2014,Public (TCIA),Open Access (approval),144,1,1,1,Yes,2/5,https://www.cancerimagingarchive.net
+TCIA LGG,C14-Tumor,2014,Public (TCIA),Open Access (approval),172,1,1,1,Yes,2/5,https://www.cancerimagingarchive.net
+TCIA GBM,C14-Tumor,2014,Public (TCIA),Open Access (approval),100,1,1,1,Yes,2/5,https://www.cancerimagingarchive.net
+MSD Brain Task,C14-Tumor,2022,Public,Institutional,10,0,1,1,No,3/5,https://medicaldecathlon.com
+ISIC Archive,C14-Tumor,2017+,Public,CC,11000+,0,0,1,No,0/5,https://isic-archive.com
+OASIS-2,C01-Longitudinal,2016,Public (NDA/CMU),Open Access,404,0,1,4,No,0/5,https://www.oasis-brains.org
+MIX (MS MRI),C10-Longitudinal+MRI,2017,Public,Open Access,107,0,1,1,No,0/5,https://www.isi.uu.nl/research/mix
+LiTS,C14-Tumor,2019,Public (Kaggle),Open Access,131+70,1,0,1,No,2/5,https://www.kaggle.com/datasets/mishaballons93/lits
+Kvasir,C14-Tumor,2019,Public,Open Access,6000,0,0,1,No,0/5,https://www.kvasir.com
+CheXpert,C15-CXR,2019,Public (MIMIC),Open Access,224000,0,0,1,No,0/5,https://stanfordmlgroup.github.io/projects/chexpert
+MIMIC-IV,C15-CXR,2019,Public (DBIC),Institutional,50000+,0,0,1,No,0/5,https://mimic.mit.edu
+DeepLesion,C14-Tumor,2018,Public (registration),Open Access,133422 annotations,1,0,1,Yes (brain),1/5,https://github.com/zyxiang/DeepLesion
+GBM-SBRT,C04-Longitudinal+Tumor,Unknown,Public (TCIA),Open Access (approval),~50-100,1,1,3+,Yes,4/5,https://www.cancerimagingarchive.net
+RIT-SEG,C04-Longitudinal+Tumor,Unknown,Institutional,Unknown,Limited,0,1,3+,Yes,3/5,Unknown
+MSSEG,C10-Longitudinal+MRI,Unknown,Public,Open Access,107,0,1,8,Yes (MS),1/5,Unknown
+Preclinical glioma models,C08-Longitudinal+MRI,Various,Varies,Varies,Varies,0,1,Multiple,Yes,2/5,Various labs
