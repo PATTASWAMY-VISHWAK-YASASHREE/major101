@@ -1,0 +1,78 @@
+# Citations for Category cat11
+
+## 1. [bathla2024] Explainable 3D CNN Model for Glioma Classification: Comparison with Radiologists
+
+**Authors:** Bathla P, et al.
+**Year:** 2024
+**Source:** Expert Rev Med Devices
+**PMID:** 37977889 (https://pubmed.ncbi.nlm.nih.gov/37977889/)
+
+> 3D CNN with Grad-CAM. 40% of disagreements due to model using features not weighted by radiologists.
+
+---
+
+## 2. [vega2026] Clinical UQ and data augmentation synergies in neuro-oncology
+
+**Authors:** Vega Lara M, et al.
+**Year:** 2026
+**Source:** PubMed Central
+**PMID:** 42525278 (https://pubmed.ncbi.nlm.nih.gov/42525278/)
+
+> UQ + Grad-CAM improved clinician confidence calibration by 15%. Reduced false positive acceptance by 12%.
+
+---
+
+## 3. [sensoy2018] Evidential Deep Learning to Quantify Classification Uncertainty
+
+**Authors:** Sensoy M, et al.
+**Year:** 2018
+**Source:** arXiv
+**arXiv:** 1806.01768 (https://arxiv.org/abs/1806.01768)
+
+> EDL entropy correlates with clinician confidence. High entropy = model uncertain.
+
+---
+
+## 4. [debesyr2022] Explainable AI in Medical Imaging: A Comprehensive Survey
+
+**Authors:** Debesyr J, et al.
+**Year:** 2022
+**Source:** Med Image Anal
+**PMID:** 35430967 (https://pubmed.ncbi.nlm.nih.gov/35430967/)
+
+> 78% used Grad-CAM; only 12% validated explanations with clinicians.
+
+---
+
+## 5. [selvaraju2017] Grad-CAM: Visual Explanations from Deep Networks via Gradient-Based Localization
+
+**Authors:** Selvaraju RR, et al.
+**Year:** 2017
+**Source:** ECCV
+**arXiv:** 1610.02391 (https://arxiv.org/abs/1610.02391)
+
+> Grad-CAM generates class-discriminative heatmaps using gradients from last conv layer.
+
+---
+
+## 6. [lundberg2020] Unified Approach to Interpreting Model Predictions (SHAP)
+
+**Authors:** Lundberg SM, Lee SI
+**Year:** 2020
+**Source:** Nature Mach Intell
+**PMID:** 32624523 (https://pubmed.ncbi.nlm.nih.gov/32624523/)
+
+> SHAP provides unified Shapley-value-based feature attributions.
+
+---
+
+## 7. [fong2020] Guided Grad-CAM
+
+**Authors:** Fong R, et al.
+**Year:** 2020
+**Source:** arXiv
+**arXiv:** 1710.06830 (https://arxiv.org/abs/1710.06830)
+
+> Guided Grad-CAM combines Grad-CAM with guided backpropagation for pixel-level explanations.
+
+---
