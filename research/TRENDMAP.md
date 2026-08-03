@@ -1,8 +1,11 @@
-# Brain Tumour DL Research — Publication Trend Map
+# Brain Tumour DL Research — Complete Trend Map
 
-Generated from 117 papers across 19 research categories (bibtex/*.bib).
+**Generated from 117 papers across 19 research categories (bibtex/*.bib).**
+**Last updated:** 2026-06-16
 
-## Overall Publication Timeline
+---
+
+## 1. Overall Publication Timeline
 
 ```mermaid
 %%{init:{"theme":"forest"}}%%
@@ -40,10 +43,10 @@ gantt
     Survival Analysis : 2016, 2022
     Federated Learning : 2017, 2021
     Multimodal Registration : 2018, 2023
-    Generative / SSDL : 2020, 2022
+    Generative / SSSL : 2020, 2022
 ```
 
-## Papers Per Year — Bar Chart (ASCII)
+## 2. Papers Per Year — Bar Chart
 
 ```
 2026 █                    1
@@ -63,7 +66,7 @@ gantt
 
 **Peak year:** 2021 (26 papers) — driven by nnU-Net, Swin-Transformer, ViT expansion, and BraTS 2021 challenge.
 
-## Topic Distribution
+## 3. Topic Distribution
 
 ```
 CT+MRI Experimental   ████████      8
@@ -86,7 +89,7 @@ Survival              █████         5
 Uncertainty           █████         5
 ```
 
-## Key Research Waves
+## 4. Key Research Waves
 
 ```mermaid
 timeline
@@ -105,7 +108,7 @@ timeline
         2024-2026 : CT+MRI late fusion (Gong 2025), MRI-CT translation (Chen 2026), Experimental prototypes
 ```
 
-## Trend: Method Evolution Over Time
+## 5. Method Evolution Over Time
 
 ```mermaid
 timeline
@@ -124,7 +127,7 @@ timeline
         2023-2026 : Explainability, Uncertainty Calibration, Federated Learning, Multimodal (MRI+CT) Fusion, Survival Prediction
 ```
 
-## Subfield Heatmap (Year × Topic)
+## 6. Subfield Heatmap (Year × Topic)
 
 ```
 Topic                  | 2015 | 2016 | 2017 | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024-26
@@ -137,7 +140,7 @@ Segmentation           |  ●   |  ●   |      |      |  ●   |  ●   |  ● 
 AI Architectures       |      |      |  ●   |      |  ●   |  ●   |  ●●  |  ●   |      |
 Registration           |      |  ●   |  ●   |      |      |  ●   |  ●   |  ●   |  ●   |
 CT+MRI Fusion          |      |      |  ●   |  ●   |      |  ●   |  ●●  |      |  ●   |
-Multimodal Register    |      |      |      |      |  ●   |      |  ●   |  ●   |  ●   |  ●
+Multimodal Register    |      |      |      |  ●   |      |      |  ●   |  ●   |  ●   |  ●
 Self-Supervised        |      |      |      |      |      |  ●   |  ●   |  ●●  |      |  ●
 Generative             |      |      |      |      |      |  ●   |  ●   |  ●   |      |  ●
 Explainability         |      |      |  ●   |  ●   |      |  ●   |  ●   |      |  ●   |
