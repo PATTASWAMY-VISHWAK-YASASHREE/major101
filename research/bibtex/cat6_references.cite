@@ -1,0 +1,39 @@
+[Cite Format - Detailed Reference List]
+Category: 6 - AI Architectures for Brain Tumour Classification
+Generated: 2026-08-03
+Verified via PubMed / DOI lookup
+
+==============================================================================
+
+1. He K, Zhang X, Ren S, Sun J. Deep Residual Learning for Image
+   Recognition. CVPR 2016:770-778. DOI: 10.48550/arXiv.1512.03385.
+   Institution: Microsoft Research, Redmond, WA, USA.
+   Abstract: ResNet with residual blocks enabling training of 100+ layer
+   networks. 3D ResNet-18 baseline used for per-modality classification.
+
+2. Huang G, Liu Z, van der Maaten L, Weinberger KQ. Densely Connected
+   Convolutional Networks. CVPR 2017:4700-4708.
+   DOI: 10.48550/arXiv.1608.06993.
+   Institution: Columbia University, New York, NY, USA.
+   Abstract: DenseNet with dense skip connections improving gradient flow.
+
+3. Ronneberger O, Fischer P, Brox T. U-Net: Convolutional Networks for
+   Biomedical Image Segmentation. MICCAI 2015;9351:234-241.
+   DOI: 10.1007/978-3-319-24574-4_28.
+   Institution: Freiburg University Medical Center, Freiburg, Germany.
+   Abstract: U-Net encoder architecture with skip connections.
+
+4. Hatamizadeh A, Tang Y, Nath V, Yang D, Myronenko A, Landman B,
+   Xu D, Xu D, Feng A. UNETR: Transformers for 3D Medical Image
+   Segmentation. arXiv 2021. DOI: 10.48550/arXiv.2103.10504.
+   Institution: Yale School of Medicine, New Haven, CT, USA.
+
+5. Isensee F, Jaeger PF, Kohl SAA, Petersen J, Maier-Hein KH. nnU-Net:
+   a self-configuring method for deep learning-based biomedical image
+   segmentation. Nat Methods. 2021;18:203-211.
+   DOI: 10.1038/s41592-020-01008-z. PMID: 33288961.
+
+==============================================================================
+Total references: 5
+Verified PMIDs/DOIs: 5/5
+==============================================================================

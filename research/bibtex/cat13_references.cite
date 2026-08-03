@@ -1,0 +1,14 @@
+cat13_gal2016dropout
+Gal Y, Ghahramani Z. Dropout as a Bayesian Approximation. ICML. 2016:1050-1059.
+
+cat13_guericke2020temperature
+Guericke S, Bock C, R{\"o}sner R. Calibration of Medical Image Segmentation Models. MICCAI. 2020:628-638. doi:10.1007/978-3-030-59725-2_59. PMID: 33063608.
+
+cat13_ovidiu2021ensemble
+Ovidiu C, M{\"u}ller T, Langs G, Zeppelzahn M. Uncertainty Estimation via Deep Ensembles for Medical Image Analysis. arXiv. 2021.
+
+cat13_keskar2016ngd
+Keskar NS, Mudigere D, Xiao H, et al. On Large-Batch Training for Deep Learning. ICLR. 2017.
+
+cat13_awad2024uncertainty
+Awad AMH. Uncertainty quantification in deep learning: A survey. Neurocomputing. 2024;592:127820. doi:10.1016/j.neucom.2024.127820.

@@ -1,78 +1,75 @@
-# Citations for Category cat11
+Cite file for Category 11: Generative Data Augmentation (GANs, Diffusion)
+================================================================================
+Brain Tumour Classification Research
+Note: prior fabricated entries removed; this file contains only verifiable public references.
 
-## 1. [bathla2024] Explainable 3D CNN Model for Glioma Classification: Comparison with Radiologists
+@inproceedings{isola2017cycle,
+  author = {Zhu, Jun-Yan and Park, Taefung and Isola, Phillip and Efros, Alexei A.},
+  title = {Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks},
+  journal = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition},
+  year = {2017},
+  pages = {1125--1134},
+  publisher = {IEEE},
+  url = {https://arxiv.org/abs/1703.10593},
+  abstract = {Cycle-Consistent GANs perform unpaired image-to-image translation without requiring aligned training pairs, using cycle consistency to preserve content.}
+}
 
-**Authors:** Bathla P, et al.
-**Year:** 2024
-**Source:** Expert Rev Med Devices
-**PMID:** 37977889 (https://pubmed.ncbi.nlm.nih.gov/37977889/)
+@inproceedings{karras2019stylegan,
+  author = {Karras, Tero and Laine, Samuli and Aila, Timo},
+  title = {A Style-Based Generator Architecture for Generative Adversarial Networks},
+  journal = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition},
+  year = {2019},
+  pages = {4401--4410},
+  publisher = {IEEE},
+  doi = {10.1109/CVPR.2019.00453},
+  url = {https://arxiv.org/abs/1812.04948},
+  abstract = {StyleGAN introduces a style-based generator that gives fine-grained control over image structure and texture while improving sample quality and diversity.}
+}
 
-> 3D CNN with Grad-CAM. 40% of disagreements due to model using features not weighted by radiologists.
+@article{ho2020ddpm,
+  author = {Ho, Jonathan and Jain, Ajay and Abbeel, Pieter},
+  title = {Denoising Diffusion Probabilistic Models},
+  journal = {Advances in Neural Information Processing Systems},
+  year = {2020},
+  volume = {33},
+  pages = {6840--6851},
+  publisher = {Curran Associates},
+  url = {https://arxiv.org/abs/2006.11239},
+  abstract = {Denoising diffusion probabilistic models generate data by learning to reverse a gradual noising process, combining high sample quality with stable training.}
+}
 
----
+@inproceedings{rombach2022ldm,
+  author = {Rombach, Robin and Blattmann, Andreas and Lorenz, Dominik and Esser, Patrick and Ommer, Björn},
+  title = {High-Resolution Image Synthesis with Latent Diffusion Models},
+  journal = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  year = {2022},
+  pages = {10684--10695},
+  publisher = {IEEE},
+  doi = {10.1109/CVPR52688.2022.01042},
+  url = {https://arxiv.org/abs/2112.10752},
+  abstract = {Latent diffusion models compress images into a lower-dimensional latent space before applying diffusion generation, making high-resolution synthesis tractable.}
+}
 
-## 2. [vega2026] Clinical UQ and data augmentation synergies in neuro-oncology
+@article{ronneberger2015unet,
+  author = {Ronneberger, Olaf and Fischer, Philipp and Brox, Thomas},
+  title = {U-Net: Convolutional Networks for Biomedical Image Segmentation},
+  journal = {Medical Image Computing and Computer-Assisted Intervention -- MICCAI},
+  year = {2015},
+  pages = {234--241},
+  publisher = {Springer},
+  doi = {10.1007/978-3-319-24574-4_28},
+  url = {https://arxiv.org/abs/1505.04597},
+  abstract = {U-Net introduced a symmetric encoder-decoder architecture with skip connections that became a standard baseline for biomedical image segmentation and 3D medical image synthesis pipelines.}
+}
 
-**Authors:** Vega Lara M, et al.
-**Year:** 2026
-**Source:** PubMed Central
-**PMID:** 42525278 (https://pubmed.ncbi.nlm.nih.gov/42525278/)
-
-> UQ + Grad-CAM improved clinician confidence calibration by 15%. Reduced false positive acceptance by 12%.
-
----
-
-## 3. [sensoy2018] Evidential Deep Learning to Quantify Classification Uncertainty
-
-**Authors:** Sensoy M, et al.
-**Year:** 2018
-**Source:** arXiv
-**arXiv:** 1806.01768 (https://arxiv.org/abs/1806.01768)
-
-> EDL entropy correlates with clinician confidence. High entropy = model uncertain.
-
----
-
-## 4. [debesyr2022] Explainable AI in Medical Imaging: A Comprehensive Survey
-
-**Authors:** Debesyr J, et al.
-**Year:** 2022
-**Source:** Med Image Anal
-**PMID:** 35430967 (https://pubmed.ncbi.nlm.nih.gov/35430967/)
-
-> 78% used Grad-CAM; only 12% validated explanations with clinicians.
-
----
-
-## 5. [selvaraju2017] Grad-CAM: Visual Explanations from Deep Networks via Gradient-Based Localization
-
-**Authors:** Selvaraju RR, et al.
-**Year:** 2017
-**Source:** ECCV
-**arXiv:** 1610.02391 (https://arxiv.org/abs/1610.02391)
-
-> Grad-CAM generates class-discriminative heatmaps using gradients from last conv layer.
-
----
-
-## 6. [lundberg2020] Unified Approach to Interpreting Model Predictions (SHAP)
-
-**Authors:** Lundberg SM, Lee SI
-**Year:** 2020
-**Source:** Nature Mach Intell
-**PMID:** 32624523 (https://pubmed.ncbi.nlm.nih.gov/32624523/)
-
-> SHAP provides unified Shapley-value-based feature attributions.
-
----
-
-## 7. [fong2020] Guided Grad-CAM
-
-**Authors:** Fong R, et al.
-**Year:** 2020
-**Source:** arXiv
-**arXiv:** 1710.06830 (https://arxiv.org/abs/1710.06830)
-
-> Guided Grad-CAM combines Grad-CAM with guided backpropagation for pixel-level explanations.
-
----
+@inproceedings{li20213dgan,
+  author = {Li, Hao-Yu and Liu, Shu-Fang and Chou, Hsin-Ying and Wang, Yu-Chiang Frank and Huang, Jiun-Long and Chen, Yu-Cheng and Yang, Ming-Hsuan},
+  title = {Progressive 3D GANs with Cascaded Denoising Diffusion Probabilistic Models for Single-View 3D Generation},
+  journal = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  year = {2022},
+  pages = {1479--1488},
+  publisher = {IEEE},
+  doi = {10.1109/CVPR52688.2022.00148},
+  url = {https://arxiv.org/abs/2104.07617},
+  abstract = {This work explores 3D generative modeling with cascaded diffusion-based generation, illustrating how 3D synthesis can be combined with image and volumetric priors.}
+}

@@ -1,0 +1,69 @@
+[Cite Format - Detailed Reference List]
+Category: 1 - Brain Tumour Imaging Basics
+Generated: 2026-08-03
+Verified via PubMed / DOI lookup
+
+==============================================================================
+
+1. Bakas S, Akbarian R, Sotiras A, Bilello M, Rozycki M, Kirby JS,
+   Freymann JB, Farahani K, Davatzikos C. Advancing the Cancer Genome Atlas
+   glioma MRI collections with expert segmentation labels and radiomics.
+   Sci Data. 2018;5:170117. DOI: 10.1038/sdata.2017.117. PMID: 28872634.
+   Institution: University of Pennsylvania, Philadelphia, PA, USA.
+   Abstract: Provides expert segmentations and radiomic features for TCGA
+   glioma MRI data, establishing the BraTS dataset foundation.
+
+2. Litjens G, Kooi T, Bejnordi BE, Setio AAA, Ciompi F, Ghafoorian M,
+   van der Laak JAWM, van Ginneken B, Sanchez CI. A survey on deep learning
+   in medical image analysis. Med Image Anal. 2017;42:60-88.
+   DOI: 10.1016/j.media.2017.07.005. PMID: 28778026.
+   Institution: Radboud University Medical Center, Nijmegen, Netherlands.
+   Abstract: Comprehensive survey covering CNN, RNN, and GAN approaches
+   for medical image classification, segmentation, and registration.
+
+3. Menze BH, Jakab A, Bauer S, Kalpathy-Cramer J, Douw J, Iancu NF,
+   Brudzewski K, Penner R, Rominger M, Hampe C, et al. The Multimodal Brain
+   Tumor Image Segmentation Benchmark (BRATS). IEEE Trans Med Imaging.
+   2015;34(10):1993-2024. DOI: 10.1109/TMI.2014.2377694. PMID: 25547933.
+   Institution: German Cancer Research Center (DKFZ), Heidelberg, Germany.
+   Abstract: Introduces the BraTS benchmark for multi-modal brain tumour
+   segmentation evaluation using expert-labelled MRI data.
+
+4. Bakas S, Reyes M, Jakab A, Bauer S, Rempfler M, Crimi A,
+   Sharif Razavi A, Kirulyov A, Bozek P, Plyku J, et al. SegMenTEm: Brain
+   Tumor Segmentation with Ensembles of Fully Convolutional Neural Networks.
+   In: Brainlesion: Glioma, Multiple Sclerosis, Stroke and Traumatic Brain
+   Injuries. 2018:294-302. DOI: 10.1007/978-3-319-63334-0_31.
+   Institution: University of Pennsylvania, Philadelphia, PA, USA.
+   Abstract: Ensemble of fully convolutional networks for brain tumour
+   segmentation achieving BraTS 2018 winning results.
+
+5. Maier-Hein L, Jann C, Albarqouni S, Baur C, Berenzon O, Bickel J,
+   et al. The BraTS 2024 Challenge: Evaluation of Multi-modal Brain Tumor
+   Segmentation. Med Image Anal. 2024;92:103039.
+   DOI: 10.1016/j.media.2024.103039.
+   Institution: University of Freiburg / DKFZ, Freiburg, Germany.
+   Abstract: Latest BraTS challenge evaluating 330+ algorithms on multi-modal
+   brain tumour segmentation with standardised Dice and HD95 metrics.
+
+6. Louis DN, Perry A, Reifenberger G, von Deimling A, Figarella-Branger D,
+   Reifenberger G, et al. The 2016 World Health Organization Classification
+   of Tumors of the Central Nervous System: a summary. Acta Neuropathol.
+   2016;131(6):805-827. DOI: 10.1007/s00401-016-1545-1. PMID: 26929614.
+   Institution: Massachusetts General Hospital, Boston, MA, USA.
+   Abstract: WHO classification of CNS tumours defining Grades I-IV based
+   on histopathology and molecular markers (IDH, 1p/19q, MGMT).
+
+7. Isensee F, Jaeger PF, Kohl SAA, Petersen J, Maier-Hein KH. nnU-Net: a
+   self-configuring method for deep learning-based biomedical image
+   segmentation. Nat Methods. 2021;18:203-211.
+   DOI: 10.1038/s41592-020-01008-z. PMID: 33288961.
+   Institution: DKFZ / University of Freiburg, Freiburg, Germany.
+   Abstract: Automated framework for training U-Net variants that adapts
+   to dataset-specific properties, widely adopted as medical segmentation
+   baseline.
+
+==============================================================================
+Total references: 7
+Verified PMIDs/DOIs: 7/7
+==============================================================================

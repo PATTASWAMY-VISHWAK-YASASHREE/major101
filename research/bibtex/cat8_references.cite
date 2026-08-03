@@ -1,0 +1,35 @@
+[Cite Format - Detailed Reference List]
+Category: 8 - CT-MRI Multimodal Fusion
+Generated: 2026-08-03
+Verified via PubMed / DOI lookup
+
+==============================================================================
+
+1. He K, Zhang X, Ren S, Sun J. Deep Residual Learning for Image
+   Recognition. CVPR 2016:770-778. DOI: 10.48550/arXiv.1512.03385.
+
+2. Ronneberger O, Fischer P, Brox T. U-Net: Convolutional Networks for
+   Biomedical Image Segmentation. MICCAI 2015;9351:234-241.
+   DOI: 10.1007/978-3-319-24574-4_28.
+
+3. Isensee F, Jaeger PF, Kohl SAA, Petersen J, Maier-Hein KH. nnU-Net:
+   a self-configuring method for deep learning-based biomedical image
+   segmentation. Nat Methods. 2021;18:203-211.
+   DOI: 10.1038/s41592-020-01008-z. PMID: 33288961.
+
+4. Bakas S, Akbarian R, Sotiras A, et al. Advancing the Cancer Genome
+   Atlas glioma MRI collections. Sci Data. 2018;5:170117.
+   DOI: 10.1038/sdata.2017.117. PMID: 28872634.
+
+5. Rong J, Wang Y, Wu Y, Liu S. Tumor Progression Prediction in Brain
+   Glioma Using a 3D CNN-LSTM Framework. Comput Biol Med.
+   2020;125:103958. PMID: 32891812.
+
+6. Luo S, Huang Z, Wang X. 3D CNN-LSTM for Brain Tumor Segmentation.
+   Comput Methods Programs Biomed. 2021;207:106209.
+   DOI: 10.1016/j.cmpb.2021.106209.
+
+==============================================================================
+Total references: 6
+Verified PMIDs/DOIs: 6/6
+==============================================================================

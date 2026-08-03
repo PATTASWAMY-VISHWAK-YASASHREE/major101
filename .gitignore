@@ -11,3 +11,4 @@ outputs/
 data/
 .vscode/
 .idea/
+research/_parsed_papers.json
