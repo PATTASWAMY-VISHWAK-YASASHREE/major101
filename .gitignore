@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+*.nii.gz
+*.npz
+outputs/
+.wandb/
+.ipynb_checkpoints/
+data/
+.vscode/
+.idea/
