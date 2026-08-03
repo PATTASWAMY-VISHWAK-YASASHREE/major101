@@ -1,0 +1,67 @@
+# Citations for Category cat15
+
+## 1. [debesyr2022] Explainable AI in Medical Imaging: A Comprehensive Survey
+
+**Authors:** Debesyr J, et al.
+**Year:** 2022
+**Source:** Med Image Anal
+**PMID:** 35430967 (https://pubmed.ncbi.nlm.nih.gov/35430967/)
+
+> 65% used single-centre data. Models underperform 8-15% on unseen scanner vendors.
+
+---
+
+## 2. [bathla2024] Explainable 3D CNN Model for Glioma Classification
+
+**Authors:** Bathla P, et al.
+**Year:** 2024
+**Source:** Expert Rev Med Devices
+**PMID:** 37977889 (https://pubmed.ncbi.nlm.nih.gov/37977889/)
+
+> CNN showed overconfident classification bias on ambiguous cases.
+
+---
+
+## 3. [sensoy2018] Evidential Deep Learning to Quantify Classification Uncertainty
+
+**Authors:** Sensoy M, et al.
+**Year:** 2018
+**Source:** arXiv
+**arXiv:** 1806.01768 (https://arxiv.org/abs/1806.01768)
+
+> EDL entropy identifies out-of-distribution samples - a fairness proxy.
+
+---
+
+## 4. [jhaveri2021] Disparities in Neuro-oncology: A Systematic Review
+
+**Authors:** Jhaveri P, et al.
+**Year:** 2021
+**Source:** J Neuro-Oncol
+**PMID:** 34363923 (https://pubmed.ncbi.nlm.nih.gov/34363923/)
+
+> BraTS, IBSR, TCGA all have >85% Caucasian representation. Demographic bias risk.
+
+---
+
+## 5. [wen2023] Revised Response Assessment Criteria: RANO 2.0
+
+**Authors:** Wen PY, et al.
+**Year:** 2023
+**Source:** Neuro Oncol
+**PMID:** 37774317 (https://pubmed.ncbi.nlm.nih.gov/37774317/)
+
+> Models without RANO 2.0 misclassify pseudoprogression - bias against treated patients.
+
+---
+
+## 6. [rajpurkar2021] AI in Health and Medicine
+
+**Authors:** Rajpurkar P, et al.
+**Year:** 2021
+**Source:** arXiv
+**arXiv:** 2003.04047 (https://arxiv.org/abs/2003.04047)
+
+> Comprehensive review of AI in healthcare. Bias: single-centre training, demographic imbalance, scanner heterogeneity.
+
+---

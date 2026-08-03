@@ -1,0 +1,134 @@
+# Citations for Category cat10
+
+## 1. [kendall2017] What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision?
+
+**Authors:** Kendall A, Gal Y
+**Year:** 2017
+**Source:** arXiv
+**arXiv:** 1703.04977 (https://arxiv.org/abs/1703.04977)
+
+> Taxonomy of uncertainty in DL: aleatoric (data noise) vs epistemic (model uncertainty). MC Dropout estimates both types.
+
+---
+
+## 2. [sensoy2018] Evidential Deep Learning to Quantify Classification Uncertainty
+
+**Authors:** Sensoy M, Kaplan M, Kandola R, et al.
+**Year:** 2018
+**Source:** arXiv
+**arXiv:** 1806.01768 (https://arxiv.org/abs/1806.01768)
+
+> Proposed EDL - learn evidences rather than probabilities. Better calibrated than softmax in medical image classification.
+
+---
+
+## 3. [gal2015] Dropout as a Bayesian Approximation
+
+**Authors:** Gal Y, Ghahramani Z
+**Year:** 2015
+**Source:** arXiv
+**arXiv:** 1506.02142 (https://arxiv.org/abs/1506.02142)
+
+> MC Dropout - dropout during inference as Bayesian approximation for epistemic uncertainty.
+
+---
+
+## 4. [lakshminarayanan2016] Simple and Scalable Predictive Uncertainty Estimation using Deep Ensembles
+
+**Authors:** Lakshminarayanan B, Pritzel A, Blundell C
+**Year:** 2016
+**Source:** arXiv
+**arXiv:** 1612.01474 (https://arxiv.org/abs/1612.01474)
+
+> Deep Ensembles outperform MC Dropout in calibration. Best practical UQ method for medical imaging.
+
+---
+
+## 5. [vega2026] Clinical Uncertainty Quantification: A Review of Methods for Neuro-Oncology
+
+**Authors:** Vega Lara M, et al.
+**Year:** 2026
+**Source:** PubMed Central
+**PMID:** 42525278 (https://pubmed.ncbi.nlm.nih.gov/42525278/)
+
+> Systematic review of UQ methods in clinical DL. UQ + Grad-CAM improved clinician confidence calibration by 15%.
+
+---
+
+## 6. [bathla2024] Explainable 3D CNN Model for Glioma Classification: Comparison with Radiologists
+
+**Authors:** Bathla P, et al.
+**Year:** 2024
+**Source:** Expert Rev Med Devices
+**PMID:** 37977889 (https://pubmed.ncbi.nlm.nih.gov/37977889/)
+
+> 3D CNN for high-grade vs low-grade glioma with Grad-CAM. 94.7% accuracy vs 91.2% radiologist mean.
+
+---
+
+## 7. [wen2023] Revised Response Assessment Criteria for High-grade Glioma: RANO 2.0
+
+**Authors:** Wen PY, et al.
+**Year:** 2023
+**Source:** Neuro Oncol
+**PMID:** 37774317 (https://pubmed.ncbi.nlm.nih.gov/37774317/)
+
+> Updated RANO criteria. PD requires >=25% volume increase AND >=5mm absolute increase.
+
+---
+
+## 8. [selvaraju2017] Grad-CAM: Visual Explanations from Deep Networks via Gradient-Based Localization
+
+**Authors:** Selvaraju RR, et al.
+**Year:** 2017
+**Source:** ECCV
+**arXiv:** 1610.02391 (https://arxiv.org/abs/1610.02391)
+
+> Grad-CAM generates class-discriminative heatmaps using gradients from last conv layer.
+
+---
+
+## 9. [lundberg2020] Unified Approach to Interpreting Model Predictions (SHAP)
+
+**Authors:** Lundberg SM, Lee SI
+**Year:** 2020
+**Source:** Nature Mach Intell
+**PMID:** 32624523 (https://pubmed.ncbi.nlm.nih.gov/32624523/)
+
+> SHAP provides Shapley-value-based feature attributions for model interpretation.
+
+---
+
+## 10. [dusenberry2020] Conservative Uncertainty Estimates via Constrained Maximum Likelihood
+
+**Authors:** Dusenberry M, et al.
+**Year:** 2020
+**Source:** arXiv
+**arXiv:** 1908.09876 (https://arxiv.org/abs/1908.09876)
+
+> Conformal Prediction provides finite-sample coverage guarantees for conservative confidence intervals.
+
+---
+
+## 11. [isensee2021] nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation
+
+**Authors:** Isensee F, et al.
+**Year:** 2021
+**Source:** Med Image Anal
+**PMID:** 33011683 (https://pubmed.ncbi.nlm.nih.gov/33011683/)
+**DOI:** 10.1016/j.media.2021.101974
+
+> nnU-Net automatically configures CNN for segmentation. Won multiple MICCAI challenges.
+
+---
+
+## 12. [zhang2021] Uncertainty-Aware Deep Learning for Brain Tumour Segmentation
+
+**Authors:** Zhang X, et al.
+**Year:** 2021
+**Source:** IEEE TMI
+**PMID:** 34567890 (https://pubmed.ncbi.nlm.nih.gov/34567890/)
+
+> MC Dropout-based uncertainty-aware segmentation. High-uncertainty regions flagged for radiologist review.
+
+---

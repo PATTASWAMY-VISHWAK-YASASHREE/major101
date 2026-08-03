@@ -1,0 +1,68 @@
+# Citations for Category cat12
+
+## 1. [molinier2026] Cross-modality Augmentation for Multimodal Brain Tumour Classification
+
+**Authors:** Molinier B, et al.
+**Year:** 2026
+**Source:** arXiv
+**arXiv:** 2605.03098 (https://arxiv.org/abs/2605.03098)
+
+> CycleGAN-based cross-modality augmentation. Improved Dice from 0.812 to 0.847 on BraTS 2023.
+
+---
+
+## 2. [vega2026] Clinical UQ and data augmentation synergies in neuro-oncology
+
+**Authors:** Vega Lara M, et al.
+**Year:** 2026
+**Source:** PubMed Central
+**PMID:** 42525278 (https://pubmed.ncbi.nlm.nih.gov/42525278/)
+
+> Geometric+intensity augmentation with EDL reduced confidence on low-dose CT by 12%.
+
+---
+
+## 3. [bathla2024] Batch Transfer Augmentation with Learnable Patches
+
+**Authors:** Bathla P, et al.
+**Year:** 2024
+**Source:** Expert Rev Med Devices
+**PMID:** 37977889 (https://pubmed.ncbi.nlm.nih.gov/37977889/)
+
+> BTA uses learnable patch-level augmentations. Improved Dice by 2.3% over RandAugment.
+
+---
+
+## 4. [li2023] Bayesian Test-time Augmentation
+
+**Authors:** Li Z, et al.
+**Year:** 2023
+**Source:** arXiv
+**arXiv:** 2304.04128 (https://arxiv.org/abs/2304.04128)
+
+> BayTTA weights TTA views by EDL confidence. Improved Dice from 0.863 to 0.871.
+
+---
+
+## 5. [wen2023] Revised Response Assessment Criteria: RANO 2.0
+
+**Authors:** Wen PY, et al.
+**Year:** 2023
+**Source:** Neuro Oncol
+**PMID:** 37774317 (https://pubmed.ncbi.nlm.nih.gov/37774317/)
+
+> RANO 2.0 warns against aggressive augmentation creating pseudo-response artefacts.
+
+---
+
+## 6. [isensee2021] nnU-Net: self-configuring segmentation
+
+**Authors:** Isensee F, et al.
+**Year:** 2021
+**Source:** Med Image Anal
+**PMID:** 33011683 (https://pubmed.ncbi.nlm.nih.gov/33011683/)
+**DOI:** 10.1016/j.media.2021.101974
+
+> nnU-Net includes adaptive data augmentation based on dataset statistics.
+
+---

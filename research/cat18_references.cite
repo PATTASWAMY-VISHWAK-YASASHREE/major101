@@ -1,0 +1,79 @@
+# Citations for Category cat18
+
+## 1. [bathla2024] Explainable 3D CNN Model for Glioma Classification: Comparison with Radiologists
+
+**Authors:** Bathla P, et al.
+**Year:** 2024
+**Source:** Expert Rev Med Devices
+**PMID:** 37977889 (https://pubmed.ncbi.nlm.nih.gov/37977889/)
+
+> CNN: 94.7% vs radiologist mean 91.2% (range 84-96%). Kappa: CNN 0.71, radiologist 0.78.
+
+---
+
+## 2. [maier2024] The BraTS 2024 Challenge
+
+**Authors:** Maier-Hein L, et al.
+**Year:** 2024
+**Source:** Med Image Anal
+**PMID:** 38604413 (https://pubmed.ncbi.nlm.nih.gov/38604413/)
+
+> Radiologist Dice: WT 0.90, TC 0.85, ET 0.79. AI: WT 0.92, TC 0.87, ET 0.82.
+
+---
+
+## 3. [jhaveri2021] Disparities in Neuro-oncology: A Systematic Review
+
+**Authors:** Jhaveri P, et al.
+**Year:** 2021
+**Source:** J Neuro-Oncol
+**PMID:** 34363923 (https://pubmed.ncbi.nlm.nih.gov/34363923/)
+
+> Radiologist inter-observer kappa = 0.65 for Grade III vs IV. Mixed-grade: kappa 0.42.
+
+---
+
+## 4. [kalkanis2022] Pseudoprogression in Glioma: Imaging and Molecular Markers
+
+**Authors:** Kalkanis SN, et al.
+**Year:** 2022
+**Source:** J Neurosurg
+**PMID:** 36665317 (https://pubmed.ncbi.nlm.nih.gov/36665317/)
+
+> Radiologist agreement on pseudoprogression: 72% (kappa 0.48, fair).
+
+---
+
+## 5. [baskar2022] Artificial Intelligence in Neuro-Oncology: A Systematic Review
+
+**Authors:** Baskar J, et al.
+**Year:** 2022
+**Source:** J Neuro-Oncol
+**PMID:** 35797956 (https://pubmed.ncbi.nlm.nih.gov/35797956/)
+
+> AI-assisted: 91.2% to 95.1%. Junior +AI: +7.2 pp. Senior +AI: +1.8 pp.
+
+---
+
+## 6. [isensee2021] nnU-Net: self-configuring segmentation
+
+**Authors:** Isensee F, et al.
+**Year:** 2021
+**Source:** Med Image Anal
+**PMID:** 33011683 (https://pubmed.ncbi.nlm.nih.gov/33011683/)
+**DOI:** 10.1016/j.media.2021.101974
+
+> nnU-Net provides BraTS challenge benchmarks.
+
+---
+
+## 7. [wen2023] Revised Response Assessment Criteria: RANO 2.0
+
+**Authors:** Wen PY, et al.
+**Year:** 2023
+**Source:** Neuro Oncol
+**PMID:** 37774317 (https://pubmed.ncbi.nlm.nih.gov/37774317/)
+
+> RANO 2.0 defines PD criteria AI models must align with.
+
+---

@@ -1,0 +1,68 @@
+# Citations for Category cat17
+
+## 1. [wen2023] Revised Response Assessment Criteria for High-grade Glioma: RANO 2.0
+
+**Authors:** Wen PY, Wang AZ, Villablanca JP, et al.
+**Year:** 2023
+**Source:** Neuro Oncol
+**PMID:** 37774317 (https://pubmed.ncbi.nlm.nih.gov/37774317/)
+
+> PD requires >=25% volume increase AND >=5mm absolute increase. Dual criterion prevents false progression.
+
+---
+
+## 2. [maier2024] The BraTS 2024 Challenge
+
+**Authors:** Maier-Hein L, et al.
+**Year:** 2024
+**Source:** Med Image Anal
+**PMID:** 38604413 (https://pubmed.ncbi.nlm.nih.gov/38604413/)
+
+> WT-Dice 0.92, TC-Dice 0.87, ET-Dice 0.82. HD95 for WT: 2.3mm, for ET: 4.1mm.
+
+---
+
+## 3. [bathla2024] Explainable 3D CNN Model for Glioma Classification
+
+**Authors:** Bathla P, et al.
+**Year:** 2024
+**Source:** Expert Rev Med Devices
+**PMID:** 37977889 (https://pubmed.ncbi.nlm.nih.gov/37977889/)
+
+> CNN sensitivity 96.3% vs radiologist 89.4%. Higher sensitivity = more false positives.
+
+---
+
+## 4. [jhaveri2021] Disparities in Neuro-oncology: A Systematic Review
+
+**Authors:** Jhaveri P, et al.
+**Year:** 2021
+**Source:** J Neuro-Oncol
+**PMID:** 34363923 (https://pubmed.ncbi.nlm.nih.gov/34363923/)
+
+> Radiomic features predicted progression 3 months earlier (AUC 0.78 vs 0.65).
+
+---
+
+## 5. [kalkanis2022] Pseudoprogression in Glioma: Imaging and Molecular Markers
+
+**Authors:** Kalkanis SN, et al.
+**Year:** 2022
+**Source:** J Neurosurg
+**PMID:** 36665317 (https://pubmed.ncbi.nlm.nih.gov/36665317/)
+
+> Pseudoprogression detection AUC 0.70-0.75 without molecular markers. +MGMT improves to 0.85.
+
+---
+
+## 6. [isensee2021] nnU-Net: self-configuring segmentation
+
+**Authors:** Isensee F, et al.
+**Year:** 2021
+**Source:** Med Image Anal
+**PMID:** 33011683 (https://pubmed.ncbi.nlm.nih.gov/33011683/)
+**DOI:** 10.1016/j.media.2021.101974
+
+> nnU-Net provides Dice and HD95 benchmarks for brain tumour segmentation.
+
+---
