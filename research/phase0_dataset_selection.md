@@ -22,19 +22,28 @@
 
 ## Selected Dataset: C-BRATS (Primary) + IBSR (Auxiliary)
 
-### Primary: C-BRATS
+### Primary: BraTS 2024 GLI (Glioma)
 | Field | Value |
 |-------|-------|
-| **Size** | 2 GB |
-| **Cases** | 600 |
+| **Size** | 34.89 GB (TrainingData.zip, syn60086071) |
+| **Cases** | ~2,400 cases |
 | **Modalities** | T1, T1ce, T2, FLAIR (mpMRI) |
-| **Labels** | Tumour core, edema, enhancing tumour (BraTS annotations) |
-| **URL** | https://www.synapse.org/Synapse:syn2582906 |
+| **Labels** | Tumour core, edema, enhancing tumour; WHO Grade (I-IV) |
+| **URL** | https://www.synapse.org/Synapse:syn2582906 → BraTS-GLI folder |
 | **Access** | Public, Synapse registration required |
 | **Licensing** | Open Access for research |
 | **Format** | NIfTI (.nii.gz) |
+| **Notes** | Also grab ValidationData.zip (syn61455507, 4.99 GB) for validation |
 
-**Why:** Only 2 GB, 600 cases, proper segmentation masks, established benchmark.
+**Why:** Full WHO Grade I-IV labels, established benchmark, ~35 GB compressed.
+
+### Validation: BraTS-GLI Validation Set
+| Field | Value |
+|-------|-------|
+| **Size** | 4.99 GB (ValidationData.zip, syn61455507) |
+| **Cases** | ~400 cases |
+| **Modalities** | T1, T1ce, T2, FLAIR |
+| **Labels** | Ground truth segmentations |
 
 ### Auxiliary: IBSR (CT+MRI Paired — Fusion Validation Only)
 | Field | Value |
@@ -54,9 +63,13 @@
 
 | Component | Raw Size | Preprocessed | Cached .pt |
 |-----------|:--------:|:------------:|:----------:|
-| C-BRATS (600 cases) | 2 GB | 4 GB | 30 GB |
+| BraTS-GLI Training (2400 cases) | 34.89 GB | 70 GB | ~240 GB |
+| BraTS-GLI Validation (400 cases) | 4.99 GB | 10 GB | ~40 GB |
 | IBSR (80 cases) | 10.5 GB | 12 GB | 264 MB |
-| **Total** | **12.5 GB** | **16 GB** | **~30.3 GB** |
+| **Total** | **~50 GB** | **~92 GB** | **~280 GB** |
+
+**On 80 GB free SSD:** Raw downloads (~50 GB) fit. Preprocessed cache (~280 GB) will NOT fit.
+**Mitigation:** Pre-cache in batches (e.g., 100 cases at a time), delete raw NIfTI after caching, use sparse caching.
 
 **All well under 50 GB.** ✓
 
