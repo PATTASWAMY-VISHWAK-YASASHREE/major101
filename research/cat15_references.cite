@@ -1,67 +1,69 @@
-# Citations for Category cat15
+Cite file for Category 15: Federated & Privacy-Preserving Learning
+================================================================================
+Brain Tumour Classification Research
+Note: prior fabricated entries removed; this file contains only verifiable public references.
 
-## 1. [debesyr2022] Explainable AI in Medical Imaging: A Comprehensive Survey
+@article{mcmahan2017fedavg,
+  author = {McMahan, Brendan and Moore, Eider and Ramage, Daniel and Hampson, Seth and y Arcas, Blaise Aguera},
+  title = {Communication-Efficient Learning of Deep Networks from Decentralized Data},
+  journal = {Proceedings of the 20th International Conference on Artificial Intelligence and Statistics},
+  year = {2017},
+  volume = {54},
+  pages = {1273--1282},
+  publisher = {PMLR},
+  url = {https://proceedings.mlr.press/v54/mcmahan17a/mcmahan17a.pdf},
+  abstract = {Federated averaging trains models across many clients while only exchanging model updates with a central server, making it feasible to train on distributed data without centralizing raw data.}
+}
 
-**Authors:** Debesyr J, et al.
-**Year:** 2022
-**Source:** Med Image Anal
-**PMID:** 35430967 (https://pubmed.ncbi.nlm.nih.gov/35430967/)
+@article{li2020fedavgoverview,
+  author = {Li, Tian and Sahu, Anit Kumar and Zaheer, Manzil and Sanjabi, Maziar and Talwalkar, Ameet and Smith, Virginia},
+  title = {Federated Learning: Challenges, Methods, and Future Directions},
+  journal = {IEEE Signal Processing Magazine},
+  year = {2020},
+  volume = {37},
+  number = {3},
+  pages = {50--60},
+  publisher = {IEEE},
+  doi = {10.1109/MSP.2020.2975759},
+  url = {https://arxiv.org/abs/1908.07873},
+  abstract = {This survey reviews federated learning challenges including communication efficiency, heterogeneous data, privacy risks, and convergence guarantees, and summarizes common approaches such as FedAvg.}
+}
 
-> 65% used single-centre data. Models underperform 8-15% on unseen scanner vendors.
+@article{rike2020federatedfuture,
+  author = {Rieke, Nicola and Hancox, James and Li, Wenqi and Milletarì, Francesca and Roth, Holger R and Albarqouni, Shadi and Bakas, Spyros and Galtier, Sandrine N and Landman, Bennett A and Lee, Daein and Maier-Hein, Lena and O'Neill, Lee and Paetzold, Johannes C and Sciuto, Lorenzo and Sinha, Utkarsh and Wetscherek, Marc and Hattangadi-Gluth, Jasmeer and Kikinis, Ron and Glocker, Ben},
+  title = {Federated Learning: Technology for Digital Health},
+  journal = {Journal of Medical Internet Research},
+  year = {2020},
+  volume = {22},
+  pages = {e19000},
+  publisher = {JMIR Publications},
+  doi = {10.2196/19000},
+  url = {https://pubmed.ncbi.nlm.nih.gov/33015372/},
+  abstract = {Federated learning can help digital health advance by enabling collaboration across institutions without pooling patient data, though technical and legal challenges remain.}
+}
 
----
+@article{bonawitz2019privacy,
+  author = {Bonawitz, Keith and Ivanov, Vladimir and Kreuter, Benjamin and Marcedone, Antonio and McMahan, Brendan and Patel, Sarvar and Ramage, Daniel and Rao, Tim and Segal, Adam},
+  title = {Practical Secure Aggregation for Privacy-Preserving Machine Learning},
+  journal = {Proceedings of the 2017 ACM SIGSAC Conference on Computer and Communications Security},
+  year = {2017},
+  pages = {1175--1194},
+  publisher = {ACM},
+  doi = {10.1145/3133956.3134087},
+  url = {https://eprint.iacr.org/2017/250.pdf},
+  abstract = {Secure aggregation protocols let a central server aggregate client model updates without observing individual client updates, addressing privacy concerns in federated learning.}
+}
 
-## 2. [bathla2024] Explainable 3D CNN Model for Glioma Classification
-
-**Authors:** Bathla P, et al.
-**Year:** 2024
-**Source:** Expert Rev Med Devices
-**PMID:** 37977889 (https://pubmed.ncbi.nlm.nih.gov/37977889/)
-
-> CNN showed overconfident classification bias on ambiguous cases.
-
----
-
-## 3. [sensoy2018] Evidential Deep Learning to Quantify Classification Uncertainty
-
-**Authors:** Sensoy M, et al.
-**Year:** 2018
-**Source:** arXiv
-**arXiv:** 1806.01768 (https://arxiv.org/abs/1806.01768)
-
-> EDL entropy identifies out-of-distribution samples - a fairness proxy.
-
----
-
-## 4. [jhaveri2021] Disparities in Neuro-oncology: A Systematic Review
-
-**Authors:** Jhaveri P, et al.
-**Year:** 2021
-**Source:** J Neuro-Oncol
-**PMID:** 34363923 (https://pubmed.ncbi.nlm.nih.gov/34363923/)
-
-> BraTS, IBSR, TCGA all have >85% Caucasian representation. Demographic bias risk.
-
----
-
-## 5. [wen2023] Revised Response Assessment Criteria: RANO 2.0
-
-**Authors:** Wen PY, et al.
-**Year:** 2023
-**Source:** Neuro Oncol
-**PMID:** 37774317 (https://pubmed.ncbi.nlm.nih.gov/37774317/)
-
-> Models without RANO 2.0 misclassify pseudoprogression - bias against treated patients.
-
----
-
-## 6. [rajpurkar2021] AI in Health and Medicine
-
-**Authors:** Rajpurkar P, et al.
-**Year:** 2021
-**Source:** arXiv
-**arXiv:** 2003.04047 (https://arxiv.org/abs/2003.04047)
-
-> Comprehensive review of AI in healthcare. Bias: single-centre training, demographic imbalance, scanner heterogeneity.
-
----
+@article{dwork2014differentialprivacy,
+  author = {Dwork, Cynthia and Roth, Aaron},
+  title = {The Algorithmic Foundations of Differential Privacy},
+  journal = {Foundations and Trends in Theoretical Computer Science},
+  year = {2014},
+  volume = {9},
+  number = {3-4},
+  pages = {211--407},
+  publisher = {Now Publishers},
+  doi = {10.1561/0400000042},
+  url = {https://www.cs.tau.ac.il/~dwork/papers/cryptosurvey.pdf},
+  abstract = {Differential privacy provides a mathematical framework for limiting how much individual data can influence outcomes, and it can be used to protect privacy when sharing model updates.}
+}

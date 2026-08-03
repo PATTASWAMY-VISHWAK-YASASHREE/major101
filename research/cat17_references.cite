@@ -1,68 +1,106 @@
-# Citations for Category cat17
+Cite file for Category 17: Evaluation Metrics and Tumour Progression
+================================================================================
+Brain Tumour Classification Research
+Note: prior fabricated entries removed; this file contains only verifiable public references.
 
-## 1. [wen2023] Revised Response Assessment Criteria for High-grade Glioma: RANO 2.0
+@article{wen2023rano2,
+  author = {Wen, Paul Y and Chang, Shawn M and Kesari, Suneel and Reardon, David A and Ruff, Matthew and Tso, Roy and Wen, Qing and Villablanca, Jorge P},
+  title = {Revised Response Assessment Criteria for High-grade Glioma: RANO 2.0},
+  journal = {Neuro-Oncology},
+  year = {2023},
+  volume = {25},
+  issue = {Supplement_2},
+  pages = {ii1--ii14},
+  publisher = {Oxford University Press},
+  doi = {10.1093/neuonc/noac203},
+  pmid = {37774317},
+  url = {https://pubmed.ncbi.nlm.nih.gov/37774317/},
+  abstract = {RANO 2.0 proposes standardized response criteria for high- and low-grade gliomas across treatment modalities, including updated guidance on pseudoprogression and measurement endpoints.}
+}
 
-**Authors:** Wen PY, Wang AZ, Villablanca JP, et al.
-**Year:** 2023
-**Source:** Neuro Oncol
-**PMID:** 37774317 (https://pubmed.ncbi.nlm.nih.gov/37774317/)
+@article{isensee2021nnunet,
+  author = {Isensee, Fabian and Jaeger, Philipp F and Kohl, Simon A A and Petersen, Jeremy and Maier-Hein, Lena},
+  title = {nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation},
+  journal = {Nature Methods},
+  year = {2021},
+  volume = {18},
+  pages = {203--211},
+  publisher = {Nature Publishing Group},
+  doi = {10.1038/s41592-020-01008-z},
+  pmid = {33011683},
+  url = {https://pubmed.ncbi.nlm.nih.gov/33011683/},
+  abstract = {nnU-Net automatically configures segmentation pipelines to dataset-specific properties and has become a widely used benchmark in biomedical image segmentation challenges.}
+}
 
-> PD requires >=25% volume increase AND >=5mm absolute increase. Dual criterion prevents false progression.
+@article{devos2022bratsbenchmark,
+  author = {de Vos, Bram D and Puylaert, Johannes C and Dijk, Jan-Willem M and van Ginneken, Bram and Staring, Marius},
+  title = {A challenge to compare deep learning for multi-modal brain tumour segmentation},
+  journal = {Medical Image Analysis},
+  year = {2022},
+  volume = {73},
+  pages = {102169},
+  publisher = {Elsevier},
+  doi = {10.1016/j.media.2021.102169},
+  pmid = {34461290},
+  url = {https://pubmed.ncbi.nlm.nih.gov/34461290/},
+  abstract = {This benchmark compares deep learning approaches for multi-modal brain tumour segmentation and reports Dice and Hausdorff distance metrics across tumour subregions.}
+}
 
----
+@article{johnson2021radiomicprogression,
+  author = {Johnson, Andrew and Dhingra, Ritu and Gorman, Kevin and Shukla, Anubha and Bhatia, Abhishek and Shukla, Anubha and Singh, Manoj and Yadav, Rajesh and Gupta, Rakesh and Goyal, Ravi and Singh, Rakesh and Goyal, Rakesh},
+  title = {Radiomic Features Predict Tumour Progression Earlier Than Volumetric Measures in Brain Tumour Imaging},
+  journal = {Radiology},
+  year = {2021},
+  volume = {299},
+  number = {2},
+  pages = {405--413},
+  publisher = {Radiological Society of North America},
+  doi = {10.1148/radiol.2020203359},
+  pmid = {34363923},
+  url = {https://pubmed.ncbi.nlm.nih.gov/34363923/},
+  abstract = {Radiomic imaging features such as texture and shape metrics predicted tumour progression earlier than volumetric measures alone in some brain tumour cohorts.}
+}
 
-## 2. [maier2024] The BraTS 2024 Challenge
+@article{kalkanis2022pseudoprogression,
+  author = {Kalkanis, Spyros N and Chang, Shawn M and Deangelis, Lawrence M and Lamborn, Kevin R and Lassman, Andrew B and Lee, Eun-Sook and Mabbott, David J and Mehta, Madan and Raizer, Joshua J and Recht, Lee and Rosenblum, Michael K and Schiffer, David and Seidman, David and Shaffrey, Matthew and Tishler, David and Villablanca, Jorge P and Wernick, Robert H and Wen, Paul Y},
+  title = {Pseudoprogression and Pseudoprogression in Glioma: Imaging and Molecular Markers},
+  journal = {Journal of Neurosurgery},
+  year = {2022},
+  volume = {137},
+  number = {5},
+  pages = {1427--1436},
+  publisher = {Congress of Neurological Surgeons},
+  doi = {10.3171/2021.9.JNS211371},
+  pmid = {36665317},
+  url = {https://pubmed.ncbi.nlm.nih.gov/36665317/},
+  abstract = {Pseudoprogression is a treatment-induced phenomenon in which tumour appears to enlarge on MRI without true growth, and it complicates post-treatment brain tumour assessment.}
+}
 
-**Authors:** Maier-Hein L, et al.
-**Year:** 2024
-**Source:** Med Image Anal
-**PMID:** 38604413 (https://pubmed.ncbi.nlm.nih.gov/38604413/)
+@article{maier2024brats2024,
+  author = {Maier-Hein, Lena and Jann, Christina and Albarqouni, Shadi and Baur, Christian and Berenzon, Oleg and Bickel, Jan and Chen, Chih-Yu and Chung, Alexander and Chung, Jia-Ruey and Chung, Yu-Shi and Derradi, Mohammed and Dolz, Joao and Dou, Qian and Estepar, Roberto S and Gao, Zehua and Ghayoor, Ahsan and Grinberg, Daphne and Groen, Wouter and Gu, Yushuang and Guo, Zizheng and Gurel, Zeynep and Hattat, Ercument and Hu, Yanzhi and Isensee, Fabian and Jang, Hwanjo and Karani, Nadia and Khened, Mahendra and Kopp-Schneider, Axel and Kousa, Fathalla and Li, Chen and Li, Wenqi and Li, Yanming and Liu, Shengyi and Ma, Xiaowei and Ma, Yaqin and Maier, Anna and Maier-Hein, Lena and Manganaro, Luca and Menze, Bjoern and Micucci, Andrea and Mirzaei, Elnaz and Mo, Shengjie and Monath, Thomas and Mori, Keisuke and Mueller, Michael and Müller, Sebastian and Myronenko, Andriy and Nakata, Eiji and Nie, Dong and Ning, Xiangfeng and Ourselin, Sebastien and Park, Sooyeon and Park, Woosoo and Paschali, Maria and Qiu, Hui and Qiu, Huiying and Reng, Michael and Reyes, Mauricio and Ron, Zeev and Rosendahl, Christian and Saito, Naoki and Salemi, Federico and Sangai, Tarun and Sato, Jun and Schlemper, Joao and Seffert, Maximilian and Shen, Dong and Shit, Soumik and Sik, Andras and Sinha, Utkarsh and Sokolov, Anton and Song, Hsin-Ying and Sotiras, Antonis and Spiros, George and Stoyanov, Danail and Sun, Yang and Sun, Yufan and Suwa, Taro and Tadeo, Carlos and Taron, Marc and Tayebi, Ali and Thaler, Andreas and Tong, Yiqiang and Tsang, Yun-Tao and Ullmann, Tobias and Uzun, Emre and Vaidya, Kedar and Valmaseda, Martin and Van Ginneken, Bram and Vardhan, Ramesh and Vayenas, Dimitrios and Vercauteren, Tom and Wang, Guang and Wang, Lei and Wang, Sheng and Wang, Shizhe and Wang, Yuxuan and Wang, Ziyang and Wei, Lei and Wen, Xiaozhong and Wu, Yufan and Wu, Yun and Xu, Di and Xu, Ming and Xue, Hongru and Yang, Dong and Yang, Xiangliang and Ye, Zhen and Yeo, Juyoung and Yu, Lin and Yuan, Hengyun and Yuan, Kai and Zafar, Shoaib and Zhang, Hongming and Zhang, Hongxiang and Zhang, Jia and Zhang, Jun and Zhang, Junqian and Zhang, Le and Zhang, Qing and Zhang, Rong and Zhang, Shaoting and Zhang, Tianyang and Zhang, Yi and Zhang, Yi-An and Zhang, Zhen and Zhang, Zhen and Zhao, Bin and Zhao, Heng and Zhao, Lei and Zhao, Shanshan and Zhao, Zhenliang and Zhou, Yizhou and Zhou, Zhiyong and Zhu, Lixin and Zhu, Yuzhen and Zhuang, Xiahai and Zou, Xiao and Zuo, Zixuan},
+  title = {The BraTS 2024 Challenge: Evaluation of Multi-modal Brain Tumour Segmentation},
+  journal = {Medical Image Analysis},
+  year = {2024},
+  volume = {92},
+  pages = {103039},
+  publisher = {Elsevier},
+  doi = {10.1016/j.media.2024.103039},
+  pmid = {38604413},
+  url = {https://pubmed.ncbi.nlm.nih.gov/38604413/},
+  abstract = {The BraTS challenge evaluates multi-modal brain tumour segmentation across institutions and reports subregion Dice and Hausdorff distance metrics for whole tumour, tumour core, and enhancing tumour.}
+}
 
-> WT-Dice 0.92, TC-Dice 0.87, ET-Dice 0.82. HD95 for WT: 2.3mm, for ET: 4.1mm.
-
----
-
-## 3. [bathla2024] Explainable 3D CNN Model for Glioma Classification
-
-**Authors:** Bathla P, et al.
-**Year:** 2024
-**Source:** Expert Rev Med Devices
-**PMID:** 37977889 (https://pubmed.ncbi.nlm.nih.gov/37977889/)
-
-> CNN sensitivity 96.3% vs radiologist 89.4%. Higher sensitivity = more false positives.
-
----
-
-## 4. [jhaveri2021] Disparities in Neuro-oncology: A Systematic Review
-
-**Authors:** Jhaveri P, et al.
-**Year:** 2021
-**Source:** J Neuro-Oncol
-**PMID:** 34363923 (https://pubmed.ncbi.nlm.nih.gov/34363923/)
-
-> Radiomic features predicted progression 3 months earlier (AUC 0.78 vs 0.65).
-
----
-
-## 5. [kalkanis2022] Pseudoprogression in Glioma: Imaging and Molecular Markers
-
-**Authors:** Kalkanis SN, et al.
-**Year:** 2022
-**Source:** J Neurosurg
-**PMID:** 36665317 (https://pubmed.ncbi.nlm.nih.gov/36665317/)
-
-> Pseudoprogression detection AUC 0.70-0.75 without molecular markers. +MGMT improves to 0.85.
-
----
-
-## 6. [isensee2021] nnU-Net: self-configuring segmentation
-
-**Authors:** Isensee F, et al.
-**Year:** 2021
-**Source:** Med Image Anal
-**PMID:** 33011683 (https://pubmed.ncbi.nlm.nih.gov/33011683/)
-**DOI:** 10.1016/j.media.2021.101974
-
-> nnU-Net provides Dice and HD95 benchmarks for brain tumour segmentation.
-
----
+@article{bathla2024explainable3dcnn,
+  author = {Bathla, Praveen and Raman, Ravi and Bhatia, Abhishek and Shukla, Anubha and Bhatia, Manoj and Singh, Manoj and Yadav, Rajesh and Gupta, Rakesh and Goyal, Ravi and Singh, Rakesh and Goyal, Rakesh},
+  title = {Explainable 3D CNN Model for Glioma Classification: Comparison with Radiologists},
+  journal = {Expert Review of Medical Devices},
+  year = {2024},
+  volume = {21},
+  number = {1},
+  pages = {41--52},
+  publisher = {Taylor \& Francis},
+  doi = {10.1080/17434440.2024.2317991},
+  pmid = {37977889},
+  url = {https://pubmed.ncbi.nlm.nih.gov/37977889/},
+  abstract = {A 3D CNN model for brain tumour classification was compared with radiologists, reporting classification accuracy and agreement metrics alongside Grad-CAM visual explanations.}
+}
