@@ -1,0 +1,38 @@
+# Brain Tumour Classification — Default Config
+# MRI / CT volumetric data
+
+model:
+  type: resnet3d
+  base_width: 32
+  num_classes: 4      # e.g. 0=no tumour, 1=low grade, 2=high grade, 3=benign
+  input_channels: 1   # single-channel (T1-weighted)
+
+data:
+  root: data
+  # Expected structure:
+  #   data/{train, val, test}/{class_0, class_1, ...}/<file>.nii.gz
+  # Also supports image folders with .png/.jpg slices
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+  img_size: [96, 96, 96]   # [D, H, W]
+  normalize: true
+  num_workers: 4
+
+training:
+  batch_size: 4
+  epochs: 150
+  lr: 1.0e-4
+  weight_decay: 1.0e-4
+  optimizer: adamw
+  scheduler: cosine_annealing
+  scheduler_t0: 30
+  warmup_epochs: 5
+  device: cuda
+  seed: 42
+  patience: 20            # early stopping patience
+
+output:
+  dir: outputs
+  save_every: 5
+  log: true
