@@ -2,7 +2,13 @@
 
 import logging
 import math
+import sys
 from pathlib import Path
+
+# Ensure repo root is on sys.path so `src` package is importable
+_repo = Path(__file__).resolve().parent.parent
+if str(_repo) not in sys.path:
+    sys.path.insert(0, str(_repo))
 
 import numpy as np
 import pandas as pd
@@ -122,6 +128,31 @@ def train_model(
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     logger.info(f"Device: {device}")
 
+    # GPU memory budgeting (pre-flight check)
+    if torch.cuda.is_available():
+        props = torch.cuda.get_device_properties(0)
+        total_gb = props.total_memory / 1e9
+        logger.info(f"GPU: {props.name}, total={total_gb:.2f} GB, SM={props.major}.{props.minor}")
+        budget_gb = total_gb * 0.80
+        logger.info(f"VRAM budget: {budget_gb:.2f} GB (80% of {total_gb:.2f} GB)")
+
+        # Warn if other processes are holding VRAM
+        pre_alloc = torch.cuda.memory_allocated() / 1e9
+        if pre_alloc > 0.5:
+            logger.warning(f"!! {pre_alloc:.2f} GB already allocated on GPU — training may OOM")
+            torch.cuda.empty_cache()
+
+        # Reset peak stats for clean measurement
+        torch.cuda.empty_cache()
+        torch.cuda.reset_peak_memory_stats()
+        logger.info(f"Post-clear alloc={torch.cuda.memory_allocated()/1e9:.2f} GB")
+
+    # AMP + gradient accumulation for RTX 2050 4GB
+    # 2 real batches x 4 accum steps = effective batch 8
+    grad_accum = 4
+    scaler = torch.cuda.amp.GradScaler(enabled=device.type == "cuda")
+    logger.info(f"AMP enabled, grad_accum={grad_accum}, eff_batch={batch_size * grad_accum}")
+
     loaders, splits = make_dataloaders(
         npy_dir, labels_csv, batch_size=batch_size, augment=augment, seed=seed,
     )
@@ -150,21 +181,52 @@ def train_model(
         model.train()
         train_loss = 0.0
         train_preds, train_labels = [], []
-        for x, y in tqdm(loaders["train"], desc=f"[{model_name}] Train", leave=False):
+        for step, (x, y) in enumerate(tqdm(loaders["train"], desc=f"[{model_name}] Train", leave=False)):
             try:
                 x, y = x.to(device), y.to(device).float()
-                optimizer.zero_grad()
-                logits = model(x)
-                loss = criterion(logits, y)
-                loss.backward()
-                optimizer.step()
-                train_loss += loss.item() * x.size(0)
+                # Reset gradients
+                optimizer.zero_grad(set_to_none=True)
+                # AMP forward pass
+                with torch.amp.autocast("cuda"):
+                    logits = model(x)
+                    loss = criterion(logits, y) / grad_accum  # scale loss for accumulation
+                # Scaled backward pass
+                scaler.scale(loss).backward()
+                # Step every grad_accum batches
+                if (step + 1) % grad_accum == 0:
+                    scaler.step(optimizer)
+                    scaler.update()
+                    optimizer.zero_grad(set_to_none=True)
+
+                train_loss += loss.item() * x.size(0) * grad_accum
                 train_preds.extend((logits > 0).cpu().numpy())
                 train_labels.extend(y.cpu().numpy())
             except (RuntimeError, ValueError) as e:
                 logger.warning(f"Skipping corrupt batch in train: {e}")
 
-        torch.cuda.empty_cache()  # Free GPU/CPU memory between epochs
+        # Log GPU memory snapshot per epoch (detect leaks, OOM risks)
+        if torch.cuda.is_available():
+            alloc = torch.cuda.memory_allocated() / 1e9
+            reserved = torch.cuda.memory_reserved() / 1e9
+            peak = torch.cuda.max_memory_allocated() / 1e9
+            util_pct = peak / (torch.cuda.get_device_properties(0).total_memory / 1e9) * 100
+            logger.info(f"  GPU mem: alloc={alloc:.2f}G reserved={reserved:.2f}G peak={peak:.2f}G util={util_pct:.0f}%")
+            # Leak detection: warn if VRAM usage grows monotonically across epochs
+            if epoch > 0 and "prev_peak" in dir():
+                if peak > prev_peak * 1.10:  # >10% growth = possible leak
+                    logger.warning(f"  !! Possible memory leak: peak grew {prev_peak:.2f}G -> {peak:.2f}G")
+            prev_peak = peak
+
+            torch.cuda.empty_cache()
+
+        # Budget check — warn if approaching 80% VRAM
+        if torch.cuda.is_available():
+            util_pct = torch.cuda.memory_allocated() / torch.cuda.get_device_properties(0).total_memory * 100
+            if util_pct > 85:
+                logger.warning(f"  !! VRAM utilization {util_pct:.0f}% — approaching budget. Consider reducing batch size.")
+            elif util_pct > 70:
+                logger.info(f"  VRAM utilization: {util_pct:.0f}%")
+
         train_loss /= n_train
         train_acc = np.mean(np.array(train_preds) == np.array(train_labels))
 
@@ -175,8 +237,9 @@ def train_model(
             for x, y in tqdm(loaders["val"], desc=f"[{model_name}] Val", leave=False):
                 try:
                     x, y = x.to(device), y.to(device).float()
-                    logits = model(x)
-                    loss = criterion(logits, y)
+                    with torch.amp.autocast("cuda"):
+                        logits = model(x)
+                        loss = criterion(logits, y)
                     val_loss += loss.item() * x.size(0)
                     val_preds.extend((logits > 0).cpu().numpy())
                     val_labels.extend(y.cpu().numpy())
@@ -219,6 +282,7 @@ def train_model(
     model.load_state_dict(torch.load(checkpoint_path, weights_only=True))
     model.eval()
     torch.cuda.empty_cache()
+    torch.cuda.reset_peak_memory_stats()
     test_preds, test_labels = [], []
     test_case_ids = loaders["test"].dataset.indices
     labels_df = pd.read_csv(labels_csv)
@@ -226,7 +290,8 @@ def train_model(
         for x, y in loaders["test"]:
             try:
                 x, y = x.to(device), y.to(device).float()
-                logits = model(x)
+                with torch.amp.autocast("cuda"):
+                    logits = model(x)
                 test_preds.extend((logits > 0).cpu().numpy())
                 test_labels.extend(y.cpu().numpy())
             except (RuntimeError, ValueError) as e:
