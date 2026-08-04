@@ -206,6 +206,40 @@ def run_preprocessing(n_workers: int = 3, max_cases: int = None, resume: bool = 
 
     # ── Incremental labels writer ───────────────────────────────────────
     labels_path = OUTPUT_DIR / "labels.csv"
+    # If labels.csv exists but is stale (fewer rows than .npy files), reset it
+    if resume and labels_path.exists():
+        existing_rows = sum(1 for _ in open(labels_path, encoding="utf-8")) - 1  # minus header
+        npy_count = len(list((OUTPUT_DIR / "train").glob("*.npy")))
+        if existing_rows < npy_count:
+            log(f"  labels.csv stale ({existing_rows} rows vs {npy_count} .npy files) — regenerating")
+            with open(labels_path, "w", newline="", encoding="utf-8") as f:
+                csv.writer(f).writerow(["case", "et", "tc", "wt", "wt_volume", "tc_volume", "et_volume", "grade_proxy"])
+            # Backfill labels from existing seg.nii.gz files
+            for c in sorted([d.name for d in NIFTI_DIR.iterdir() if d.is_dir()]):
+                npy = (OUTPUT_DIR / "train" / f"{c}.npy")
+                if not npy.exists():
+                    continue
+                seg_path = (NIFTI_DIR / c) / f"{c}-seg.nii.gz"
+                if not seg_path.exists():
+                    continue
+                try:
+                    seg = nib.load(seg_path).get_fdata(dtype=np.float32)
+                    et = bool(np.any(seg == 3))
+                    tc = bool(np.any(seg == 2) or np.any(seg == 3))
+                    wt = bool(np.any(seg == 1) or np.any(seg == 2) or np.any(seg == 3))
+                    csv.writer(open(labels_path, "a", newline="", encoding="utf-8")).writerow(
+                        [c, int(et), int(tc), int(wt),
+                         float(np.sum(seg == 1) + np.sum(seg == 2) + np.sum(seg == 3)),
+                         float(np.sum(seg == 2) + np.sum(seg == 3)),
+                         float(np.sum(seg == 3)),
+                         int(et)])
+                except Exception:
+                    pass
+                del seg
+                gc.collect()
+            log(f"  Backfilled labels from {npy_count} existing cases")
+            del seg
+            gc.collect()
     if not labels_path.exists():
         with open(labels_path, "w", newline="", encoding="utf-8") as f:
             csv.writer(f).writerow(["case", "et", "tc", "wt", "wt_volume", "tc_volume", "et_volume", "grade_proxy"])
