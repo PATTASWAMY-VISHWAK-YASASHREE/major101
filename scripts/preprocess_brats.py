@@ -179,20 +179,20 @@ def run_preprocessing(n_workers: int = 3, max_cases: int = None, resume: bool = 
 
     # ── Resume: skip cases with valid .npy ──────────────────────────────
     if resume:
+        # Expected .npy size: 4×182×218×182 float32 = 57,350,784 bytes + ~100 byte header
+        expected_min = 4 * 182 * 218 * 182 * 4  # 57,350,784
         valid = 0
         corrupted = []
         for c in all_cases:
             npy = (OUTPUT_DIR / "train" / f"{c}.npy")
             if npy.exists():
-                try:
-                    arr = np.load(str(npy), mmap_mode="r")
-                    if arr.shape == (4, 182, 218, 182) and arr.dtype == np.float32:
-                        valid += 1
-                    else:
-                        corrupted.append((c, "unexpected shape/dtype"))
-                except Exception as e:
-                    corrupted.append((c, str(e)))
-        all_cases = [c for c in all_cases if (OUTPUT_DIR / "train" / f"{c}.npy").exists() is False]
+                sz = npy.stat().st_size
+                if sz >= expected_min:
+                    valid += 1
+                else:
+                    corrupted.append((c, f"file size {sz} < expected {expected_min}"))
+            # skip non-existent files — they get processed
+        all_cases = [c for c in all_cases if not (OUTPUT_DIR / "train" / f"{c}.npy").exists()]
         if valid:
             log(f"  Resuming: {valid} already processed, {len(all_cases)} remain")
         if corrupted:
@@ -235,11 +235,8 @@ def run_preprocessing(n_workers: int = 3, max_cases: int = None, resume: bool = 
                          int(et)])
                 except Exception:
                     pass
-                del seg
                 gc.collect()
             log(f"  Backfilled labels from {npy_count} existing cases")
-            del seg
-            gc.collect()
     if not labels_path.exists():
         with open(labels_path, "w", newline="", encoding="utf-8") as f:
             csv.writer(f).writerow(["case", "et", "tc", "wt", "wt_volume", "tc_volume", "et_volume", "grade_proxy"])
