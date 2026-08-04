@@ -42,9 +42,23 @@ class BraTS3DDataset(Dataset):
         npy_path = self.npy_dir / f"{case_id}.npy"
 
         # Load .npy — shape (4, 182, 218, 182), CTN-normalised, float32
-        img = np.load(npy_path, mmap_mode="r")  # lazy load on disk
-        img = img.astype(np.float32)  # copy to memory — mmap on small files is slower
-        img = torch.from_numpy(img)  # (4, 182, 218, 182)
+        try:
+            img = np.load(npy_path)
+        except (OSError, ValueError) as e:
+            raise RuntimeError(
+                f"Failed to load {npy_path}: {e}. File may be corrupted/truncated."
+            ) from e
+
+        # Validate shape and dtype — catches partial/corrupt files early
+        expected = (4, 182, 218, 182)
+        if img.shape != expected:
+            raise ValueError(
+                f"Invalid shape in {npy_path}: got {img.shape}, expected {expected}"
+            )
+        if img.dtype != np.float32:
+            img = img.astype(np.float32)
+
+        img = torch.from_numpy(img).contiguous()  # (4, 182, 218, 182)
 
         # Label: grade_proxy (0=low, 1=high)
         label = int(self.labels_df.iloc[case_idx]["grade_proxy"])
@@ -79,14 +93,18 @@ def build_split_indices(
     val_ratio: float = 0.1,
     test_ratio: float = 0.1,
     seed: int = 42,
-) -> dict[str, list[int]]:
+) -> tuple[dict[str, list[int]], pd.DataFrame]:
     """Stratified 80/10/10 split by grade_proxy.
 
-    Returns dict: {"train": [indices], "val": [indices], "test": [indices]}
+    Deduplicates by case ID before splitting to prevent data leakage.
+    Returns (splits dict, deduplicated labels DataFrame).
     """
     df = pd.read_csv(labels_csv)
-    rng = np.random.default_rng(seed)
+    # Deduplicate by case ID — preprocessing appends per case on --resume,
+    # leaving duplicate rows. Keep first occurrence only.
+    df = df.drop_duplicates(subset="case").reset_index(drop=True)
 
+    rng = np.random.default_rng(seed)
     train_idx, val_idx, test_idx = [], [], []
     for grade in sorted(df["grade_proxy"].unique()):
         group = df[df["grade_proxy"] == grade].index.tolist()
@@ -102,7 +120,7 @@ def build_split_indices(
         "train": sorted(train_idx),
         "val": sorted(val_idx),
         "test": sorted(test_idx),
-    }
+    }, df
 
 
 def make_dataloaders(
@@ -112,7 +130,7 @@ def make_dataloaders(
     augment: bool = False,
     seed: int = 42,
     num_workers: int = 0,
-) -> dict[str, DataLoader]:
+) -> tuple[dict[str, DataLoader], dict[str, list[int]]]:
     """Build train/val/test DataLoaders with stratified splits.
 
     Args:
@@ -126,8 +144,7 @@ def make_dataloaders(
     Returns:
         dict with "train", "val", "test" DataLoader keys + "splits" dict.
     """
-    splits = build_split_indices(labels_csv, seed=seed)
-    labels_df = pd.read_csv(labels_csv)
+    splits, labels_df = build_split_indices(labels_csv, seed=seed)
 
     loaders = {}
     for split_name, indices in splits.items():
@@ -152,8 +169,10 @@ def make_dataloaders(
 if __name__ == "__main__":
     # Self-check: verify the dataset loads correctly
     import sys
-    npy_dir = Path("C:/Users/pvish/copilot-worktrees/major101/pattaswamy-vishwak-yasashree-cuddly-lamp/data/brats_preprocessed/train")
-    labels_csv = Path("C:/Users/pvish/copilot-worktrees/major101/pattaswamy-vishwak-yasashree-cuddly-lamp/data/brats_preprocessed/labels.csv")
+    # Resolve paths relative to repo root
+    repo = Path(__file__).resolve().parent.parent
+    npy_dir = repo / "data" / "brats_preprocessed" / "train"
+    labels_csv = repo / "data" / "brats_preprocessed" / "labels.csv"
 
     loaders, splits = make_dataloaders(npy_dir, labels_csv, batch_size=2, augment=False, seed=42)
 

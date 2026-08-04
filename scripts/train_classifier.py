@@ -1,7 +1,7 @@
 """3D CNN Grade Classifier (M1) + Augmentation variant (M3)."""
 
 import logging
-from datetime import datetime
+import math
 from pathlib import Path
 
 import numpy as np
@@ -12,6 +12,20 @@ from tqdm import tqdm
 from src.data import BraTS3DDataset, make_dataloaders, build_split_indices
 
 logger = logging.getLogger("classifier")
+
+
+def _setup_logging(log_path: Path) -> None:
+    """One-time logging setup — safe to call repeatedly."""
+    if not logger.handlers:
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s %(levelname)s %(message)s",
+            handlers=[
+                logging.FileHandler(log_path, mode="a"),
+                logging.StreamHandler(),
+            ],
+        )
 
 
 class GradeClassifier3D(nn.Module):
@@ -55,7 +69,7 @@ class GradeClassifier3D(nn.Module):
         return self.head(x).squeeze(-1)
 
 
-def compute_class_weights(labels_csv: Path, seed: int = 42) -> torch.Tensor:
+def compute_class_weights(labels_csv: Path) -> torch.Tensor:
     """Compute class weights for BCEWithLogitsLoss based on grade imbalance."""
     df = pd.read_csv(labels_csv)
     n_pos = int(df["grade_proxy"].sum())
@@ -94,21 +108,16 @@ def train_model(
     checkpoint_path = output_dir / f"{model_name}_best.pth"
     history_path = output_dir / f"{model_name}_history.csv"
     log_path = Path("training_log.txt")
+    per_case_path = output_dir / f"{model_name}_predictions.csv"
 
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s %(levelname)s %(message)s",
-        handlers=[
-            logging.FileHandler(log_path, mode="a"),
-            logging.StreamHandler(),
-        ],
-    )
+    _setup_logging(log_path)
     logger.info(f"{'='*60}")
     logger.info(f"Starting {model_name} — augment={augment}")
     logger.info(f"{'='*60}")
 
     torch.manual_seed(seed)
     np.random.seed(seed)
+    torch.backends.mkldnn = False  # Disable MKLDNN — causes OOM on large 3D batches (CPU)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     logger.info(f"Device: {device}")
@@ -125,7 +134,7 @@ def train_model(
     n_params = sum(p.numel() for p in model.parameters())
     logger.info(f"Model params: {n_params:,}")
 
-    class_weights = compute_class_weights(labels_csv, seed).to(device)
+    class_weights = compute_class_weights(labels_csv).to(device)
     criterion = nn.BCEWithLogitsLoss(pos_weight=class_weights[1:])
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-4)
@@ -142,16 +151,20 @@ def train_model(
         train_loss = 0.0
         train_preds, train_labels = [], []
         for x, y in tqdm(loaders["train"], desc=f"[{model_name}] Train", leave=False):
-            x, y = x.to(device), y.to(device).float()
-            optimizer.zero_grad()
-            logits = model(x)
-            loss = criterion(logits, y)
-            loss.backward()
-            optimizer.step()
-            train_loss += loss.item() * x.size(0)
-            train_preds.extend((logits > 0).cpu().numpy())
-            train_labels.extend(y.cpu().numpy())
+            try:
+                x, y = x.to(device), y.to(device).float()
+                optimizer.zero_grad()
+                logits = model(x)
+                loss = criterion(logits, y)
+                loss.backward()
+                optimizer.step()
+                train_loss += loss.item() * x.size(0)
+                train_preds.extend((logits > 0).cpu().numpy())
+                train_labels.extend(y.cpu().numpy())
+            except (RuntimeError, ValueError) as e:
+                logger.warning(f"Skipping corrupt batch in train: {e}")
 
+        torch.cuda.empty_cache()  # Free GPU/CPU memory between epochs
         train_loss /= n_train
         train_acc = np.mean(np.array(train_preds) == np.array(train_labels))
 
@@ -160,12 +173,15 @@ def train_model(
         val_preds, val_labels = [], []
         with torch.no_grad():
             for x, y in tqdm(loaders["val"], desc=f"[{model_name}] Val", leave=False):
-                x, y = x.to(device), y.to(device).float()
-                logits = model(x)
-                loss = criterion(logits, y)
-                val_loss += loss.item() * x.size(0)
-                val_preds.extend((logits > 0).cpu().numpy())
-                val_labels.extend(y.cpu().numpy())
+                try:
+                    x, y = x.to(device), y.to(device).float()
+                    logits = model(x)
+                    loss = criterion(logits, y)
+                    val_loss += loss.item() * x.size(0)
+                    val_preds.extend((logits > 0).cpu().numpy())
+                    val_labels.extend(y.cpu().numpy())
+                except (RuntimeError, ValueError) as e:
+                    logger.warning(f"Skipping corrupt batch in val: {e}")
 
         val_loss /= n_val
         val_acc = np.mean(np.array(val_preds) == np.array(val_labels))
@@ -202,30 +218,60 @@ def train_model(
 
     model.load_state_dict(torch.load(checkpoint_path, weights_only=True))
     model.eval()
+    torch.cuda.empty_cache()
     test_preds, test_labels = [], []
+    test_case_ids = loaders["test"].dataset.indices
+    labels_df = pd.read_csv(labels_csv)
     with torch.no_grad():
         for x, y in loaders["test"]:
-            x, y = x.to(device), y.to(device).float()
-            logits = model(x)
-            test_preds.extend((logits > 0).cpu().numpy())
-            test_labels.extend(y.cpu().numpy())
+            try:
+                x, y = x.to(device), y.to(device).float()
+                logits = model(x)
+                test_preds.extend((logits > 0).cpu().numpy())
+                test_labels.extend(y.cpu().numpy())
+            except (RuntimeError, ValueError) as e:
+                logger.warning(f"Skipping corrupt batch in test: {e}")
 
     test_preds = np.array(test_preds)
     test_labels = np.array(test_labels)
     test_acc = np.mean(test_preds == test_labels)
+
+    # Per-class metrics
+    tn = int(np.sum((test_preds == 0) & (test_labels == 0)))
+    tp = int(np.sum((test_preds == 1) & (test_labels == 1)))
+    fn = int(np.sum((test_preds == 0) & (test_labels == 1)))
+    fp = int(np.sum((test_preds == 1) & (test_labels == 0)))
+    sensitivity = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+    specificity = tn / (tn + fp) if (tn + fp) > 0 else 0.0
+    precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+    f1 = 2 * precision * sensitivity / (precision + sensitivity) if (precision + sensitivity) > 0 else 0.0
+
+    # Save per-case predictions CSV
+    pred_df = pd.DataFrame({
+        "case": labels_df.iloc[test_case_ids]["case"].values,
+        "true_label": test_labels.astype(int),
+        "predicted_label": test_preds.astype(int),
+        "correct": (test_preds == test_labels).astype(int),
+    })
+    pred_df.to_csv(per_case_path, index=False)
 
     results = {
         "model": model_name,
         "augment": augment,
         "best_val_loss": best_val_loss,
         "best_val_acc": max(h["val_acc"] for h in history),
-        "test_acc": test_acc,
+        "test_acc": float(test_acc),
+        "test_f1": float(f1),
+        "test_sensitivity": float(sensitivity),
+        "test_specificity": float(specificity),
         "epochs_trained": len(history),
         "checkpoint": str(checkpoint_path),
         "history": str(history_path),
+        "predictions": str(per_case_path),
     }
 
-    logger.info(f"{model_name} complete — test_acc={test_acc:.4f}, {len(history)} epochs")
+    logger.info(f"{model_name} done — acc={test_acc:.4f} F1={f1:.4f} "
+                f"sens={sensitivity:.4f} spec={specificity:.4f} ({len(history)} epochs)")
     return results
 
 
