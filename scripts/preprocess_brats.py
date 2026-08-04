@@ -1,22 +1,22 @@
 """Phase 1 — BraTS Preprocessing Pipeline.
 
-Processes 1350 BraTS cases:
-  - Load 4 modalities (t1, t1c, t2, t2w) + segmentation
+Processes BraTS 2024 GLI cases:
+  - Load 4 modalities (t1c, t1n, t2f, t2w) + segmentation
   - CTN normalisation with brain mask from T1-native
-  - Percentile clipping (99.5%)
+  - Percentile clipping (99.5th percentile)
   - Stack into (4, D, H, W) .npy files
   - Extract tumor subregion presence labels
 
 Output: data/brats_preprocessed/
-  - train/{case}.npy  — 4-channel normalised volume (numpy float32)
-  - labels.csv       — case, et/tc/wt presence, volumes, grade proxy
-  - preprocessing_log.txt  — progress, errors, summary log
-  - preprocessing_errors.csv  — per-case errors (if any)
+  - train/{case}.npy      — 4-channel normalised volume (numpy float32)
+  - labels.csv            — case, et/tc/wt presence, volumes, grade proxy
+  - preprocessing_log.txt — progress, errors, summary log
+  - preprocessing_errors.csv — per-case errors (if any)
 
 Usage:
   python scripts/preprocess_brats.py [--workers 3] [--max-cases 100]
 
-Expected: 1350 cases → ~1350 .pt files + labels.csv
+Expected: ~1350 cases → ~1350 .npy files + labels.csv
 """
 
 import gc, csv, sys, logging, time
@@ -68,7 +68,7 @@ def brain_mask(t1n: np.ndarray) -> np.ndarray:
 
 # ── Single case processing ─────────────────────────────────────────────────
 def process_case(case_name: str, output_dir: Path) -> dict:
-    """Process one case: normalise 4 modalities, save .pt, extract labels."""
+    """Process one case: normalise 4 modalities, save .npy, extract labels."""
     case_dir = NIFTI_DIR / case_name
     vols = {}
     for mod in MODALITIES:
@@ -163,7 +163,6 @@ def run_preprocessing(n_workers: int = 3, max_cases: int = None):
 
     def log(msg):
         logger.info(msg)
-        print(msg, flush=True)
 
     log("=" * 70)
     log("BRAINS TUMOUR PREPROCESSING PIPELINE")
@@ -171,7 +170,6 @@ def run_preprocessing(n_workers: int = 3, max_cases: int = None):
     log("=" * 70)
 
     all_cases = sorted([d.name for d in NIFTI_DIR.iterdir() if d.is_dir()])
-    total = len(all_cases)
     if max_cases:
         all_cases = all_cases[:max_cases]
     log(f"  Cases to process: {len(all_cases)}")
