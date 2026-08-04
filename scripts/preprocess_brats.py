@@ -177,12 +177,12 @@ def run_preprocessing(n_workers: int = 3, max_cases: int = None, resume: bool = 
     if max_cases:
         all_cases = all_cases[:max_cases]
 
-    # ── Resume: skip cases with valid .npy ──────────────────────────────
+    # ── Resume: skip cases with valid .npy, delete truncated ones ──────
     if resume:
-        # Expected .npy size: 4×182×218×182 float32 = 57,350,784 bytes + ~100 byte header
-        expected_min = 4 * 182 * 218 * 182 * 4  # 57,350,784
+        expected_min = 4 * 182 * 218 * 182 * 4  # 115,536,512 bytes
         valid = 0
         corrupted = []
+        to_delete = []
         for c in all_cases:
             npy = (OUTPUT_DIR / "train" / f"{c}.npy")
             if npy.exists():
@@ -190,15 +190,21 @@ def run_preprocessing(n_workers: int = 3, max_cases: int = None, resume: bool = 
                 if sz >= expected_min:
                     valid += 1
                 else:
-                    corrupted.append((c, f"file size {sz} < expected {expected_min}"))
-            # skip non-existent files — they get processed
-        all_cases = [c for c in all_cases if not (OUTPUT_DIR / "train" / f"{c}.npy").exists()]
+                    corrupted.append((c, f"truncated: {sz} < {expected_min} bytes"))
+                    to_delete.append(npy)
+        # Delete truncated files so they get reprocessed
+        if to_delete:
+            log(f"  Deleting {len(to_delete)} truncated .npy files...")
+            for f in to_delete:
+                f.unlink(missing_ok=True)
+        # Skip only files that passed validation
+        all_cases = [c for c in all_cases if (OUTPUT_DIR / "train" / f"{c}.npy").exists() is False]
         if valid:
             log(f"  Resuming: {valid} already processed, {len(all_cases)} remain")
         if corrupted:
-            log(f"  Corrupted files: {len(corrupted)}")
+            log(f"  Corrupted/truncated: {len(corrupted)} (will reprocess)")
             for c, reason in corrupted:
-                log(f"    SKIP {c}: {reason}")
+                log(f"    DEL {c}: {reason}")
     log(f"  Cases to process: {len(all_cases)}")
     log(f"  Workers:          {n_workers}")
 
