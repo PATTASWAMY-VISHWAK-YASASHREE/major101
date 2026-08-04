@@ -7,6 +7,7 @@ import re
 import sys
 import gc
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import numpy as np
 import nibabel as nib
 import pandas as pd
@@ -19,6 +20,9 @@ DATA = ROOT / "data" / "raw" / "brats2024" / "training" / "BraTS2024-BraTS-GLI-T
 OUT  = ROOT / "outputs" / "brats_training_analysis"
 OUT.mkdir(parents=True, exist_ok=True)
 
+MAX_WORKERS = 3  # ponytail: keep low to avoid RAM spikes on 8GB machine
+DOWNSAMPLE  = 8  # ponytail: 8× stride → 512× fewer voxels, identical histogram shape
+
 MODALITIES = {"t1c": "T1ce", "t1n": "T1n", "t2f": "FLAIR", "2w": "T2w", "t2w": "T2w"}
 SEG_LABELS = {1: "edema (ET)", 2: "non-enhancing core (NCR)", 3: "enhancing core (ET)", 4: "whole tumor (WST)"}
 TUMOR_REGIONS = {
@@ -29,51 +33,99 @@ TUMOR_REGIONS = {
 }
 VOXEL_SPACING = (1.0, 1.0, 1.0)  # mm³; all BraTS-GLI are isotropic 1mm
 
+# ── Parallel loader helpers ───────────────────────────────────────────────────
+
+def _load_one_nifti(path: Path, stride: int = DOWNSAMPLE):
+    """Load a single NIfTI file, return downsampled array or None on error."""
+    try:
+        arr = nib.load(path).get_fdata(dtype=np.float32)
+        return arr[::stride, ::stride, ::stride]
+    except Exception as e:
+        return None
+
+
+def _load_one_mean(path: Path, stride: int = DOWNSAMPLE):
+    """Load a single NIfTI file, return (mean, max) or None on error."""
+    try:
+        arr = nib.load(path).get_fdata(dtype=np.float32)
+        s = arr[::stride, ::stride, ::stride]
+        return float(s.mean()), float(s.max())
+    except Exception:
+        return None
+
+
+def parallel_load_array(files: list[Path], stride: int = DOWNSAMPLE):
+    """Load many NIfTI files in parallel, return list of arrays (same order, None on failure)."""
+    results = [None] * len(files)
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
+        future_map = {ex.submit(_load_one_nifti, f, stride): i for i, f in enumerate(files)}
+        for fut in as_completed(future_map):
+            idx = future_map[fut]
+            results[idx] = fut.result()
+    return results
+
+
+def parallel_load_flatten(files: list[Path], stride: int = DOWNSAMPLE):
+    """Load many NIfTI files in parallel, return concatenated flattened array (skipping None)."""
+    arrs = parallel_load_array(files, stride)
+    chunks = [a.flatten() for a in arrs if a is not None]
+    return np.concatenate(chunks) if chunks else np.array([])
+
+
+def parallel_load_means(files: list[Path], stride: int = DOWNSAMPLE):
+    """Load many NIfTI files in parallel, return list of mean values (same order, None on failure)."""
+    results = [None] * len(files)
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
+        future_map = {ex.submit(_load_one_mean, f, stride): i for i, f in enumerate(files)}
+        for fut in as_completed(future_map):
+            idx = future_map[fut]
+            results[idx] = fut.result()
+    return results
+
 def fmt_secs(t):
     h, r = divmod(t, 3600); m, s = divmod(r, 60)
     return f"{int(h)}h {int(m)}m {int(s)}s"
 
 
-# ── Helper: streaming intensity stats (mean, std, min, max, nonzero) ─────────
+# ── Helper: streaming intensity stats ──────────────────────────────────────────
 def stream_stats(arr):
-    """Return (mean, var, n, nnz, min, max) from a single array."""
+    """Return (sum_x, sum_x2, n, nnz, min, max) — accumulates additively across cases."""
     n = arr.size
     s = float(arr.sum())
     s2 = float(np.square(arr).sum())
-    return (s / n, (s2 / n) - (s / n) ** 2, n, int((arr > 0).sum()),
-            float(arr.min()), float(arr.max()))
+    return (s, s2, n, int((arr > 0).sum()), float(arr.min()), float(arr.max()))
 
 
 # ── PASS 1: scan every case, collect metadata + streaming accumulators ───────
 
 cases = sorted(d for d in DATA.iterdir() if d.is_dir())
-print(f"[PASS 1] Scanning {len(cases)} cases ...")
+print(f"[PASS 1] Scanning {len(cases)} cases ({MAX_WORKERS} parallel workers) ...")
 print(f"  Output dir: {OUT}")
 
-# Accumulators: mod -> [sum, sum_sq, count, nnz, min, max]
+# Accumulators
 agg = {}
-seg_agg = {}  # region_name -> [vol_mm3_sum, count]
-case_meta = []  # per-case row dicts
+seg_agg = {}
+case_meta = []
 
-# Progress tracking
 t0 = __import__("time").time()
 batch = 50
 
-for i, case_dir in enumerate(cases):
+
+def _process_case(case_dir):
+    """Worker: process one BraTS case directory, return (meta_row, mod_stats_dict, seg_stats_dict)."""
     case_id = case_dir.name
     seq_m = re.search(r"-(\d{3})$", case_id)
     pat_m = re.search(r"BraTS-GLI-(\d+)-", case_id)
     sequence = seq_m.group(1) if seq_m else "?"
     patient  = pat_m.group(1) if pat_m else "?"
-
     row = {"case_id": case_id, "patient": patient, "sequence": sequence}
+    mod_stats = {}
+    seg_stats = {}
 
-    # ── MRI modalities ────────────────────────────────────────────────────────
+    # MRI modalities
     for f in sorted(case_dir.glob("*.nii.gz")):
         mod = f.stem.rsplit("-", 1)[-1].replace(".nii", "")
-        if mod == "seg":
-            continue  # handled below
-        if mod not in MODALITIES:
+        if mod == "seg" or mod not in MODALITIES:
             continue
         row[f"{mod}_bytes"] = f.stat().st_size
         try:
@@ -85,47 +137,37 @@ for i, case_dir in enumerate(cases):
             row[f"{mod}_mean"]  = float(arr.mean())
             row[f"{mod}_std"]   = float(arr.std())
             row[f"{mod}_nonzero_pct"] = float((arr > 0).mean() * 100)
-            s, var, n, nnz, mn, mx = stream_stats(arr)
-            a = agg.setdefault(mod, [0.0, 0.0, 0, 0, float("inf"), float("-inf")])
-            a[0] += s * n; a[1] += var * n + s * s * n; a[2] += n; a[3] += nnz
-            a[4] = min(a[4], mn); a[5] = max(a[5], mx)
+            sum_x, sum_x2, n, nnz, mn, mx = stream_stats(arr)
+            mod_stats[mod] = (sum_x, sum_x2, n, nnz, mn, mx)
         except Exception as e:
             row[f"{mod}_err"] = str(e)
-            print(f"  WARN {f.name}: {e}", file=sys.stderr)
-        del arr, img; gc.collect()
+            mod_stats[mod] = None
 
-    # ── Segmentation mask ─────────────────────────────────────────────────────
+    # Segmentation mask
     seg_path = case_dir / f"{case_id}-seg.nii.gz"
     if seg_path.exists():
         row["seg_bytes"] = seg_path.stat().st_size
         try:
             seg_img = nib.load(seg_path)
             seg = seg_img.get_fdata(dtype=np.float32).astype(np.int16)
-            shape_str = ",".join(map(str, seg.shape))
-            row["seg_shape"] = shape_str
+            row["seg_shape"] = ",".join(map(str, seg.shape))
             row["seg_nunique"] = len(np.unique(seg))
 
-            # Count voxels per label
             labels, counts = np.unique(seg[seg > 0], return_counts=True)
             for lbl, cnt in zip(labels, counts):
                 lbl_name = SEG_LABELS.get(int(lbl), f"label_{int(lbl)}")
                 vol_mm3 = cnt * float(np.prod(VOXEL_SPACING))
                 row[f"seg_{lbl_name}_voxels"] = int(cnt)
                 row[f"seg_{lbl_name}_mm3"] = vol_mm3
-                # accumulate
-                sa = seg_agg.setdefault(lbl_name, [0.0, 0])
-                sa[0] += vol_mm3; sa[1] += 1
+                seg_stats.setdefault(lbl_name, []).append(vol_mm3)
 
-            # Tumor regions (composite)
             for region_name, region_labels in TUMOR_REGIONS.items():
                 mask = np.isin(seg, region_labels)
                 vol_mm3 = mask.sum() * float(np.prod(VOXEL_SPACING))
                 row[f"tumor_{region_name}_voxels"] = int(mask.sum())
                 row[f"tumor_{region_name}_mm3"] = vol_mm3
-                ra = seg_agg.setdefault(f"tumor_{region_name}", [0.0, 0])
-                ra[0] += vol_mm3; ra[1] += 1
+                seg_stats.setdefault(f"tumor_{region_name}", []).append(vol_mm3)
 
-            # Tumor volume fraction: whole tumor (label 4) voxels / total voxels
             total_voxels = seg.size
             tumor_voxels = int((seg == 4).sum())
             if total_voxels > 0:
@@ -133,18 +175,38 @@ for i, case_dir in enumerate(cases):
 
         except Exception as e:
             row["seg_err"] = str(e)
-            print(f"  WARN seg {case_id}: {e}", file=sys.stderr)
-        del seg, seg_img; gc.collect()
 
-    case_meta.append(row)
+    return row, mod_stats, seg_stats
 
-    if (i + 1) % batch == 0:
-        elapsed = __import__("time").time() - t0
-        eta = elapsed / (i + 1) * (len(cases) - i - 1)
-        print(f"  [{i+1}/{len(cases)}] elapsed={fmt_secs(elapsed)} eta={fmt_secs(eta)}")
-    if i == len(cases) - 1:
-        elapsed = __import__("time").time() - t0
-        print(f"  [{i+1}/{len(cases)}] DONE in {fmt_secs(elapsed)}")
+
+# Parallel case scanning (max 3 concurrent)
+with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
+    futures = {ex.submit(_process_case, c): c for c in cases}
+    completed = 0
+    for fut in as_completed(futures):
+        try:
+            row, mod_stats, seg_stats = fut.result()
+            case_meta.append(row)
+            for mod, stats in mod_stats.items():
+                if stats is not None:
+                    a = agg.setdefault(mod, [0.0, 0.0, 0, 0, float("inf"), float("-inf")])
+                    sum_x, sum_x2, n, nnz, mn, mx = stats
+                    a[0] += sum_x; a[1] += sum_x2; a[2] += n; a[3] += nnz
+                    a[4] = min(a[4], mn); a[5] = max(a[5], mx)
+            for name, vol_list in seg_stats.items():
+                sa = seg_agg.setdefault(name, [0.0, 0])
+                sa[0] += sum(vol_list); sa[1] += len(vol_list)
+        except Exception as e:
+            print(f"  WARN {futures[fut].name}: {e}", file=sys.stderr)
+
+        completed += 1
+        if completed % batch == 0:
+            elapsed = __import__("time").time() - t0
+            eta = elapsed / completed * (len(cases) - completed)
+            print(f"  [{completed}/{len(cases)}] elapsed={fmt_secs(elapsed)} eta={fmt_secs(eta)}")
+
+elapsed = __import__("time").time() - t0
+print(f"  [{len(cases)}/{len(cases)}] DONE in {fmt_secs(elapsed)}")
 
 print(f"\n  -> {len(cases)} cases scanned, "
       f"{len(cases_meta) if 'cases_meta' in dir() else len(case_meta)} rows collected.")
@@ -172,28 +234,22 @@ for mod, (sum_n, sum_n_var, n, nnz, mn, mx) in agg.items():
     print(f"  {mod}: mean={grand_mean:.1f}, std={grand_std:.1f}, "
           f"min={mn:.1f}, max={mx:.1f}, non-zero={nnz/n*100:.2f}%")
 
-# Percentiles — sparse sampling (100 cases, downsampled 4x per axis)
-print("  Sampling percentiles (100 cases, 4x downsample) ...")
+# Percentiles — sparse sampling (100 cases, downsampled 8x per axis, parallel)
+print("  Sampling percentiles (100 cases, {}x downsample, {} workers) ...".format(DOWNSAMPLE, MAX_WORKERS))
+sample_cases = sorted(DATA.rglob("*/"))[:100]
+sample_pcts = {}
 for mod in ["t1c", "t1n", "t2f", "t2w"]:
-    files = sorted(DATA.rglob(f"*-{mod}.nii.gz"))[:100]
-    chunks = []
-    for f in files:
-        try:
-            arr = nib.load(f).get_fdata(dtype=np.float32)
-            chunks.append(arr[::4, ::4, ::4].flatten())
-        except:
-            pass
-        del arr; gc.collect()
-    if chunks:
-        v = np.concatenate(chunks)
-        for r in agg_rows:
-            if r["modality"] == mod:
-                r["p1"] = float(np.percentile(v, 1))
-                r["p5"] = float(np.percentile(v, 5))
-                r["p50"] = float(np.percentile(v, 50))
-                r["p95"] = float(np.percentile(v, 95))
-                r["p99"] = float(np.percentile(v, 99))
-        del v, chunks; gc.collect()
+    files = [d / f"{d.name}-{mod}.nii.gz" for d in sample_cases]
+    vals = parallel_load_flatten(files, DOWNSAMPLE)
+    v = np.array(vals, dtype=np.float32)[:10_000]
+    for r in agg_rows:
+        if r["modality"] == mod:
+            r["p1"] = float(np.percentile(v, 1))
+            r["p5"] = float(np.percentile(v, 5))
+            r["p50"] = float(np.percentile(v, 50))
+            r["p95"] = float(np.percentile(v, 95))
+            r["p99"] = float(np.percentile(v, 99))
+    del v; gc.collect()
 
 agg_df = pd.DataFrame(agg_rows)
 agg_df.to_csv(OUT / "modality_stats.csv", index=False)
@@ -220,73 +276,307 @@ seg_df.to_csv(OUT / "tumor_volume_summary.csv", index=False)
 print(f"  -> tumor_volume_summary.csv")
 
 
-# ── Histograms (sample-based) ────────────────────────────────────────────────
+# ── PASS 3: Paper-Grade Statistical Visualisations ────────────────────────────
 
-print("\n[PASS 3] Generating histograms ...")
-fig, axes = plt.subplots(2, 2, figsize=(12, 10))
-axes = axes.flatten()
+print("\n[PASS 3] Generating paper-grade statistical visualisations ...")
+
 colors = {"t1c": "#e74c3c", "t1n": "#3498db", "t2f": "#2ecc71", "t2w": "#9b59b6"}
+mods = ["t1c", "t1n", "t2f", "t2w"]
+SAMPLE = 100  # sample size for intensity stats
 
-for i, mod in enumerate(["t1c", "t1n", "t2f", "t2w"]):
+# --- 3a. Modality intensity histograms (per-modality, 2x2) ---
+print("  [3a] Modality histograms ...")
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+axes = axes.flatten()
+
+intensity_stats = {}
+for i, mod in enumerate(mods):
     ax = axes[i]
-    files = sorted(DATA.rglob(f"*-{mod}.nii.gz"))[:100]
-    chunks = []
-    for f in files:
+    files = sorted(DATA.rglob(f"*-{mod}.nii.gz"))[:SAMPLE]
+    vals = parallel_load_flatten(files, DOWNSAMPLE)
+    if len(vals) > 0:
+        hi = np.percentile(vals, 99.5)
+        ax.hist(vals[vals <= hi], bins=100, color=colors[mod], edgecolor="none", alpha=0.85)
+        ax.axvline(vals.mean(), color="black", linestyle="--", linewidth=1.2,
+                   label=f"μ={vals.mean():.0f}")
+        ax.axvline(np.median(vals), color="darkred", linestyle=":", linewidth=1,
+                   label=f"median={np.median(vals):.0f}")
+        ax.set_title(f"{mod.upper()} — Intensity Distribution (n={SAMPLE})", fontsize=10, fontweight="bold")
+        ax.set_xlabel("Intensity (HU-scale for T1C/T1N)"); ax.set_ylabel("Frequency")
+        ax.legend(fontsize=8, loc="upper right")
+        intensity_stats[mod] = {
+            "mean": float(vals.mean()), "std": float(vals.std()),
+            "min": float(vals.min()), "max": float(vals.max()),
+            "p25": float(np.percentile(vals, 25)), "p50": float(np.percentile(vals, 50)),
+            "p75": float(np.percentile(vals, 75)), "p99": float(np.percentile(vals, 99)),
+        }
+    del vals; gc.collect()
+plt.tight_layout()
+plt.savefig(OUT / "modality_histograms.png", dpi=150)
+plt.close()
+print("    -> modality_histograms.png")
+
+
+# --- 3b. Modality intensity box plots ---
+print("  [3b] Modality box plots ...")
+sample_dfs = {}
+for mod in mods:
+    files = sorted(DATA.rglob(f"*-{mod}.nii.gz"))[:SAMPLE]
+    means = parallel_load_means(files, DOWNSAMPLE)
+    sample_dfs[mod] = [m[0] for m in means if m is not None]
+
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+axes = axes.flatten()
+for i, mod in enumerate(mods):
+    ax = axes[i]
+    data = sample_dfs[mod]
+    bp = ax.boxplot(data, patch_artist=True, widths=0.5)
+    bp['boxes'][0].set_facecolor(colors[mod])
+    bp['boxes'][0].set_alpha(0.7)
+    ax.set_title(f"{mod.upper()} — Per-Case Mean Intensity", fontsize=10, fontweight="bold")
+    ax.set_ylabel("Mean Intensity")
+    ax.grid(axis="y", alpha=0.3)
+plt.tight_layout()
+plt.savefig(OUT / "modality_boxplots.png", dpi=150)
+plt.close()
+print("    -> modality_boxplots.png")
+del sample_dfs; gc.collect()
+
+
+# --- 3c. Modality correlation matrix (per-case mean intensities, parallel) ---
+print("  [3c] Modality correlation matrix ...")
+corr_sample = sorted(DATA.rglob("*/"))[:200]
+case_mod_means = {mod: [] for mod in mods}
+
+
+def _case_mod_means(case_dir):
+    """Return dict of {mod: mean} for one case, or None if incomplete."""
+    row = {}
+    for mod in mods:
+        f = case_dir / f"{case_dir.name}-{mod}.nii.gz"
+        if not f.exists():
+            return None
         try:
             arr = nib.load(f).get_fdata(dtype=np.float32)
-            chunks.append(arr[::4, ::4, ::4].flatten())
-        except:
+            row[mod] = float(arr[::DOWNSAMPLE, ::DOWNSAMPLE, ::DOWNSAMPLE].mean())
+            del arr; gc.collect()
+        except Exception:
+            return None
+    return row
+
+
+with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
+    corr_futs = {ex.submit(_case_mod_means, d): d for d in corr_sample}
+    for fut in as_completed(corr_futs):
+        try:
+            row = fut.result()
+            if row:
+                for mod in mods:
+                    case_mod_means[mod].append(row[mod])
+        except Exception:
             pass
-        del arr; gc.collect()
-    if chunks:
-        vals = np.concatenate(chunks)
-        hi = np.percentile(vals, 99.5)
-        ax.hist(vals[vals <= hi], bins=80, color=colors[mod], edgecolor="none", alpha=0.85)
-        ax.axvline(vals.mean(), color="black", linestyle="--", linewidth=1,
-                   label=f"mean={vals.mean():.0f}")
-        ax.set_title(f"{mod.upper()} — value distribution")
-        ax.set_xlabel("Intensity"); ax.set_ylabel("Count")
-        ax.legend(fontsize=8)
-    del vals, chunks; gc.collect()
+
+corr_df = pd.DataFrame(case_mod_means)
+corr_matrix = corr_df.corr()
+
+fig, ax = plt.subplots(figsize=(7, 6))
+im = ax.imshow(corr_matrix, cmap="RdBu_r", vmin=-1, vmax=1)
+ax.set_xticks(range(len(mods))); ax.set_xticklabels([m.upper() for m in mods], fontsize=12)
+ax.set_yticks(range(len(mods))); ax.set_yticklabels([m.upper() for m in mods], fontsize=12)
+for i in range(len(mods)):
+    for j in range(len(mods)):
+        ax.text(j, i, f"{corr_matrix.iloc[i, j]:.3f}", ha="center", va="center",
+                fontsize=12, color="black" if abs(corr_matrix.iloc[i, j]) < 0.7 else "white")
+fig.colorbar(im, ax=ax, label="Pearson r")
+ax.set_title("Modality Pairwise Correlation (n=200 cases)", fontsize=12, fontweight="bold")
 plt.tight_layout()
-plt.savefig(OUT / "modality_histograms.png", dpi=120)
+plt.savefig(OUT / "modality_correlation_matrix.png", dpi=150)
 plt.close()
-print(f"  -> modality_histograms.png")
+corr_matrix.to_csv(OUT / "modality_correlation_matrix.csv")
+print("    -> modality_correlation_matrix.png")
+print("    -> modality_correlation_matrix.csv")
+
+del case_mod_means, corr_df; gc.collect()
 
 
-# ── Tumor volume distribution histogram ──────────────────────────────────────
+# --- 3d. Tumor volume distribution ---
+print("  [3d] Tumor volume distribution ...")
+whole_tumor_vols = [float(r.get("tumor_whole_tumor_mm3", 0)) for r in case_meta if r.get("tumor_whole_tumor_mm3", 0) > 0]
 
-print("  Generating tumor volume distribution plots ...")
-whole_tumor_vols = []
-for row in case_meta:
-    vol = row.get("tumor_whole_tumor_mm3", 0)
-    if vol and vol > 0:
-        whole_tumor_vols.append(float(vol))
-
-fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+fig, axes = plt.subplots(2, 2, figsize=(16, 8))
+axes = axes.flatten()
 if whole_tumor_vols:
-    axes[0].hist(whole_tumor_vols, bins=40, color="#e74c3c", edgecolor="none", alpha=0.85)
-    axes[0].set_title("Whole Tumor Volume Distribution")
-    axes[0].set_xlabel("Volume (mm^3)"); axes[0].set_ylabel("Cases")
-    axes[0].set_xlim(0, max(whole_tumor_vols) * 0.5)
+    axes[0].hist(whole_tumor_vols, bins=50, color="#e74c3c", edgecolor="white", alpha=0.85)
+    axes[0].set_title("Whole Tumor Volume (mm³)", fontsize=10, fontweight="bold")
+    axes[0].set_xlabel("Volume (mm³)"); axes[0].set_ylabel("Cases")
+    axes[0].set_xlim(0, float(np.percentile(whole_tumor_vols, 95)))
+    axes[0].axvline(np.median(whole_tumor_vols), color="blue", linestyle="--",
+                    label=f"median={np.median(whole_tumor_vols):.0f}")
+    axes[0].legend(fontsize=8)
 else:
-    axes[0].text(0.5, 0.5, "No tumor volumes found", ha="center", va="center", transform=axes[0].transAxes)
-    axes[0].set_title("Whole Tumor Volume Distribution")
+    axes[0].text(0.5, 0.5, "No tumor volumes", ha="center", va="center", transform=axes[0].transAxes)
 
-# Tumor volume fraction
-tumor_fracs = [r.get("tumor_volume_fraction", 0) for r in case_meta if r.get("tumor_volume_fraction", 0) > 0]
-if tumor_fracs:
-    axes[1].hist(tumor_fracs, bins=40, color="#9b59b6", edgecolor="none", alpha=0.85)
-    axes[1].set_title("Tumor Volume Fraction Distribution")
-    axes[1].set_xlabel("Fraction of brain"); axes[1].set_ylabel("Cases")
-else:
-    axes[1].text(0.5, 0.5, "No tumor fractions found", ha="center", va="center", transform=axes[1].transAxes)
+# Sub-region volumes
+for idx, (key, name, clr) in enumerate([
+    ("seg_edema (ET)_mm3", "Edema", "#f39c12"),
+    ("seg_non-enhancing core (NCR)_mm3", "Non-Enhancing (NCR)", "#3498db"),
+    ("seg_enhancing core (ET)_mm3", "Enhancing (ET)", "#e74c3c"),
+]):
+    ax = axes[idx + 1]
+    vals = [float(r.get(key, 0)) for r in case_meta if r.get(key, 0) > 0]
+    if vals:
+        ax.hist(vals, bins=30, color=clr, edgecolor="white", alpha=0.85)
+        ax.set_title(f"{name} Volume (mm³)", fontsize=10, fontweight="bold")
+        ax.set_xlabel("Volume (mm³)"); ax.set_ylabel("Cases")
+        ax.set_xlim(0, float(np.percentile(vals, 95)))
+    else:
+        ax.text(0.5, 0.5, f"No {name} data", ha="center", va="center", transform=ax.transAxes)
 plt.tight_layout()
-plt.savefig(OUT / "tumor_volume_distribution.png", dpi=120)
+plt.savefig(OUT / "tumor_volume_distribution.png", dpi=150)
 plt.close()
-print(f"  -> tumor_volume_distribution.png")
+print("    -> tumor_volume_distribution.png")
+del whole_tumor_vols; gc.collect()
 
-del whole_tumor_vols, tumor_fracs; gc.collect()
+
+# --- 3e. Dimension shape scatter (cases with shape data) ---
+print("  [3e] Dimension scatter plots ...")
+dims = []
+for row in case_meta:
+    shape = row.get("shape")
+    if isinstance(shape, list) and len(shape) >= 3:
+        dims.append(shape[:3])
+if dims:
+    dims = np.array(dims, dtype=float)
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+    axes[0].scatter(dims[:, 0], dims[:, 1], alpha=0.5, s=20, c="#e74c3c")
+    axes[0].set_xlabel("X (mm)"); axes[0].set_ylabel("Y (mm)"); axes[0].set_title("X vs Y")
+    axes[0].grid(alpha=0.3)
+    axes[1].scatter(dims[:, 0], dims[:, 2], alpha=0.5, s=20, c="#3498db")
+    axes[1].set_xlabel("X (mm)"); axes[1].set_ylabel("Z (mm)"); axes[1].set_title("X vs Z")
+    axes[1].grid(alpha=0.3)
+    axes[2].scatter(dims[:, 1], dims[:, 2], alpha=0.5, s=20, c="#2ecc71")
+    axes[2].set_xlabel("Y (mm)"); axes[2].set_ylabel("Z (mm)"); axes[2].set_title("Y vs Z")
+    axes[2].grid(alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(OUT / "dimension_scatter.png", dpi=150)
+    plt.close()
+    print("    -> dimension_scatter.png")
+del dims; gc.collect()
+
+
+# --- 3f. Intensity correlation heatmap (scatter per pair, parallel) ---
+print("  [3f] Pairwise intensity scatter plots ...")
+sample_pairs = sorted(DATA.rglob("*/"))[:200]
+pair_means = {m: [] for m in mods}
+
+# Reuse _case_mod_means from 3c
+with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
+    pair_futs = {ex.submit(_case_mod_means, d): d for d in sample_pairs}
+    for fut in as_completed(pair_futs):
+        try:
+            row = fut.result()
+            if row:
+                for mod in mods:
+                    pair_means[mod].append(row[mod])
+        except Exception:
+            pass
+
+fig, axes = plt.subplots(2, 3, figsize=(16, 10))
+axes = axes.flatten()
+pairs = [("t1c", "t1n"), ("t1c", "t2f"), ("t1c", "t2w"), ("t1n", "t2f"), ("t1n", "t2w"), ("t2f", "t2w")]
+for idx, (a, b) in enumerate(pairs):
+    ax = axes[idx]
+    x_vals = pair_means[a]; y_vals = pair_means[b]
+    ax.scatter(x_vals, y_vals, alpha=0.4, s=15, c="#3498db")
+    ax.set_xlabel(f"{a.upper()} mean"); ax.set_ylabel(f"{b.upper()} mean")
+    ax.set_title(f"{a.upper()} vs {b.upper()}", fontsize=10, fontweight="bold")
+    ax.grid(alpha=0.2)
+plt.tight_layout()
+plt.savefig(OUT / "pairwise_intensity_scatter.png", dpi=150)
+plt.close()
+print("    -> pairwise_intensity_scatter.png")
+del pair_means; gc.collect()
+
+
+# --- 3g. Class distribution (BraTS-GLI has WHO grade labels) ---
+print("  [3g] Class distribution analysis ...")
+# Check if WHO grade columns exist
+grade_cols = [c for c in case_df.columns if "grade" in c.lower() or "who" in c.lower() or "class" in c.lower()]
+class_dist = None
+if grade_cols:
+    for col in grade_cols:
+        vc = case_df[col].value_counts(dropna=True)
+        if len(vc) > 1:
+            class_dist = vc.to_dict()
+            break
+
+fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+axes = axes.flatten()
+
+# Tumor presence pie
+has_tumor_count = sum(1 for r in case_meta if r.get("tumor_whole_tumor_mm3", 0) > 0)
+no_tumor_count = len(case_meta) - has_tumor_count
+axes[0].pie([has_tumor_count, no_tumor_count], labels=["With Tumor", "No Tumor"],
+            autopct="%1.1f%%", colors=["#e74c3c", "#2ecc71"], startangle=90)
+axes[0].set_title("Cases with Tumor vs Without", fontsize=10, fontweight="bold")
+
+# Tumor sub-region counts
+sub_regions = {
+    "Edema (label 1)": [r.get("seg_label_1", 0) for r in case_meta],
+    "Non-Enhancing (label 2)": [r.get("seg_label_2", 0) for r in case_meta],
+    "Enhancing (label 3)": [r.get("seg_label_3", 0) for r in case_meta],
+}
+axes[1].bar(sub_regions.keys(), [sum(1 for v in vlist if v > 0) for vlist in sub_regions.values()],
+            color=["#f39c12", "#3498db", "#e74c3c"], edgecolor="white")
+axes[1].set_ylabel("Cases"); axes[1].set_title("Tumor Sub-region Presence", fontsize=10, fontweight="bold")
+axes[1].tick_params(axis="x", rotation=15)
+
+# Class distribution if available
+if class_dist:
+    labels = list(class_dist.keys()); counts = list(class_dist.values())
+    axes[2].bar(labels, counts, color="#9b59b6", edgecolor="white")
+    axes[2].set_ylabel("Cases"); axes[2].set_title("Class Distribution", fontsize=10, fontweight="bold")
+else:
+    axes[2].text(0.5, 0.5, "No class labels in BraTS-GLI\n(10-class segmentation only)",
+                 ha="center", va="center", transform=axes[2].transAxes, fontsize=11)
+    axes[2].set_title("Class Distribution", fontsize=10, fontweight="bold")
+
+# Tumor volume fraction distribution
+tumor_fracs = [float(r.get("tumor_volume_fraction", 0)) for r in case_meta if r.get("tumor_volume_fraction", 0) > 0]
+if tumor_fracs:
+    axes[3].hist(tumor_fracs, bins=50, color="#9b59b6", edgecolor="white", alpha=0.85)
+    axes[3].set_xlabel("Fraction of Brain with Tumor"); axes[3].set_ylabel("Cases")
+    axes[3].set_title("Tumor Volume Fraction", fontsize=10, fontweight="bold")
+    axes[3].set_xlim(0, float(np.percentile(tumor_fracs, 95)))
+else:
+    axes[3].text(0.5, 0.5, "No volume fraction data", ha="center", va="center", transform=axes[3].transAxes)
+    axes[3].set_title("Tumor Volume Fraction", fontsize=10, fontweight="bold")
+
+# Intensity grand mean comparison (from agg)
+mod_names = [r["modality"].upper() for r in agg_rows]
+mod_means = [r["grand_mean"] for r in agg_rows]
+axes[4].barh(mod_names, mod_means, color=list(colors.values()), edgecolor="white")
+axes[4].set_xlabel("Grand Mean Intensity"); axes[4].set_title("Modality Intensity Comparison",
+                                                                fontsize=10, fontweight="bold")
+
+# Tumor volume vs fraction scatter
+wtv = [float(r.get("tumor_whole_tumor_mm3", 0)) for r in case_meta if r.get("tumor_whole_tumor_mm3", 0) > 0]
+wtf = [float(r.get("tumor_volume_fraction", 0)) for r in case_meta if r.get("tumor_whole_tumor_mm3", 0) > 0 and r.get("tumor_volume_fraction", 0) > 0]
+if len(wtf) == len(wtv):
+    axes[5].scatter(wtv, wtf, alpha=0.4, s=15, c="#e74c3c")
+    axes[5].set_xlabel("Whole Tumor Volume (mm³)"); axes[5].set_ylabel("Volume Fraction")
+    axes[5].set_title("Tumor Volume vs Fraction", fontsize=10, fontweight="bold")
+    axes[5].set_xlim(0, float(np.percentile(wtv, 95)))
+    axes[5].grid(alpha=0.2)
+else:
+    axes[5].text(0.5, 0.5, "No volume/fraction pair data", ha="center", va="center", transform=axes[5].transAxes)
+    axes[5].set_title("Tumor Volume vs Fraction", fontsize=10, fontweight="bold")
+
+plt.tight_layout()
+plt.savefig(OUT / "class_and_tumor_analysis.png", dpi=150)
+plt.close()
+print("    -> class_and_tumor_analysis.png")
+del tumor_fracs, wtv, wtf; gc.collect()
 
 
 # ── Sample slices with tumor overlay ─────────────────────────────────────────
@@ -302,7 +592,7 @@ if tumor_cases:
     best_case = tumor_cases[0]
     case_dir = DATA / best_case["case_id"]
     mid = 90  # axial mid-slice
-    fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+    fig, axes = plt.subplots(2, 4, figsize=(20, 10))
 
     # Top row: modalities
     for i, mod in enumerate(["t1c", "t1n", "t2f", "t2w"]):
