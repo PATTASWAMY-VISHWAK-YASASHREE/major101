@@ -4,12 +4,14 @@ Processes 1350 BraTS cases:
   - Load 4 modalities (t1, t1c, t2, t2w) + segmentation
   - CTN normalisation with brain mask from T1-native
   - Percentile clipping (99.5%)
-  - Stack into (4, D, H, W) .pt files
+  - Stack into (4, D, H, W) .npy files
   - Extract tumor subregion presence labels
 
 Output: data/brats_preprocessed/
-  - train/{case}.pt  — 4-channel normalised volume (numpy float32)
+  - train/{case}.npy  — 4-channel normalised volume (numpy float32)
   - labels.csv       — case, et/tc/wt presence, volumes, grade proxy
+  - preprocessing_log.txt  — progress, errors, summary log
+  - preprocessing_errors.csv  — per-case errors (if any)
 
 Usage:
   python scripts/preprocess_brats.py [--workers 3] [--max-cases 100]
@@ -17,18 +19,22 @@ Usage:
 Expected: 1350 cases → ~1350 .pt files + labels.csv
 """
 
-import gc, csv, sys
+import gc, csv, sys, logging, time
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime
 
 import numpy as np
 import nibabel as nib
 
 
 # ── Constants ───────────────────────────────────────────────────────────────
-NIFTI_DIR = Path("data/brats/training")
-OUTPUT_DIR = Path("data/brats_preprocessed")
-MODALITIES = ["t1", "t1c", "t2", "t2w"]  # BraTS filename convention
+# BraTS 2024 GLI: case dirs like "BraTS-GLI-00005-100"
+# Each contains: <name>-t1c.nii.gz, <name>-t1n.nii.gz, <name>-t2f.nii.gz, <name>-t2w.nii.gz, <name>-seg.nii.gz
+ROOT = Path(__file__).resolve().parents[1]
+NIFTI_DIR = ROOT / "data" / "raw" / "brats2024" / "training" / "BraTS2024-BraTS-GLI-TrainingData" / "training_data1_v2"
+OUTPUT_DIR = ROOT / "data" / "brats_preprocessed"
+MODALITIES = ["t1c", "t1n", "t2f", "t2w"]  # BraTS 2024 GLI naming: T1ce, T1 native, FLAIR, T2
 BRAIN_THRESHOLD = 50
 
 
@@ -66,19 +72,21 @@ def process_case(case_name: str, output_dir: Path) -> dict:
     case_dir = NIFTI_DIR / case_name
     vols = {}
     for mod in MODALITIES:
-        f = case_dir / f"{case_name}_{mod}.nii.gz"
+        f = case_dir / f"{case_name}-{mod}.nii.gz"
+        if not f.exists():
+            candidates = list(NIFTI_DIR.rglob(f"{case_name}-{mod}.nii.gz"))
+            if candidates:
+                f = candidates[0]
         if not f.exists():
             return {"status": "missing", "case": case_name, "mod": mod}
         try:
             vols[mod] = nib.load(f).get_fdata(dtype=np.float32)
         except Exception as e:
-            return {"status": "error", "case": case_name, "error": str(e)}
+            return {"status": "error", "case": case_name, "mod": mod, "error": str(e)}
     gc.collect()
 
     # Brain mask from T1-native
     mask = brain_mask(vols["t1n"])
-    del vols["t1n"]
-    gc.collect()
 
     # Normalise each modality
     normalised = []
@@ -99,7 +107,7 @@ def process_case(case_name: str, output_dir: Path) -> dict:
 
     # Parse segmentation labels
     # BraTS 2024 labels (non-overlapping): 1=Edema, 2=NCR, 3=ET, 4=Whole Tumor (mask)
-    seg_path = case_dir / f"{case_name}_seg.nii.gz"
+    seg_path = case_dir / f"{case_name}-seg.nii.gz"
     et_present = tc_present = wt_present = False
     volumes = {"et": 0.0, "tc": 0.0, "wt": 0.0}
     if seg_path.exists():
@@ -141,18 +149,37 @@ def process_case(case_name: str, output_dir: Path) -> dict:
 
 # ── Main ────────────────────────────────────────────────────────────────────
 def run_preprocessing(n_workers: int = 3, max_cases: int = None):
-    print("=" * 70)
-    print("BRAINS TUMOUR PREPROCESSING PIPELINE")
-    print("=" * 70)
+    # File logger — writes progress, errors, and summary to log file + console
+    log_path = OUTPUT_DIR / "preprocessing_log.txt"
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    logger = logging.getLogger("preprocess")
+    logger.setLevel(logging.INFO)
+    fh = logging.FileHandler(log_path, mode="w", encoding="utf-8")
+    fh.setFormatter(logging.Formatter("%(message)s"))
+    logger.addHandler(fh)
+    sh = logging.StreamHandler(sys.stdout)
+    sh.setFormatter(logging.Formatter("%(message)s"))
+    logger.addHandler(sh)
+
+    def log(msg):
+        logger.info(msg)
+        print(msg, flush=True)
+
+    log("=" * 70)
+    log("BRAINS TUMOUR PREPROCESSING PIPELINE")
+    log(f"  Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    log("=" * 70)
 
     all_cases = sorted([d.name for d in NIFTI_DIR.iterdir() if d.is_dir()])
+    total = len(all_cases)
     if max_cases:
         all_cases = all_cases[:max_cases]
-    print(f"  Cases to process: {len(all_cases)}")
-    print(f"  Workers:          {n_workers}")
+    log(f"  Cases to process: {len(all_cases)}")
+    log(f"  Workers:          {n_workers}")
 
     (OUTPUT_DIR / "train").mkdir(parents=True, exist_ok=True)
 
+    t0 = time.time()
     results, errors = [], []
     with ThreadPoolExecutor(max_workers=n_workers) as executor:
         futures = {
@@ -171,16 +198,33 @@ def run_preprocessing(n_workers: int = 3, max_cases: int = None):
             except Exception as e:
                 errors.append({"status": "exception", "case": futures[future], "error": str(e)})
             if done % 100 == 0:
-                print(f"  [{done}/{len(all_cases)}]  OK={len(results)}  ERR={len(errors)}")
+                elapsed = time.time() - t0
+                eta = (elapsed / done * (len(all_cases) - done)) if done else 0
+                h, m = divmod(int(elapsed), 3600)
+                eh, em = divmod(int(eta), 3600)
+                log(f"  [{done}/{len(all_cases)}] elapsed={h}h {m}m  eta={eh}h {em}m  OK={len(results)}  ERR={len(errors)}")
+
+    elapsed = time.time() - t0
+    h, m = divmod(int(elapsed), 3600)
+    log(f"  [{len(all_cases)}/{len(all_cases)}] DONE in {h}h {m}m")
+
+    # Write errors to CSV
+    if errors:
+        err_path = OUTPUT_DIR / "preprocessing_errors.csv"
+        with open(err_path, "w", newline="", encoding="utf-8") as f:
+            w = csv.writer(f)
+            w.writerow(["case", "status", "mod", "error"])
+            for e in errors:
+                w.writerow([e["case"], e["status"], e.get("mod", ""), e.get("error", "")])
+        log(f"  Errors log: {err_path} ({len(errors)} rows)")
 
     # Summary
-    print(f"\n{'=' * 70}")
-    print(f"PREPROCESSING COMPLETE")
-    print(f"  Processed: {len(results)}/{len(all_cases)}")
-    print(f"  Errors:    {len(errors)}")
-    if errors:
-        for e in errors[:10]:
-            print(f"    {e['case']}: {e.get('error', e.get('mod', 'unknown'))}")
+    log(f"\n{'=' * 70}")
+    log("PREPROCESSING COMPLETE")
+    log(f"  Finished: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    log(f"  Total time: {h}h {m}m")
+    log(f"  Processed: {len(results)}/{len(all_cases)}")
+    log(f"  Errors:    {len(errors)}")
 
     # Write labels.csv
     labels_path = OUTPUT_DIR / "labels.csv"
@@ -192,19 +236,20 @@ def run_preprocessing(n_workers: int = 3, max_cases: int = None):
             w.writerow([r["case"], r["et"], r["tc"], r["wt"],
                          r["volumes"]["wt"], r["volumes"]["tc"],
                          r["volumes"]["et"], r["grade"]])
-    print(f"  Labels: {labels_path}")
+    log(f"  Labels: {labels_path}")
 
     # Class balance
     high = sum(1 for r in results if r["grade"] == 1)
     low = len(results) - high
-    print(f"\n  Grade proxy distribution:")
-    print(f"    High-grade (ET/TC present): {high}")
-    print(f"    Low-grade  (neither):       {low}")
-    print(f"\n  Subregion presence:")
+    log(f"\n  Grade proxy distribution:")
+    log(f"    High-grade (ET/TC present): {high}")
+    log(f"    Low-grade  (neither):       {low}")
+    log(f"\n  Subregion presence:")
     for sub in ["et", "tc", "wt"]:
         cnt = sum(1 for r in results if r[sub] == 1)
         pct = cnt / len(results) * 100 if results else 0
-        print(f"    {sub.upper()}: {cnt}/{len(results)} ({pct:.1f}%)")
+        log(f"    {sub.upper()} {cnt}/{len(results)} ({pct:.1f}%)")
+    log(f"  Log file: {log_path}")
 
 
 if __name__ == "__main__":
