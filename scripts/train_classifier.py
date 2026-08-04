@@ -54,7 +54,7 @@ class GradeClassifier3D(nn.Module):
             blocks.append(
                 nn.Sequential(
                     nn.Conv3d(in_ch, out_ch, 3, stride=2, padding=1, bias=False),
-                    nn.BatchNorm3d(out_ch),
+                    nn.InstanceNorm3d(out_ch),  # ponytail: replaces BatchNorm3d — works with batch=2, no running-stat garbage
                     nn.ReLU(inplace=True),
                 )
             )
@@ -154,7 +154,7 @@ def train_model(
     logger.info(f"AMP enabled, grad_accum={grad_accum}, eff_batch={batch_size * grad_accum}")
 
     loaders, splits = make_dataloaders(
-        npy_dir, labels_csv, batch_size=batch_size, augment=augment, seed=seed,
+        npy_dir, labels_csv, batch_size=batch_size, augment=augment, seed=seed, num_workers=4
     )
     n_train = len(loaders["train"].dataset)
     n_val = len(loaders["val"].dataset)
