@@ -1,201 +1,192 @@
-"""Dataset and DataLoader for 3D MRI/CT brain tumour scans."""
+"""BraTS3D dataset — loads preprocessed .npy + labels.csv with stratified splits."""
 
 from pathlib import Path
-from typing import Optional
 import random
 
 import numpy as np
-import nibabel as nib
+import pandas as pd
 import torch
 from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms
 
 
-class BrainTumourDataset(Dataset):
-    """
-    Loads 3D volumes from .nii.gz files.
-    Expects: root/{split}/{class_label}/<file>.nii.gz
-    Class labels auto-inferred from directory names (integer).
+class BraTS3DDataset(Dataset):
+    """Dataset for preprocessed BraTS .npy volumes.
+
+    Args:
+        npy_dir: Directory containing <case_id>.npy files (shape 4×182×218×182).
+        labels_csv: Path to labels.csv (case, et, tc, wt, et_vol, tc_vol, wt_vol, grade_proxy).
+        indices: List of case indices (0..N-1) for this split.
+        labels_df: Full labels DataFrame (aligned by row index).
+        augment: If True, apply online augmentation (random flips, rotation, intensity jitter).
     """
 
     def __init__(
         self,
-        root: Path,
-        split: str = "train",
-        img_size: tuple[int, int, int] = (96, 96, 96),
-        normalize: bool = True,
-        transform: Optional[transforms.Compose] = None,
+        npy_dir: Path,
+        labels_csv: Path,
+        indices: list[int],
+        labels_df: pd.DataFrame,
+        augment: bool = False,
     ):
-        self.root = Path(root) / split
-        self.img_size = img_size
-        self.normalize = normalize
-        self.transform = transform
-        self.files: list[Path] = []
-        self.labels: list[int] = []
-        self._build_index()
-
-    def _build_index(self):
-        """Scan directory for .nii.gz files and assign class labels."""
-        for label_dir in sorted(self.root.iterdir()):
-            if not label_dir.is_dir():
-                continue
-            try:
-                label = int(label_dir.name)
-            except ValueError:
-                continue
-            for f in sorted(label_dir.glob("*.nii.gz")):
-                self.files.append(f)
-                self.labels.append(label)
+        self.npy_dir = npy_dir
+        self.indices = indices
+        self.labels_df = labels_df
+        self.augment = augment
 
     def __len__(self):
-        return len(self.files)
+        return len(self.indices)
 
-    def _load_volume(self, path: Path) -> np.ndarray:
-        img = nib.load(path)
-        return img.get_fdata(dtype=np.float32)
+    def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
+        case_idx = self.indices[idx]
+        case_id = self.labels_df.iloc[case_idx]["case"]
+        npy_path = self.npy_dir / f"{case_id}.npy"
 
-    def _preprocess(self, vol: np.ndarray) -> np.ndarray:
-        if self.normalize:
-            non_zero = vol[vol != 0]
-            if non_zero.size == 0:
-                vol = np.zeros_like(vol)
-            else:
-                mean, std = non_zero.mean(), non_zero.std() + 1e-8
-                vol = (vol - mean) / std
-        if vol.shape != self.img_size:
-            vol = torch.nn.functional.interpolate(
-                torch.from_numpy(vol).unsqueeze(0).unsqueeze(0),
-                size=self.img_size,
-                mode="trilinear",
-                align_corners=False,
-            ).squeeze().numpy()
-        return vol
-
-    def __getitem__(self, idx: int):
-        vol = self._load_volume(self.files[idx])
-        vol = self._preprocess(vol)
-        x = torch.from_numpy(vol).unsqueeze(0)  # (1, D, H, W)
-        y = torch.tensor(self.labels[idx], dtype=torch.long)
-        if self.transform:
-            x = self.transform(x)
-        return x, y
-
-
-def build_file_index(
-    root: Path,
-    img_size: tuple[int, int, int] = (96, 96, 96),
-    normalize: bool = True,
-) -> tuple[list[Path], list[int]]:
-    """
-    Build (files, labels) index from a flat root directory.
-    Expects: root/{class_label}/<file>.nii.gz
-    """
-    files, labels = [], []
-    for label_dir in sorted(root.iterdir()):
-        if not label_dir.is_dir():
-            continue
+        # Load .npy — shape (4, 182, 218, 182), CTN-normalised, float32
         try:
-            label = int(label_dir.name)
-        except ValueError:
-            continue
-        for f in sorted(label_dir.glob("*.nii.gz")):
-            files.append(f)
-            labels.append(label)
-    return files, labels
+            img = np.load(npy_path)
+        except (OSError, ValueError) as e:
+            raise RuntimeError(
+                f"Failed to load {npy_path}: {e}. File may be corrupted/truncated."
+            ) from e
+
+        # Validate shape and dtype — catches partial/corrupt files early
+        expected = (4, 182, 218, 182)
+        if img.shape != expected:
+            raise ValueError(
+                f"Invalid shape in {npy_path}: got {img.shape}, expected {expected}"
+            )
+        if img.dtype != np.float32:
+            img = img.astype(np.float32)
+
+        img = torch.from_numpy(img).contiguous()  # (4, 182, 218, 182)
+
+        # Label: grade_proxy (0=low, 1=high)
+        label = int(self.labels_df.iloc[case_idx]["grade_proxy"])
+
+        if self.augment:
+            img = _augment(img)
+
+        return img, torch.tensor(label, dtype=torch.long)
 
 
-def split_index(
-    files: list[Path],
-    labels: list[int],
-    train_split: float = 0.7,
-    val_split: float = 0.15,
+def _augment(img: torch.Tensor) -> torch.Tensor:
+    """Online augmentation: random flips, rotation, intensity jitter."""
+    # Random flip along any axis (x, y, or z)
+    for dim in range(2, 5):  # skip channel dim
+        if random.random() < 0.5:
+            img = torch.flip(img, [dim])
+
+    # Random 90° rotation in axial plane (last 2 dims)
+    k = random.randint(0, 3)
+    img = torch.rot90(img, k, dims=(3, 2))
+
+    # Intensity jitter: additive Gaussian noise σ=0.02 (CTN range [-1,1])
+    noise = torch.randn_like(img) * 0.02
+    img = img + noise
+
+    return img
+
+
+def build_split_indices(
+    labels_csv: Path,
+    train_ratio: float = 0.8,
+    val_ratio: float = 0.1,
+    test_ratio: float = 0.1,
     seed: int = 42,
-) -> tuple[tuple[list[Path], list[int]], tuple[list[Path], list[int]], tuple[list[Path], list[int]]]:
+) -> tuple[dict[str, list[int]], pd.DataFrame]:
+    """Stratified 80/10/10 split by grade_proxy.
+
+    Deduplicates by case ID before splitting to prevent data leakage.
+    Returns (splits dict, deduplicated labels DataFrame).
     """
-    Stratified split of (files, labels) into train/val/test.
-    No data mutation — callers pass split indices to BrainTumourDataset.
-    """
+    df = pd.read_csv(labels_csv)
+    # Deduplicate by case ID — preprocessing appends per case on --resume,
+    # leaving duplicate rows. Keep first occurrence only.
+    df = df.drop_duplicates(subset="case").reset_index(drop=True)
+
     rng = np.random.default_rng(seed)
-    n = len(files)
-    indices = list(range(n))
-    rng.shuffle(indices)
+    train_idx, val_idx, test_idx = [], [], []
+    for grade in sorted(df["grade_proxy"].unique()):
+        group = df[df["grade_proxy"] == grade].index.tolist()
+        rng.shuffle(group)
+        n = len(group)
+        n_train = int(n * train_ratio)
+        n_val = int(n * val_ratio)
+        train_idx.extend(group[:n_train])
+        val_idx.extend(group[n_train:n_train + n_val])
+        test_idx.extend(group[n_train + n_val:])
 
-    n_train = int(n * train_split)
-    n_val = int(n * val_split)
-
-    train_idx = indices[:n_train]
-    val_idx = indices[n_train:n_train + n_val]
-    test_idx = indices[n_train + n_val:]
-
-    def slice_idx(idx_list):
-        return [files[i] for i in idx_list], [labels[i] for i in idx_list]
-
-    return slice_idx(train_idx), slice_idx(val_idx), slice_idx(test_idx)
-
-
-def make_datasets_from_split(
-    root: Path,
-    train_split: float = 0.7,
-    val_split: float = 0.15,
-    img_size: tuple[int, int, int] = (96, 96, 96),
-    normalize: bool = True,
-    seed: int = 42,
-) -> tuple[BrainTumourDataset, BrainTumourDataset, BrainTumourDataset, int]:
-    """
-    Build train/val/test datasets from a flat root dir.
-    Returns (train_ds, val_ds, test_ds, n_classes).
-    """
-    files, labels = build_file_index(root, img_size, normalize)
-    train_files, train_labels = split_index(files, labels, train_split, val_split, seed)[0]
-    val_files, val_labels = split_index(files, labels, train_split, val_split, seed)[1]
-    test_files, test_labels = split_index(files, labels, train_split, val_split, seed)[2]
-
-    # Write split subdirs (non-destructive, just a symlink/manifest approach)
-    def write_split(subdir: str, f_list: list[Path], l_list: list[int]):
-        target = root / subdir
-        target.mkdir(parents=True, exist_ok=True)
-        unique_labels = sorted(set(l_list))
-        for lbl in unique_labels:
-            (target / str(lbl)).mkdir(parents=True, exist_ok=True)
-        for f, lbl in zip(f_list, l_list):
-            src_name = f.name
-            dest = target / str(lbl) / src_name
-            if not dest.exists():
-                # hard-link if on same filesystem, else copy
-                try:
-                    dest.hardlink_to(f)
-                except OSError:
-                    import shutil
-                    shutil.copy2(f, dest)
-
-    write_split("train", train_files, train_labels)
-    write_split("val", val_files, val_labels)
-    write_split("test", test_files, test_labels)
-
-    train_ds = BrainTumourDataset(root / "train", img_size=img_size, normalize=normalize)
-    val_ds = BrainTumourDataset(root / "val", img_size=img_size, normalize=normalize)
-    test_ds = BrainTumourDataset(root / "test", img_size=img_size, normalize=normalize)
-
-    n_classes = max(train_labels + val_labels + test_labels) + 1
-    return train_ds, val_ds, test_ds, n_classes
+    return {
+        "train": sorted(train_idx),
+        "val": sorted(val_idx),
+        "test": sorted(test_idx),
+    }, df
 
 
 def make_dataloaders(
-    root: Path,
-    batch_size: int = 4,
-    num_workers: int = 4,
-    img_size: tuple[int, int, int] = (96, 96, 96),
-    normalize: bool = True,
-    train_split: float = 0.7,
-    val_split: float = 0.15,
+    npy_dir: Path,
+    labels_csv: Path,
+    batch_size: int = 2,
+    augment: bool = False,
     seed: int = 42,
-):
-    train_ds, val_ds, test_ds, n_classes = make_datasets_from_split(
-        root, train_split, val_split, img_size, normalize, seed,
-    )
-    return (
-        DataLoader(train_ds, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True),
-        DataLoader(val_ds, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True),
-        DataLoader(test_ds, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True),
-        n_classes,
-    )
+    num_workers: int = 0,
+) -> tuple[dict[str, DataLoader], dict[str, list[int]]]:
+    """Build train/val/test DataLoaders with stratified splits.
+
+    Args:
+        npy_dir: Directory with <case_id>.npy files.
+        labels_csv: Path to labels.csv.
+        batch_size: Batch size (default 2 — 4GB RAM safe on CPU).
+        augment: Enable online augmentation (M3).
+        seed: Random seed for split reproducibility.
+        num_workers: DataLoader workers (0 = main process, avoids Windows spawn overhead).
+
+    Returns:
+        dict with "train", "val", "test" DataLoader keys + "splits" dict.
+    """
+    splits, labels_df = build_split_indices(labels_csv, seed=seed)
+
+    loaders = {}
+    for split_name, indices in splits.items():
+        ds = BraTS3DDataset(
+            npy_dir=npy_dir,
+            labels_csv=labels_csv,
+            indices=indices,
+            labels_df=labels_df,
+            augment=augment if split_name == "train" else False,
+        )
+        loaders[split_name] = DataLoader(
+            ds,
+            batch_size=batch_size,
+            shuffle=(split_name == "train"),
+            num_workers=num_workers,
+            pin_memory=False,
+        )
+
+    return loaders, splits
+
+
+if __name__ == "__main__":
+    # Self-check: verify the dataset loads correctly
+    import sys
+    # Resolve paths relative to repo root
+    repo = Path(__file__).resolve().parent.parent
+    npy_dir = repo / "data" / "brats_preprocessed" / "train"
+    labels_csv = repo / "data" / "brats_preprocessed" / "labels.csv"
+
+    loaders, splits = make_dataloaders(npy_dir, labels_csv, batch_size=2, augment=False, seed=42)
+
+    print(f"Train: {len(loaders['train'].dataset)} samples")
+    print(f"Val:   {len(loaders['val'].dataset)} samples")
+    print(f"Test:  {len(loaders['test'].dataset)} samples")
+
+    # Verify first batch
+    x, y = next(iter(loaders["train"]))
+    print(f"Image shape: {x.shape}")
+    print(f"Label shape: {y.shape}")
+    print(f"Grade distribution: {y.bincount().tolist()}")
+
+    assert x.shape == (2, 4, 182, 218, 182), f"Unexpected image shape: {x.shape}"
+    assert x.dtype == torch.float32
+    assert y.dtype == torch.long
+    print("Dataset check passed ✓")

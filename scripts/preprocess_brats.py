@@ -148,13 +148,15 @@ def process_case(case_name: str, output_dir: Path) -> dict:
 
 
 # ── Main ────────────────────────────────────────────────────────────────────
-def run_preprocessing(n_workers: int = 3, max_cases: int = None):
+def run_preprocessing(n_workers: int = 3, max_cases: int = None, resume: bool = False):
     # File logger — writes progress, errors, and summary to log file + console
     log_path = OUTPUT_DIR / "preprocessing_log.txt"
     log_path.parent.mkdir(parents=True, exist_ok=True)
     logger = logging.getLogger("preprocess")
     logger.setLevel(logging.INFO)
-    fh = logging.FileHandler(log_path, mode="w", encoding="utf-8")
+    # Append mode if resuming so prior log is preserved
+    log_mode = "a" if resume else "w"
+    fh = logging.FileHandler(log_path, mode=log_mode, encoding="utf-8")
     fh.setFormatter(logging.Formatter("%(message)s"))
     logger.addHandler(fh)
     sh = logging.StreamHandler(sys.stdout)
@@ -167,15 +169,84 @@ def run_preprocessing(n_workers: int = 3, max_cases: int = None):
     log("=" * 70)
     log("BRAINS TUMOUR PREPROCESSING PIPELINE")
     log(f"  Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    if resume:
+        log("  MODE: RESUME — skipping cases with existing .npy output")
     log("=" * 70)
 
     all_cases = sorted([d.name for d in NIFTI_DIR.iterdir() if d.is_dir()])
     if max_cases:
         all_cases = all_cases[:max_cases]
+
+    # ── Resume: skip cases with valid .npy, delete truncated ones ──────
+    if resume:
+        expected_min = 4 * 182 * 218 * 182 * 4  # 115,536,512 bytes
+        valid = 0
+        corrupted = []
+        to_delete = []
+        for c in all_cases:
+            npy = (OUTPUT_DIR / "train" / f"{c}.npy")
+            if npy.exists():
+                sz = npy.stat().st_size
+                if sz >= expected_min:
+                    valid += 1
+                else:
+                    corrupted.append((c, f"truncated: {sz} < {expected_min} bytes"))
+                    to_delete.append(npy)
+        # Delete truncated files so they get reprocessed
+        if to_delete:
+            log(f"  Deleting {len(to_delete)} truncated .npy files...")
+            for f in to_delete:
+                f.unlink(missing_ok=True)
+        # Skip only files that passed validation
+        all_cases = [c for c in all_cases if (OUTPUT_DIR / "train" / f"{c}.npy").exists() is False]
+        if valid:
+            log(f"  Resuming: {valid} already processed, {len(all_cases)} remain")
+        if corrupted:
+            log(f"  Corrupted/truncated: {len(corrupted)} (will reprocess)")
+            for c, reason in corrupted:
+                log(f"    DEL {c}: {reason}")
     log(f"  Cases to process: {len(all_cases)}")
     log(f"  Workers:          {n_workers}")
 
     (OUTPUT_DIR / "train").mkdir(parents=True, exist_ok=True)
+
+    # ── Incremental labels writer ───────────────────────────────────────
+    labels_path = OUTPUT_DIR / "labels.csv"
+    # If labels.csv exists but is stale (fewer rows than .npy files), reset it
+    if resume and labels_path.exists():
+        existing_rows = sum(1 for _ in open(labels_path, encoding="utf-8")) - 1  # minus header
+        npy_count = len(list((OUTPUT_DIR / "train").glob("*.npy")))
+        if existing_rows < npy_count:
+            log(f"  labels.csv stale ({existing_rows} rows vs {npy_count} .npy files) — regenerating")
+            with open(labels_path, "w", newline="", encoding="utf-8") as f:
+                csv.writer(f).writerow(["case", "et", "tc", "wt", "wt_volume", "tc_volume", "et_volume", "grade_proxy"])
+            # Backfill labels from existing seg.nii.gz files
+            for c in sorted([d.name for d in NIFTI_DIR.iterdir() if d.is_dir()]):
+                npy = (OUTPUT_DIR / "train" / f"{c}.npy")
+                if not npy.exists():
+                    continue
+                seg_path = (NIFTI_DIR / c) / f"{c}-seg.nii.gz"
+                if not seg_path.exists():
+                    continue
+                try:
+                    seg = nib.load(seg_path).get_fdata(dtype=np.float32)
+                    et = bool(np.any(seg == 3))
+                    tc = bool(np.any(seg == 2) or np.any(seg == 3))
+                    wt = bool(np.any(seg == 1) or np.any(seg == 2) or np.any(seg == 3))
+                    csv.writer(open(labels_path, "a", newline="", encoding="utf-8")).writerow(
+                        [c, int(et), int(tc), int(wt),
+                         float(np.sum(seg == 1) + np.sum(seg == 2) + np.sum(seg == 3)),
+                         float(np.sum(seg == 2) + np.sum(seg == 3)),
+                         float(np.sum(seg == 3)),
+                         int(et)])
+                except Exception:
+                    pass
+                gc.collect()
+            log(f"  Backfilled labels from {npy_count} existing cases")
+    if not labels_path.exists():
+        with open(labels_path, "w", newline="", encoding="utf-8") as f:
+            csv.writer(f).writerow(["case", "et", "tc", "wt", "wt_volume", "tc_volume", "et_volume", "grade_proxy"])
+    # ponytail: file-lock skipped (single-process run), multi-node lock if scaling up later
 
     t0 = time.time()
     results, errors = [], []
@@ -191,6 +262,12 @@ def run_preprocessing(n_workers: int = 3, max_cases: int = None):
                 r = future.result()
                 if r["status"] == "ok":
                     results.append(r)
+                    # Write label row immediately — survives crash
+                    with open(labels_path, "a", newline="", encoding="utf-8") as f:
+                        csv.writer(f).writerow(
+                            [r["case"], r["et"], r["tc"], r["wt"],
+                             r["volumes"]["wt"], r["volumes"]["tc"],
+                             r["volumes"]["et"], r["grade"]])
                 else:
                     errors.append(r)
             except Exception as e:
@@ -224,16 +301,6 @@ def run_preprocessing(n_workers: int = 3, max_cases: int = None):
     log(f"  Processed: {len(results)}/{len(all_cases)}")
     log(f"  Errors:    {len(errors)}")
 
-    # Write labels.csv
-    labels_path = OUTPUT_DIR / "labels.csv"
-    with open(labels_path, "w", newline="") as f:
-        w = csv.writer(f)
-        w.writerow(["case", "et", "tc", "wt", "wt_volume", "tc_volume",
-                     "et_volume", "grade_proxy"])
-        for r in results:
-            w.writerow([r["case"], r["et"], r["tc"], r["wt"],
-                         r["volumes"]["wt"], r["volumes"]["tc"],
-                         r["volumes"]["et"], r["grade"]])
     log(f"  Labels: {labels_path}")
 
     # Class balance
@@ -255,5 +322,7 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("--workers", type=int, default=3)
     p.add_argument("--max-cases", type=int, default=None)
+    p.add_argument("--resume", action="store_true",
+                   help="Resume crashed run: skip cases with existing .npy, append labels")
     args = p.parse_args()
-    run_preprocessing(args.workers, args.max_cases)
+    run_preprocessing(args.workers, args.max_cases, args.resume)
