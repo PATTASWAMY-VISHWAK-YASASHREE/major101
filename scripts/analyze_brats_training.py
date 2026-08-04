@@ -209,7 +209,7 @@ elapsed = __import__("time").time() - t0
 print(f"  [{len(cases)}/{len(cases)}] DONE in {fmt_secs(elapsed)}")
 
 print(f"\n  -> {len(cases)} cases scanned, "
-      f"{len(cases_meta) if 'cases_meta' in dir() else len(case_meta)} rows collected.")
+      f"{len(case_meta)} rows collected.")
 
 
 # ── Compute aggregate intensity stats ────────────────────────────────────────
@@ -498,85 +498,38 @@ print("    -> pairwise_intensity_scatter.png")
 del pair_means; gc.collect()
 
 
-# --- 3g. Class distribution (BraTS-GLI has WHO grade labels) ---
-print("  [3g] Class distribution analysis ...")
-# Check if WHO grade columns exist
-grade_cols = [c for c in case_df.columns if "grade" in c.lower() or "who" in c.lower() or "class" in c.lower()]
-class_dist = None
-if grade_cols:
-    for col in grade_cols:
-        vc = case_df[col].value_counts(dropna=True)
-        if len(vc) > 1:
-            class_dist = vc.to_dict()
-            break
+# --- 3g. Tumor presence & volume fraction ---
+print("  [3g] Tumor presence & volume fraction ...")
 
-fig, axes = plt.subplots(2, 3, figsize=(18, 10))
-axes = axes.flatten()
-
-# Tumor presence pie
 has_tumor_count = sum(1 for r in case_meta if r.get("tumor_whole_tumor_mm3", 0) > 0)
 no_tumor_count = len(case_meta) - has_tumor_count
-axes[0].pie([has_tumor_count, no_tumor_count], labels=["With Tumor", "No Tumor"],
-            autopct="%1.1f%%", colors=["#e74c3c", "#2ecc71"], startangle=90)
-axes[0].set_title("Cases with Tumor vs Without", fontsize=10, fontweight="bold")
 
-# Tumor sub-region counts
-sub_regions = {
-    "Edema (label 1)": [r.get("seg_label_1", 0) for r in case_meta],
-    "Non-Enhancing (label 2)": [r.get("seg_label_2", 0) for r in case_meta],
-    "Enhancing (label 3)": [r.get("seg_label_3", 0) for r in case_meta],
-}
-axes[1].bar(sub_regions.keys(), [sum(1 for v in vlist if v > 0) for vlist in sub_regions.values()],
-            color=["#f39c12", "#3498db", "#e74c3c"], edgecolor="white")
-axes[1].set_ylabel("Cases"); axes[1].set_title("Tumor Sub-region Presence", fontsize=10, fontweight="bold")
-axes[1].tick_params(axis="x", rotation=15)
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
-# Class distribution if available
-if class_dist:
-    labels = list(class_dist.keys()); counts = list(class_dist.values())
-    axes[2].bar(labels, counts, color="#9b59b6", edgecolor="white")
-    axes[2].set_ylabel("Cases"); axes[2].set_title("Class Distribution", fontsize=10, fontweight="bold")
-else:
-    axes[2].text(0.5, 0.5, "No class labels in BraTS-GLI\n(10-class segmentation only)",
-                 ha="center", va="center", transform=axes[2].transAxes, fontsize=11)
-    axes[2].set_title("Class Distribution", fontsize=10, fontweight="bold")
+# Tumor presence pie
+axes[0].pie([has_tumor_count, no_tumor_count],
+            labels=[f"With Tumor ({has_tumor_count})", f"No Tumor ({no_tumor_count})"],
+            autopct="%1.1f%%", colors=["#e74c3c", "#2ecc71"], startangle=90,
+            textprops={"fontsize": 11})
+axes[0].set_title("Tumor Presence", fontsize=12, fontweight="bold")
 
 # Tumor volume fraction distribution
 tumor_fracs = [float(r.get("tumor_volume_fraction", 0)) for r in case_meta if r.get("tumor_volume_fraction", 0) > 0]
 if tumor_fracs:
-    axes[3].hist(tumor_fracs, bins=50, color="#9b59b6", edgecolor="white", alpha=0.85)
-    axes[3].set_xlabel("Fraction of Brain with Tumor"); axes[3].set_ylabel("Cases")
-    axes[3].set_title("Tumor Volume Fraction", fontsize=10, fontweight="bold")
-    axes[3].set_xlim(0, float(np.percentile(tumor_fracs, 95)))
+    axes[1].hist(tumor_fracs, bins=50, color="#9b59b6", edgecolor="white", alpha=0.85)
+    axes[1].set_xlabel("Fraction of Brain with Tumor"); axes[1].set_ylabel("Cases")
+    axes[1].set_title("Tumor Volume Fraction", fontsize=12, fontweight="bold")
+    axes[1].set_xlim(0, float(np.percentile(tumor_fracs, 95)))
 else:
-    axes[3].text(0.5, 0.5, "No volume fraction data", ha="center", va="center", transform=axes[3].transAxes)
-    axes[3].set_title("Tumor Volume Fraction", fontsize=10, fontweight="bold")
-
-# Intensity grand mean comparison (from agg)
-mod_names = [r["modality"].upper() for r in agg_rows]
-mod_means = [r["grand_mean"] for r in agg_rows]
-axes[4].barh(mod_names, mod_means, color=list(colors.values()), edgecolor="white")
-axes[4].set_xlabel("Grand Mean Intensity"); axes[4].set_title("Modality Intensity Comparison",
-                                                                fontsize=10, fontweight="bold")
-
-# Tumor volume vs fraction scatter
-wtv = [float(r.get("tumor_whole_tumor_mm3", 0)) for r in case_meta if r.get("tumor_whole_tumor_mm3", 0) > 0]
-wtf = [float(r.get("tumor_volume_fraction", 0)) for r in case_meta if r.get("tumor_whole_tumor_mm3", 0) > 0 and r.get("tumor_volume_fraction", 0) > 0]
-if len(wtf) == len(wtv):
-    axes[5].scatter(wtv, wtf, alpha=0.4, s=15, c="#e74c3c")
-    axes[5].set_xlabel("Whole Tumor Volume (mm³)"); axes[5].set_ylabel("Volume Fraction")
-    axes[5].set_title("Tumor Volume vs Fraction", fontsize=10, fontweight="bold")
-    axes[5].set_xlim(0, float(np.percentile(wtv, 95)))
-    axes[5].grid(alpha=0.2)
-else:
-    axes[5].text(0.5, 0.5, "No volume/fraction pair data", ha="center", va="center", transform=axes[5].transAxes)
-    axes[5].set_title("Tumor Volume vs Fraction", fontsize=10, fontweight="bold")
+    axes[1].text(0.5, 0.5, "No volume fraction data", ha="center", va="center",
+                 transform=axes[1].transAxes, fontsize=11)
+    axes[1].set_title("Tumor Volume Fraction", fontsize=12, fontweight="bold")
 
 plt.tight_layout()
-plt.savefig(OUT / "class_and_tumor_analysis.png", dpi=150)
+plt.savefig(OUT / "tumor_presence_fraction.png", dpi=150)
 plt.close()
-print("    -> class_and_tumor_analysis.png")
-del tumor_fracs, wtv, wtf; gc.collect()
+print("    -> tumor_presence_fraction.png")
+del tumor_fracs; gc.collect()
 
 
 # ── Sample slices with tumor overlay ─────────────────────────────────────────
@@ -610,7 +563,7 @@ if tumor_cases:
     # Bottom row: segmentation overlay
     seg_path = case_dir / f"{case_dir.name}-seg.nii.gz"
     if seg_path.exists():
-        seg = nib.load(seg_path).get_fdata(dtype=np.int16)
+        seg = nib.load(seg_path).get_fdata().astype(np.int16)
         seg_slice = seg[:, :, mid]
         tumor_mask = (seg_slice == 4)
 
