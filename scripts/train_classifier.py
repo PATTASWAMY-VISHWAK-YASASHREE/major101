@@ -76,14 +76,14 @@ class GradeClassifier3D(nn.Module):
 
 
 def compute_class_weights(labels_csv: Path) -> torch.Tensor:
-    """Compute class weights for BCEWithLogitsLoss based on grade imbalance."""
-    df = pd.read_csv(labels_csv)
+    """Compute class weights for per-sample BCE loss from DEDUPED cases."""
+    df = pd.read_csv(labels_csv).drop_duplicates(subset='case')
     n_pos = int(df["grade_proxy"].sum())
     n_neg = len(df) - n_pos
     w_pos = len(df) / (2.0 * n_pos) if n_pos > 0 else 1.0
     w_neg = len(df) / (2.0 * n_neg) if n_neg > 0 else 1.0
     weights = torch.tensor([w_neg, w_pos])
-    logger.info(f"Class weights — neg={w_neg:.3f}, pos={w_pos:.3f}")
+    logger.info(f"Class weights (deduped {len(df)} cases) — neg={w_neg:.3f}, pos={w_pos:.3f}")
     return weights
 
 
@@ -147,11 +147,13 @@ def train_model(
         torch.cuda.reset_peak_memory_stats()
         logger.info(f"Post-clear alloc={torch.cuda.memory_allocated()/1e9:.2f} GB")
 
-    # AMP + gradient accumulation for RTX 2050 4GB
-    # 2 real batches x 4 accum steps = effective batch 8
-    grad_accum = 4
+    # AMP for RTX 2050 4GB — no grad accumulation (batch=4 gives clean gradients)
+    batch_size = 4  # ponytail: bigger batch gives better gradient signal to escape collapse
+    grad_accum = 1
     scaler = torch.cuda.amp.GradScaler(enabled=device.type == "cuda")
-    logger.info(f"AMP enabled, grad_accum={grad_accum}, eff_batch={batch_size * grad_accum}")
+    # Higher LR needed to escape majority-class attractor on imbalanced data
+    lr = lr * 5 if lr == 1e-3 else lr
+    logger.info(f"LR adjusted to {lr:.2e} for class imbalance")
 
     loaders, splits = make_dataloaders(
         npy_dir, labels_csv, batch_size=batch_size, augment=augment, seed=seed, num_workers=4
@@ -166,7 +168,8 @@ def train_model(
     logger.info(f"Model params: {n_params:,}")
 
     class_weights = compute_class_weights(labels_csv).to(device)
-    criterion = nn.BCEWithLogitsLoss(pos_weight=class_weights[1:])
+    # Use both class weights via per-sample loss scaling (pos_weight only scales positive class)
+    criterion = nn.BCEWithLogitsLoss(reduction="none")
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-4)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
@@ -189,7 +192,10 @@ def train_model(
                 # AMP forward pass
                 with torch.amp.autocast("cuda"):
                     logits = model(x)
-                    loss = criterion(logits, y) / grad_accum  # scale loss for accumulation
+                    # Apply per-sample class weights: weight by sample's true label class
+                    sample_weights = torch.where(y == 1, class_weights[1], class_weights[0]).unsqueeze(1)
+                    loss = criterion(logits, y) * sample_weights
+                    loss = loss.mean() / grad_accum  # scale for accumulation
                 # Scaled backward pass
                 scaler.scale(loss).backward()
                 # Step every grad_accum batches
@@ -239,7 +245,8 @@ def train_model(
                     x, y = x.to(device), y.to(device).float()
                     with torch.amp.autocast("cuda"):
                         logits = model(x)
-                        loss = criterion(logits, y)
+                        sample_w = torch.where(y == 1, class_weights[1], class_weights[0]).unsqueeze(1)
+                        loss = (criterion(logits, y) * sample_w).mean()
                     val_loss += loss.item() * x.size(0)
                     val_preds.extend((logits > 0).cpu().numpy())
                     val_labels.extend(y.cpu().numpy())
