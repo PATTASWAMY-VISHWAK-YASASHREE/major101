@@ -1,0 +1,121 @@
+2026-08-04 20:29:05,290 INFO ============================================================
+2026-08-04 20:29:05,292 INFO Starting M1 — augment=False
+2026-08-04 20:29:05,292 INFO ============================================================
+2026-08-04 20:29:05,586 INFO Device: cpu
+2026-08-04 20:29:05,735 INFO Split sizes — train=700, val=87, test=89
+2026-08-04 20:29:05,806 INFO Model params: 1,182,145
+2026-08-04 20:29:05,825 INFO Class weights — neg=2.180, pos=0.649
+2026-08-04 20:46:23,512 INFO ============================================================
+2026-08-04 20:46:23,512 INFO Starting M1 — augment=False
+2026-08-04 20:46:23,512 INFO ============================================================
+2026-08-04 20:46:23,644 INFO Device: cuda
+2026-08-04 20:46:23,713 INFO Split sizes — train=700, val=87, test=89
+2026-08-04 20:46:23,935 INFO Model params: 1,182,145
+2026-08-04 20:46:23,942 INFO Class weights — neg=2.180, pos=0.649
+2026-08-04 20:50:44,092 INFO Epoch 1/2 | train_loss=0.4312 train_acc=0.8029 | val_loss=0.4171 val_acc=0.8046
+2026-08-04 20:55:08,017 INFO Epoch 2/2 | train_loss=0.4307 train_acc=0.8043 | val_loss=0.4082 val_acc=0.8046
+2026-08-04 20:55:33,154 INFO M1 done — acc=0.7978 F1=0.8875 sens=1.0000 spec=0.0000 (2 epochs)
+2026-08-04 21:01:49,854 INFO ============================================================
+2026-08-04 21:01:49,854 INFO Starting M1 — augment=False
+2026-08-04 21:01:49,854 INFO ============================================================
+2026-08-04 21:01:50,002 INFO Device: cuda
+2026-08-04 21:01:50,010 INFO GPU: NVIDIA GeForce RTX 2050, total=4.29 GB, SM=8.6
+2026-08-04 21:01:50,010 INFO VRAM budget: 3.44 GB (80% of 4.29 GB)
+2026-08-04 21:01:50,011 INFO Post-clear alloc=0.00 GB
+2026-08-04 21:01:50,012 INFO AMP enabled, grad_accum=4, eff_batch=8
+2026-08-04 21:01:50,060 INFO Split sizes — train=700, val=87, test=89
+2026-08-04 21:01:50,227 INFO Model params: 1,182,145
+2026-08-04 21:01:50,233 INFO Class weights — neg=2.180, pos=0.649
+2026-08-04 21:04:50,428 INFO   GPU mem: alloc=0.27G reserved=1.38G peak=0.91G
+2026-08-04 21:05:09,247 INFO Epoch 1/1 | train_loss=0.4679 train_acc=0.7729 | val_loss=0.4203 val_acc=0.8046
+2026-08-04 21:05:31,311 INFO M1 done — acc=0.7978 F1=0.8875 sens=1.0000 spec=0.0000 (1 epochs)
+2026-08-04 21:11:11,575 INFO ============================================================
+2026-08-04 21:11:11,575 INFO Starting M1 — augment=False
+2026-08-04 21:11:11,575 INFO ============================================================
+2026-08-04 21:11:12,200 INFO Device: cuda
+2026-08-04 21:11:12,216 INFO GPU: NVIDIA GeForce RTX 2050, total=4.29 GB, SM=8.6
+2026-08-04 21:11:12,216 INFO VRAM budget: 3.44 GB (80% of 4.29 GB)
+2026-08-04 21:11:12,216 INFO Post-clear alloc=0.00 GB
+2026-08-04 21:11:12,216 INFO AMP enabled, grad_accum=4, eff_batch=8
+2026-08-04 21:11:12,264 INFO Split sizes — train=700, val=87, test=89
+2026-08-04 21:11:12,406 INFO Model params: 1,182,145
+2026-08-04 21:11:12,406 INFO Class weights — neg=2.180, pos=0.649
+2026-08-04 21:13:46,752 INFO   GPU mem: alloc=0.27G reserved=1.38G peak=0.91G util=21%
+2026-08-04 21:14:03,463 INFO Epoch 1/100 | train_loss=0.4679 train_acc=0.7729 | val_loss=0.4203 val_acc=0.8046
+2026-08-04 21:16:31,833 INFO   GPU mem: alloc=0.27G reserved=1.53G peak=0.91G util=21%
+2026-08-04 21:16:48,094 INFO Epoch 2/100 | train_loss=0.4300 train_acc=0.8043 | val_loss=0.4257 val_acc=0.8046
+2026-08-04 21:19:16,436 INFO   GPU mem: alloc=0.50G reserved=1.76G peak=1.14G util=27%
+2026-08-04 21:19:16,442 WARNING   !! Possible memory leak: peak grew 0.91G -> 1.14G
+2026-08-04 21:19:32,673 INFO Epoch 3/100 | train_loss=0.4310 train_acc=0.8043 | val_loss=0.4192 val_acc=0.8046
+2026-08-04 21:22:02,364 INFO   GPU mem: alloc=0.50G reserved=1.76G peak=1.14G util=27%
+2026-08-04 21:22:18,725 INFO Epoch 4/100 | train_loss=0.4363 train_acc=0.8043 | val_loss=0.4448 val_acc=0.8046
+2026-08-04 21:24:45,949 INFO   GPU mem: alloc=0.50G reserved=1.76G peak=1.14G util=27%
+2026-08-04 21:25:02,456 INFO Epoch 5/100 | train_loss=0.4339 train_acc=0.8043 | val_loss=0.4269 val_acc=0.8046
+2026-08-04 21:27:29,561 INFO   GPU mem: alloc=0.50G reserved=1.76G peak=1.14G util=27%
+2026-08-04 21:27:45,653 INFO Epoch 6/100 | train_loss=0.4244 train_acc=0.8043 | val_loss=0.4106 val_acc=0.8046
+2026-08-04 21:30:14,840 INFO   GPU mem: alloc=0.50G reserved=1.76G peak=1.14G util=27%
+2026-08-04 21:30:30,967 INFO Epoch 7/100 | train_loss=0.4376 train_acc=0.8043 | val_loss=0.4255 val_acc=0.8046
+2026-08-04 21:32:57,468 INFO   GPU mem: alloc=0.50G reserved=1.76G peak=1.14G util=27%
+2026-08-04 21:33:13,777 INFO Epoch 8/100 | train_loss=0.4261 train_acc=0.8043 | val_loss=0.4241 val_acc=0.8046
+2026-08-04 21:35:40,118 INFO   GPU mem: alloc=0.50G reserved=1.76G peak=1.14G util=27%
+2026-08-04 21:35:56,025 INFO Epoch 9/100 | train_loss=0.4332 train_acc=0.8043 | val_loss=0.4185 val_acc=0.8046
+2026-08-04 21:38:25,062 INFO   GPU mem: alloc=0.50G reserved=1.76G peak=1.14G util=27%
+2026-08-04 21:38:41,037 INFO Epoch 10/100 | train_loss=0.4319 train_acc=0.8043 | val_loss=0.4066 val_acc=0.8046
+2026-08-04 21:41:06,502 INFO   GPU mem: alloc=0.50G reserved=1.76G peak=1.14G util=27%
+2026-08-04 21:41:22,433 INFO Epoch 11/100 | train_loss=0.4207 train_acc=0.8043 | val_loss=0.4182 val_acc=0.8046
+2026-08-04 21:43:47,476 INFO   GPU mem: alloc=0.50G reserved=1.76G peak=1.14G util=27%
+2026-08-04 21:44:03,439 INFO Epoch 12/100 | train_loss=0.4239 train_acc=0.8043 | val_loss=0.4022 val_acc=0.8046
+2026-08-04 21:46:29,785 INFO   GPU mem: alloc=0.50G reserved=1.76G peak=1.14G util=27%
+2026-08-04 21:46:46,021 INFO Epoch 13/100 | train_loss=0.4314 train_acc=0.8043 | val_loss=0.4141 val_acc=0.8046
+2026-08-04 21:49:11,116 INFO   GPU mem: alloc=0.50G reserved=1.76G peak=1.14G util=27%
+2026-08-04 21:49:27,034 INFO Epoch 14/100 | train_loss=0.4159 train_acc=0.8043 | val_loss=0.4020 val_acc=0.8046
+2026-08-04 21:51:55,616 INFO   GPU mem: alloc=0.50G reserved=1.76G peak=1.14G util=27%
+2026-08-04 21:52:11,709 INFO Epoch 15/100 | train_loss=0.4249 train_acc=0.8043 | val_loss=0.3923 val_acc=0.8046
+2026-08-04 21:55:08,526 INFO   GPU mem: alloc=0.50G reserved=1.76G peak=1.14G util=27%
+2026-08-04 21:55:27,486 INFO Epoch 16/100 | train_loss=0.4252 train_acc=0.8043 | val_loss=0.3864 val_acc=0.8046
+2026-08-04 21:59:07,809 INFO   GPU mem: alloc=0.50G reserved=1.76G peak=1.14G util=27%
+2026-08-04 21:59:40,569 INFO Epoch 17/100 | train_loss=0.4165 train_acc=0.8043 | val_loss=0.3812 val_acc=0.8046
+2026-08-04 22:03:29,422 INFO   GPU mem: alloc=0.50G reserved=1.76G peak=1.14G util=27%
+2026-08-04 22:03:53,012 INFO Epoch 18/100 | train_loss=0.4215 train_acc=0.8043 | val_loss=0.3777 val_acc=0.8046
+2026-08-04 22:45:20,112 INFO ============================================================
+2026-08-04 22:45:20,112 INFO Starting M1 — augment=False
+2026-08-04 22:45:20,113 INFO ============================================================
+2026-08-04 22:45:20,230 INFO Device: cuda
+2026-08-04 22:45:20,237 INFO GPU: NVIDIA GeForce RTX 2050, total=4.29 GB, SM=8.6
+2026-08-04 22:45:20,237 INFO VRAM budget: 3.44 GB (80% of 4.29 GB)
+2026-08-04 22:45:20,238 INFO Post-clear alloc=0.00 GB
+2026-08-04 22:45:20,238 INFO AMP enabled, grad_accum=4, eff_batch=8
+2026-08-04 22:45:20,292 INFO Split sizes — train=700, val=87, test=89
+2026-08-04 22:45:20,409 INFO Model params: 1,181,185
+2026-08-04 22:45:20,415 INFO Class weights — neg=2.180, pos=0.649
+2026-08-04 22:48:57,270 INFO   GPU mem: alloc=0.27G reserved=1.61G peak=1.08G util=25%
+2026-08-04 22:49:33,928 INFO Epoch 1/100 | train_loss=0.4460 train_acc=0.7443 | val_loss=0.4252 val_acc=0.8046
+2026-08-04 22:52:27,292 INFO   GPU mem: alloc=0.27G reserved=1.58G peak=1.08G util=25%
+2026-08-04 22:52:57,413 INFO Epoch 2/100 | train_loss=0.4299 train_acc=0.8043 | val_loss=0.4235 val_acc=0.8046
+2026-08-04 22:55:50,125 INFO   GPU mem: alloc=0.50G reserved=1.85G peak=1.31G util=30%
+2026-08-04 22:55:50,131 WARNING   !! Possible memory leak: peak grew 1.08G -> 1.31G
+2026-08-04 22:56:19,260 INFO Epoch 3/100 | train_loss=0.4351 train_acc=0.8043 | val_loss=0.4219 val_acc=0.8046
+2026-08-04 22:58:55,399 INFO   GPU mem: alloc=0.50G reserved=1.88G peak=1.31G util=30%
+2026-08-04 22:59:35,620 INFO Epoch 4/100 | train_loss=0.4334 train_acc=0.8043 | val_loss=0.4338 val_acc=0.8046
+2026-08-04 23:13:32,084 INFO ============================================================
+2026-08-04 23:13:32,089 INFO Starting M1 — augment=False
+2026-08-04 23:13:32,089 INFO ============================================================
+2026-08-04 23:13:32,154 INFO Device: cuda
+2026-08-04 23:13:32,162 INFO GPU: NVIDIA GeForce RTX 2050, total=4.29 GB, SM=8.6
+2026-08-04 23:13:32,162 INFO VRAM budget: 3.44 GB (80% of 4.29 GB)
+2026-08-04 23:13:32,165 INFO Post-clear alloc=0.00 GB
+2026-08-04 23:13:32,166 INFO LR adjusted to 5.00e-03 for class imbalance
+2026-08-04 23:13:32,209 INFO Split sizes — train=700, val=87, test=89
+2026-08-04 23:13:32,340 INFO Model params: 1,181,185
+2026-08-04 23:13:32,346 INFO Class weights (deduped 876 cases) — neg=2.547, pos=0.622
+2026-08-04 23:15:20,851 INFO ============================================================
+2026-08-04 23:15:20,852 INFO Starting M1 — augment=False
+2026-08-04 23:15:20,853 INFO ============================================================
+2026-08-04 23:15:21,003 INFO Device: cuda
+2026-08-04 23:15:21,013 INFO GPU: NVIDIA GeForce RTX 2050, total=4.29 GB, SM=8.6
+2026-08-04 23:15:21,013 INFO VRAM budget: 3.44 GB (80% of 4.29 GB)
+2026-08-04 23:15:21,017 INFO Post-clear alloc=0.00 GB
+2026-08-04 23:15:21,019 INFO LR adjusted to 5.00e-03 for class imbalance
+2026-08-04 23:15:21,090 INFO Split sizes — train=700, val=87, test=89
+2026-08-04 23:15:21,220 INFO Model params: 1,181,185
+2026-08-04 23:15:21,230 INFO Class weights (deduped 876 cases) — neg=2.547, pos=0.622
