@@ -12,3 +12,4 @@ data/
 .idea/
 research/_parsed_papers.json
 
+training_log.txt
