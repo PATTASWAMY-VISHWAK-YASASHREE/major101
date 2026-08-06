@@ -119,3 +119,25 @@
 2026-08-04 23:15:21,090 INFO Split sizes — train=700, val=87, test=89
 2026-08-04 23:15:21,220 INFO Model params: 1,181,185
 2026-08-04 23:15:21,230 INFO Class weights (deduped 876 cases) — neg=2.547, pos=0.622
+2026-08-06 12:12:21,417 INFO ============================================================
+2026-08-06 12:12:21,417 INFO Starting M1 — augment=False
+2026-08-06 12:12:21,422 INFO ============================================================
+2026-08-06 12:12:22,199 INFO Device: cuda
+2026-08-06 12:12:22,208 INFO GPU: NVIDIA GeForce RTX 2050, total=4.29 GB, SM=8.6
+2026-08-06 12:12:22,208 INFO VRAM budget: 3.44 GB (80% of 4.29 GB)
+2026-08-06 12:12:22,209 INFO Post-clear alloc=0.00 GB
+2026-08-06 12:12:22,209 INFO LR adjusted to 5.00e-03 for class imbalance
+2026-08-06 12:12:22,305 INFO Split sizes — train=700, val=87, test=89
+2026-08-06 12:12:22,986 INFO Model params: 1,181,185
+2026-08-06 12:12:23,005 INFO Class weights (deduped 876 cases) — neg=2.547, pos=0.622
+2026-08-06 12:32:52,923 INFO ============================================================
+2026-08-06 12:32:52,924 INFO Starting M1 — augment=False
+2026-08-06 12:32:52,925 INFO ============================================================
+2026-08-06 12:32:53,576 INFO Device: cuda
+2026-08-06 12:32:53,585 INFO GPU: NVIDIA GeForce RTX 2050, total=4.29 GB, SM=8.6
+2026-08-06 12:32:53,586 INFO VRAM budget: 3.44 GB (80% of 4.29 GB)
+2026-08-06 12:32:53,587 INFO Post-clear alloc=0.00 GB
+2026-08-06 12:32:53,588 INFO LR adjusted to 5.00e-03 for class imbalance
+2026-08-06 12:32:53,665 INFO Split sizes — train=700, val=87, test=89
+2026-08-06 12:32:54,293 INFO Model params: 1,181,185
+2026-08-06 12:32:54,299 INFO Class weights (deduped 876 cases) — neg=2.547, pos=0.622
