@@ -156,7 +156,7 @@ def train_model(
     logger.info(f"LR adjusted to {lr:.2e} for class imbalance")
 
     loaders, splits = make_dataloaders(
-        npy_dir, labels_csv, batch_size=batch_size, augment=augment, seed=seed, num_workers=4
+        npy_dir, labels_csv, batch_size=batch_size, augment=augment, seed=seed, num_workers=0
     )
     n_train = len(loaders["train"].dataset)
     n_val = len(loaders["val"].dataset)

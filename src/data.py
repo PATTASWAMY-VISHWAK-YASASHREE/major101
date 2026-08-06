@@ -126,7 +126,7 @@ def make_dataloaders(
     batch_size: int = 2,
     augment: bool = False,
     seed: int = 42,
-    num_workers: int = 4,  # ponytail: 4 workers on Windows — avoids main-process I/O bottleneck with 110MB files
+    num_workers: int = 0,  # ponytail: 0 on Windows — spawn overhead + near-full C: drive kills throughput with workers
 ) -> tuple[dict[str, DataLoader], dict[str, list[int]]]:
     """Build train/val/test DataLoaders with stratified splits.
 
