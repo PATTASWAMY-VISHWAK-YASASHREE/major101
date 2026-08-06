@@ -25,12 +25,12 @@ class BraTS3DDataset(Dataset):
         npy_dir: Path,
         labels_csv: Path,
         indices: list[int],
-        labels_df: pd.DataFrame,
+        labels: list[tuple[str, int]],  # (case_id, grade_proxy) — ponytail: plain list avoids pandas pickle hang on Windows spawn
         augment: bool = False,
     ):
         self.npy_dir = npy_dir
         self.indices = indices
-        self.labels_df = labels_df
+        self.labels = labels
         self.augment = augment
 
     def __len__(self):
@@ -38,7 +38,7 @@ class BraTS3DDataset(Dataset):
 
     def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
         case_idx = self.indices[idx]
-        case_id = self.labels_df.iloc[case_idx]["case"]
+        case_id, label = self.labels[case_idx]
         npy_path = self.npy_dir / f"{case_id}.npy"
 
         # Load .npy — shape (4, 182, 218, 182), CTN-normalised, float32
@@ -59,9 +59,6 @@ class BraTS3DDataset(Dataset):
             img = img.astype(np.float32)
 
         img = torch.from_numpy(img).contiguous()  # (4, 182, 218, 182)
-
-        # Label: grade_proxy (0=low, 1=high)
-        label = int(self.labels_df.iloc[case_idx]["grade_proxy"])
 
         if self.augment:
             img = _augment(img)
@@ -129,7 +126,7 @@ def make_dataloaders(
     batch_size: int = 2,
     augment: bool = False,
     seed: int = 42,
-    num_workers: int = 0,
+    num_workers: int = 4,  # ponytail: 4 workers on Windows — avoids main-process I/O bottleneck with 110MB files
 ) -> tuple[dict[str, DataLoader], dict[str, list[int]]]:
     """Build train/val/test DataLoaders with stratified splits.
 
@@ -146,13 +143,16 @@ def make_dataloaders(
     """
     splits, labels_df = build_split_indices(labels_csv, seed=seed)
 
+    # Convert DataFrame to plain list for worker-safe pickling
+    labels = [(row["case"], int(row["grade_proxy"])) for _, row in labels_df.iterrows()]
+
     loaders = {}
     for split_name, indices in splits.items():
         ds = BraTS3DDataset(
             npy_dir=npy_dir,
             labels_csv=labels_csv,
             indices=indices,
-            labels_df=labels_df,
+            labels=labels,
             augment=augment if split_name == "train" else False,
         )
         loaders[split_name] = DataLoader(
@@ -189,4 +189,4 @@ if __name__ == "__main__":
     assert x.shape == (2, 4, 182, 218, 182), f"Unexpected image shape: {x.shape}"
     assert x.dtype == torch.float32
     assert y.dtype == torch.long
-    print("Dataset check passed ✓")
+    print("Dataset check passed")
