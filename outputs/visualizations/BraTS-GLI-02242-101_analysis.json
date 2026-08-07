@@ -1,0 +1,14 @@
+{
+  "case_id": "BraTS-GLI-02242-101",
+  "prediction": "LOW",
+  "probability": 0.012484543025493622,
+  "tumor_characteristics": {
+    "et_volume_voxels": 333246,
+    "wt_volume_voxels": 633253,
+    "et_wt_ratio": 0.526244644715453,
+    "t1ce_mean": -0.8152594566345215,
+    "t1ce_max": 0.7098544239997864,
+    "t1ce_std": 0.41992422938346863,
+    "has_enhancing": true
+  }
+}

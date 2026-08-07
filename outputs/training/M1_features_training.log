@@ -1,0 +1,49 @@
+2026-08-07 19:26:27,294 INFO Training M1_features on cuda
+2026-08-07 19:26:27,369 INFO Train: 3, Val: 876
+2026-08-07 19:32:40,986 INFO Training M1_features on cuda
+2026-08-07 19:32:41,058 INFO Train: 700, Val: 87
+2026-08-07 19:43:44,532 INFO Training M1_features on cuda
+2026-08-07 19:43:44,571 INFO Train: 700, Val: 87
+2026-08-07 19:43:44,834 INFO Class-Balanced weights (beta=0.999): neg=1.524, pos=0.476
+2026-08-07 19:49:28,485 INFO Training M1_features on cuda
+2026-08-07 19:49:28,538 INFO Train: 700, Val: 87
+2026-08-07 19:49:28,824 INFO Class-Balanced weights (beta=0.999): neg=1.524, pos=0.476
+2026-08-07 19:55:45,450 INFO Training M1_features on cuda
+2026-08-07 19:55:45,497 INFO Train: 700, Val: 87
+2026-08-07 19:55:45,776 INFO Class-Balanced weights (beta=0.999): neg=1.524, pos=0.476
+2026-08-07 19:57:19,542 INFO Training M1_features on cuda
+2026-08-07 19:57:19,586 INFO Train: 700, Val: 87
+2026-08-07 19:57:19,875 INFO Class-Balanced weights (beta=0.999): neg=1.524, pos=0.476
+2026-08-07 20:04:59,387 INFO New best val_acc: 0.1954 at epoch 1
+2026-08-07 20:04:59,387 INFO Epoch   1 | Train: loss=1.4414 acc=0.5071 | Val: loss=0.3091 acc=0.1954 f1=0.0000 sens=0.0000 spec=1.0000
+2026-08-07 20:12:59,728 INFO Epoch   2 | Train: loss=0.2779 acc=0.5000 | Val: loss=0.3243 acc=0.1954 f1=0.0000 sens=0.0000 spec=1.0000
+2026-08-07 20:20:31,430 INFO Epoch   3 | Train: loss=0.2789 acc=0.5000 | Val: loss=0.3026 acc=0.1954 f1=0.0000 sens=0.0000 spec=1.0000
+2026-08-07 20:27:46,438 INFO Epoch   4 | Train: loss=0.2772 acc=0.5000 | Val: loss=0.3230 acc=0.1954 f1=0.0000 sens=0.0000 spec=1.0000
+2026-08-07 20:34:48,146 INFO Epoch   5 | Train: loss=0.2804 acc=0.5000 | Val: loss=0.3003 acc=0.1954 f1=0.0000 sens=0.0000 spec=1.0000
+2026-08-07 20:42:53,877 INFO Epoch   6 | Train: loss=0.2775 acc=0.5000 | Val: loss=0.3238 acc=0.1954 f1=0.0000 sens=0.0000 spec=1.0000
+2026-08-07 20:52:24,294 INFO Epoch   7 | Train: loss=0.2784 acc=0.5000 | Val: loss=0.3177 acc=0.1954 f1=0.0000 sens=0.0000 spec=1.0000
+2026-08-07 20:59:10,280 INFO Epoch   8 | Train: loss=0.2774 acc=0.5000 | Val: loss=0.3160 acc=0.1954 f1=0.0000 sens=0.0000 spec=1.0000
+2026-08-07 21:05:48,443 INFO Epoch   9 | Train: loss=0.2776 acc=0.5000 | Val: loss=0.3139 acc=0.1954 f1=0.0000 sens=0.0000 spec=1.0000
+2026-08-07 21:13:05,190 INFO Epoch  10 | Train: loss=0.2768 acc=0.5000 | Val: loss=0.3160 acc=0.1954 f1=0.0000 sens=0.0000 spec=1.0000
+2026-08-07 21:20:18,316 INFO Epoch  11 | Train: loss=0.2772 acc=0.5000 | Val: loss=0.3107 acc=0.1954 f1=0.0000 sens=0.0000 spec=1.0000
+2026-08-07 21:29:18,641 INFO Epoch  12 | Train: loss=0.2779 acc=0.5000 | Val: loss=0.3130 acc=0.1954 f1=0.0000 sens=0.0000 spec=1.0000
+2026-08-07 21:36:14,228 INFO Training M1_features on cuda
+2026-08-07 21:36:14,270 INFO Train: 700, Val: 87
+2026-08-07 21:36:14,544 INFO Class-Balanced weights (beta=0.999): neg=1.524, pos=0.476
+2026-08-07 21:45:26,467 INFO New best val_acc: 0.9655 at epoch 1
+2026-08-07 21:45:26,478 INFO Epoch   1 | Train: loss=1.7379 acc=0.8414 | Val: loss=0.0365 acc=0.9655 f1=0.9781 sens=0.9571 spec=1.0000
+2026-08-07 21:53:05,556 INFO Epoch   2 | Train: loss=0.0147 acc=0.9900 | Val: loss=0.0314 acc=0.9655 f1=0.9781 sens=0.9571 spec=1.0000
+2026-08-07 22:01:08,357 INFO New best val_acc: 0.9885 at epoch 3
+2026-08-07 22:01:08,357 INFO Epoch   3 | Train: loss=0.0110 acc=0.9900 | Val: loss=0.0128 acc=0.9885 f1=0.9928 sens=0.9857 spec=1.0000
+2026-08-07 22:09:01,486 INFO Epoch   4 | Train: loss=0.0091 acc=0.9943 | Val: loss=0.0121 acc=0.9885 f1=0.9928 sens=0.9857 spec=1.0000
+2026-08-07 22:17:47,534 INFO Epoch   5 | Train: loss=0.0115 acc=0.9929 | Val: loss=0.0269 acc=0.9655 f1=0.9781 sens=0.9571 spec=1.0000
+2026-08-07 22:30:38,138 INFO Epoch   6 | Train: loss=0.0055 acc=0.9929 | Val: loss=0.0214 acc=0.9885 f1=0.9928 sens=0.9857 spec=1.0000
+2026-08-07 22:38:31,462 INFO Epoch   7 | Train: loss=0.0065 acc=0.9929 | Val: loss=0.0264 acc=0.9885 f1=0.9928 sens=0.9857 spec=1.0000
+2026-08-07 22:46:54,740 INFO Epoch   8 | Train: loss=0.0110 acc=0.9929 | Val: loss=0.0057 acc=0.9885 f1=0.9928 sens=0.9857 spec=1.0000
+2026-08-07 23:00:23,188 INFO Epoch   9 | Train: loss=0.0020 acc=0.9986 | Val: loss=0.0154 acc=0.9885 f1=0.9928 sens=0.9857 spec=1.0000
+2026-08-07 23:07:32,398 INFO Epoch  10 | Train: loss=0.0033 acc=0.9957 | Val: loss=0.0041 acc=0.9885 f1=0.9928 sens=0.9857 spec=1.0000
+2026-08-07 23:14:41,976 INFO New best val_acc: 1.0000 at epoch 11
+2026-08-07 23:14:41,978 INFO Epoch  11 | Train: loss=0.0012 acc=0.9986 | Val: loss=0.0014 acc=1.0000 f1=1.0000 sens=1.0000 spec=1.0000
+2026-08-07 23:21:47,893 INFO Epoch  12 | Train: loss=0.0006 acc=1.0000 | Val: loss=0.0023 acc=0.9885 f1=0.9928 sens=0.9857 spec=1.0000
+2026-08-07 23:28:35,926 INFO Epoch  13 | Train: loss=0.0011 acc=1.0000 | Val: loss=0.0003 acc=1.0000 f1=1.0000 sens=1.0000 spec=1.0000
+2026-08-07 23:35:07,395 INFO Epoch  14 | Train: loss=0.0006 acc=0.9986 | Val: loss=0.0001 acc=1.0000 f1=1.0000 sens=1.0000 spec=1.0000
