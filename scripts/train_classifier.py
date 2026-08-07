@@ -14,8 +14,45 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
+from torch.utils.data import DataLoader
 from tqdm import tqdm
 from src.data import BraTS3DDataset, make_dataloaders, build_split_indices
+
+# ponytail: class-balanced batch sampler — yields batches with equal high/low samples
+# Each batch = half from minority (low-grade) + half from majority (high-grade), sampled with replacement
+# This ensures the gradient always sees both classes, breaking the "predict all high" attractor
+
+
+class BalancedBatchSampler(torch.utils.data.BatchSampler):
+    """Yield batches with balanced high/low representation."""
+
+    def __init__(self, dataset: BraTS3DDataset, batch_size: int, seed: int):
+        # Build mapping: position in dataset.indices -> label
+        pos = [i for i, idx in enumerate(dataset.indices) if dataset.labels[idx][1] == 1]
+        neg = [i for i, idx in enumerate(dataset.indices) if dataset.labels[idx][1] == 0]
+        rng = torch.Generator().manual_seed(seed)
+        super().__init__(dataset.indices, batch_size, drop_last=True)
+        self.dataset = dataset
+        self.batch_size = batch_size
+        self.pos = torch.tensor(pos)
+        self.neg = torch.tensor(neg)
+        self.rng = rng
+
+    def __iter__(self):
+        b = self.batch_size
+        half = b // 2
+        # How many balanced batches fit in one epoch
+        n_batches = len(self.dataset.indices) // b
+        for _ in range(n_batches):
+            pos_idx = torch.randint(0, len(self.pos), (half,), generator=self.rng)
+            neg_idx = torch.randint(0, len(self.neg), (half,), generator=self.rng)
+            batch = torch.cat([self.pos[pos_idx], self.neg[neg_idx]])
+            batch = batch[torch.randperm(b, generator=self.rng)]
+            yield batch.tolist()
+
+    def __len__(self):
+        return len(self.dataset.indices) // self.batch_size
+
 
 logger = logging.getLogger("classifier")
 
@@ -54,7 +91,7 @@ class GradeClassifier3D(nn.Module):
             blocks.append(
                 nn.Sequential(
                     nn.Conv3d(in_ch, out_ch, 3, stride=2, padding=1, bias=False),
-                    nn.InstanceNorm3d(out_ch),  # ponytail: replaces BatchNorm3d — works with batch=2, no running-stat garbage
+                    nn.GroupNorm(num_groups=8, num_channels=out_ch, affine=True),  # stable for batch=2-4
                     nn.ReLU(inplace=True),
                 )
             )
@@ -167,8 +204,40 @@ def train_model(
     n_params = sum(p.numel() for p in model.parameters())
     logger.info(f"Model params: {n_params:,}")
 
-    class_weights = compute_class_weights(labels_csv).to(device)
-    # Use both class weights via per-sample loss scaling (pos_weight only scales positive class)
+    # Weight init: Kaiming normal for Conv3d, ones/zeros for GroupNorm affine
+    for m in model.modules():
+        if isinstance(m, nn.Conv3d):
+            nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+        elif isinstance(m, (nn.GroupNorm, nn.InstanceNorm3d)):
+            if m.affine:
+                nn.init.ones_(m.weight)
+                nn.init.zeros_(m.bias)
+        elif isinstance(m, nn.Linear):
+            nn.init.normal_(m.weight, 0, 0.01)
+            nn.init.zeros_(m.bias)
+
+    # Class-Balanced Loss (Cui et al. 2019) with beta=0.999
+    # n_pos=704 (high-grade), n_neg=172 (low-grade) -> minority (low) gets higher weight
+    beta = 0.999
+    eff_pos = (1 - beta ** 704) / (1 - beta)  # ~505
+    eff_neg = (1 - beta ** 172) / (1 - beta)  # ~158
+    # Weight = (1-beta)/(1-beta^n) -- ratio neg:pos = 3.2:1
+    w_pos = (1 - beta) / eff_pos
+    w_neg = (1 - beta) / eff_neg
+    # Normalize so weights sum to 2.0 (keep loss magnitude similar to BCE)
+    scale = 2.0 / (w_pos + w_neg)
+    class_weights = torch.tensor([w_neg * scale, w_pos * scale]).to(device)
+    logger.info(f"Class-balanced weights: neg={class_weights[0]:.4f}, pos={class_weights[1]:.4f}")
+
+    # Focal loss gamma=1.0 for binary classification (not 2.0)
+    focal_gamma = 1.0
+    sampler = BalancedBatchSampler(
+        loaders["train"].dataset, batch_size=batch_size, seed=seed
+    )
+    loaders["train"] = DataLoader(
+        loaders["train"].dataset, batch_sampler=sampler,
+        num_workers=0, pin_memory=False
+    )
     criterion = nn.BCEWithLogitsLoss(reduction="none")
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-4)
@@ -192,9 +261,15 @@ def train_model(
                 # AMP forward pass
                 with torch.amp.autocast("cuda"):
                     logits = model(x)
-                    # Apply per-sample class weights: weight by sample's true label class
+                    # Focal loss: reduce weight on easy samples, amplify on misclassified ones
+                    p = torch.sigmoid(logits).squeeze()
+                    prob = p * y.squeeze() + (1 - p) * (1 - y.squeeze())
+                    focal_weight = (1 - prob) ** focal_gamma
+                    bce = criterion(logits, y).squeeze()
+                    loss = bce * focal_weight.unsqueeze(1)
+                    # Class-balanced weights: apply per-sample based on true label
                     sample_weights = torch.where(y == 1, class_weights[1], class_weights[0]).unsqueeze(1)
-                    loss = criterion(logits, y) * sample_weights
+                    loss = loss * sample_weights
                     loss = loss.mean() / grad_accum  # scale for accumulation
                 # Scaled backward pass
                 scaler.scale(loss).backward()
@@ -245,8 +320,7 @@ def train_model(
                     x, y = x.to(device), y.to(device).float()
                     with torch.amp.autocast("cuda"):
                         logits = model(x)
-                        sample_w = torch.where(y == 1, class_weights[1], class_weights[0]).unsqueeze(1)
-                        loss = (criterion(logits, y) * sample_w).mean()
+                        loss = criterion(logits, y).mean()
                     val_loss += loss.item() * x.size(0)
                     val_preds.extend((logits > 0).cpu().numpy())
                     val_labels.extend(y.cpu().numpy())
@@ -261,7 +335,8 @@ def train_model(
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             patience_counter = 0
-            torch.save(model.state_dict(), checkpoint_path)
+            # Convert Path to string for Windows compatibility
+            torch.save(model.state_dict(), str(checkpoint_path))
         else:
             patience_counter += 1
 
@@ -286,7 +361,7 @@ def train_model(
             logger.info(f"Early stopping at epoch {epoch+1}")
             break
 
-    model.load_state_dict(torch.load(checkpoint_path, weights_only=True))
+    model.load_state_dict(torch.load(str(checkpoint_path), weights_only=True))
     model.eval()
     torch.cuda.empty_cache()
     torch.cuda.reset_peak_memory_stats()
