@@ -28,7 +28,7 @@ class BraTS3DDataset(Dataset):
         labels: list[tuple[str, int]],  # (case_id, grade_proxy) — ponytail: plain list avoids pandas pickle hang on Windows spawn
         augment: bool = False,
     ):
-        self.npy_dir = npy_dir
+        self.npy_dir = Path(npy_dir)  # must be Path — / operator used in __getitem__
         self.indices = indices
         self.labels = labels
         self.augment = augment
