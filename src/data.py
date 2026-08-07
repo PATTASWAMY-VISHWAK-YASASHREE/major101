@@ -67,15 +67,11 @@ class BraTS3DDataset(Dataset):
 
 
 def _augment(img: torch.Tensor) -> torch.Tensor:
-    """Online augmentation: random flips, rotation, intensity jitter."""
-    # Random flip along any axis (x, y, or z)
-    for dim in range(2, 5):  # skip channel dim
+    """Online augmentation: random flips, intensity jitter."""
+    # Random flip along any spatial axis (depth=1, height=2, width=3)
+    for dim in range(1, 4):  # skip channel dim (0)
         if random.random() < 0.5:
             img = torch.flip(img, [dim])
-
-    # Random 90° rotation in axial plane (last 2 dims)
-    k = random.randint(0, 3)
-    img = torch.rot90(img, k, dims=(3, 2))
 
     # Intensity jitter: additive Gaussian noise σ=0.02 (CTN range [-1,1])
     noise = torch.randn_like(img) * 0.02
