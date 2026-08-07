@@ -13,3 +13,4 @@ data/
 research/_parsed_papers.json
 
 training_log.txt
+outputs/smoke_test/
