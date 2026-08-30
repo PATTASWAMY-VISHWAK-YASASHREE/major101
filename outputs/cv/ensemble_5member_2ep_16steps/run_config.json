@@ -1,0 +1,16 @@
+{
+  "output_dir": "outputs\\cv\\ensemble_5member_2ep_16steps",
+  "npy_dir": "data\\brats_preprocessed\\train",
+  "labels_csv": "data\\brats_preprocessed\\labels.csv",
+  "data_report": "outputs\\data_quality\\preprocessed_data_report.json",
+  "members": 5,
+  "folds": 5,
+  "epochs": 2,
+  "steps_per_epoch": 16,
+  "views": 1,
+  "split_seed": 42,
+  "member_seed": 100,
+  "target_vram_gib": 2.0,
+  "target_ram_gib": 3.0,
+  "resume": false
+}

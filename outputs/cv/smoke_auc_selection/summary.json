@@ -1,0 +1,59 @@
+{
+  "split_strategy": "development-only subject-disjoint StratifiedGroupKFold",
+  "seed": 42,
+  "folds_requested": 5,
+  "folds_run": [
+    1
+  ],
+  "development_case_count": 788,
+  "out_of_fold_case_count": 159,
+  "locked_test_case_count": 88,
+  "folds": [
+    {
+      "fold": 1,
+      "train_case_count": 629,
+      "validation_case_count": 159,
+      "best_epoch": 2,
+      "best_selection_score": 0.6621723790322581,
+      "best_selection_metric": "auroc",
+      "best_balanced_accuracy": 0.6418850806451613,
+      "best_validation_metrics": {
+        "threshold": 0.9199999999999999,
+        "accuracy": 0.6792452830188679,
+        "balanced_accuracy": 0.6418850806451613,
+        "f1": 0.7792207792207791,
+        "sensitivity": 0.703125,
+        "specificity": 0.5806451612903226,
+        "precision": 0.8737864077669902,
+        "predicted_positive_rate": 0.6477987421383647,
+        "tn": 18,
+        "fp": 13,
+        "fn": 38,
+        "tp": 90,
+        "auroc": 0.6621723790322581,
+        "average_precision": 0.8926571328906152
+      },
+      "checkpoint": "outputs\\cv\\smoke_auc_selection\\fold_01\\best_checkpoint.pth"
+    }
+  ],
+  "mean_best_balanced_accuracy": 0.6418850806451613,
+  "checkpoint_selection_metric": "auroc (balanced accuracy is reported at a validation-only threshold)",
+  "mean_best_auroc": 0.6621723790322581,
+  "out_of_fold_metrics_at_threshold_0_5": {
+    "threshold": 0.5,
+    "accuracy": 0.8050314465408805,
+    "balanced_accuracy": 0.5,
+    "f1": 0.89198606271777,
+    "sensitivity": 1.0,
+    "specificity": 0.0,
+    "precision": 0.8050314465408805,
+    "predicted_positive_rate": 1.0,
+    "tn": 0,
+    "fp": 31,
+    "fn": 0,
+    "tp": 128,
+    "auroc": 0.6621723790322581,
+    "average_precision": 0.8926571328906152
+  },
+  "locked_test_evaluated": false
+}

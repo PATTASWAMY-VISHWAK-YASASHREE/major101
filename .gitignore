@@ -14,3 +14,22 @@ research/_parsed_papers.json
 
 training_log.txt
 outputs/smoke_test/
+
+# model weights & heavy run artifacts (JSON/CSV/PNG evidence stays, weights don't)
+*.pth
+*.pt
+outputs/search/
+outputs/cv/smoke_base16/
+outputs/cv/smoke_residual/
+outputs/training/smoke_whole_volume/
+outputs/training/smoke_safe_profile/
+outputs/training/smoke_informative_crop/
+outputs/training/smoke_current/
+outputs/training/smoke_64_steps/
+outputs/training/smoke_bce_low_lr/
+outputs/training/smoke_grouped_crop/
+outputs/training/compat_smoke/
+fix_indent.py
+fix_indent2.py
+.codegraph/
+.agent_transfer/

@@ -1,0 +1,5 @@
+case,true_label,recorded_probability_high,recomputed_model_input_probability_high,predicted_label,crop_start,whole_volume_input,attention_peak,modalities_figure,attention_figure
+BraTS-GLI-02720-100,0,0.29345703,0.29345741868019104,0,"[43, 61, 43]",False,"[86, 136, 55]",BraTS-GLI-02720-100_modalities.png,BraTS-GLI-02720-100_attention.png
+BraTS-GLI-02225-101,0,0.46606445,0.46583202481269836,1,"[43, 61, 43]",False,"[135, 153, 63]",BraTS-GLI-02225-101_modalities.png,BraTS-GLI-02225-101_attention.png
+BraTS-GLI-02307-101,1,0.59472656,0.5948379635810852,1,"[0, 0, 0]",False,"[20, 20, 27]",BraTS-GLI-02307-101_modalities.png,BraTS-GLI-02307-101_attention.png
+BraTS-GLI-02651-100,1,0.2861328,0.28593286871910095,0,"[43, 61, 43]",False,"[86, 112, 95]",BraTS-GLI-02651-100_modalities.png,BraTS-GLI-02651-100_attention.png

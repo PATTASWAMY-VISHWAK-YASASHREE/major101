@@ -1,0 +1,23 @@
+{
+  "npy_dir": "data\\brats_preprocessed\\train",
+  "labels_csv": "data\\brats_preprocessed\\labels.csv",
+  "data_report": "outputs\\data_quality\\preprocessed_data_report.json",
+  "output_dir": "outputs\\cv\\repaired_baseline_3ep",
+  "folds": 5,
+  "fold_limit": 0,
+  "epochs": 3,
+  "steps_per_epoch": 16,
+  "batch_size": 2,
+  "grad_accum": 4,
+  "patch_size": 96,
+  "base_channels": 12,
+  "dropout": 0.25,
+  "lr": 0.0001,
+  "weight_decay": 0.0001,
+  "warmup_epochs": 3,
+  "focal_gamma": 0.0,
+  "label_smoothing": 0.0,
+  "seed": 42,
+  "target_vram_gib": 2.0,
+  "target_ram_gib": 3.0
+}

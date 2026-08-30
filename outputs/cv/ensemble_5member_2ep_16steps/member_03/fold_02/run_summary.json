@@ -1,0 +1,10 @@
+{
+  "epochs_requested": 2,
+  "epochs_completed": 2,
+  "best_epoch": 2,
+  "best_score": 0.6094470046082949,
+  "early_stopped": false,
+  "patience": 0,
+  "min_delta": 0.0001,
+  "evaluation_views": 1
+}

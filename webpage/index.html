@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#070a12" />
+    <title>Neural Slice — Multimodal Imaging</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap');
+
+      :root {
+        color-scheme: dark;
+        --ink: #eef6ff;
+        --muted: #9daabd;
+        --line: rgba(177, 211, 255, 0.22);
+        --panel: rgba(8, 13, 24, 0.64);
+        --accent: #a7f3d0;
+        --blue: #75b8ff;
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        min-width: 320px;
+        background: #070a12;
+        color: var(--ink);
+        font-family: Manrope, Arial, sans-serif;
+        overflow-x: hidden;
+      }
+
+      #particle-canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        display: block;
+        width: 100%;
+        height: 100vh;
+        pointer-events: none;
+      }
+
+      #resolved-image {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        width: 100%;
+        height: 100vh;
+        object-fit: contain;
+        object-position: center;
+        opacity: 0;
+        pointer-events: none;
+        will-change: opacity, transform;
+      }
+
+      .grain {
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        opacity: 0.08;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.88' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+      }
+
+      .site-header, main, .footer { position: relative; z-index: 2; }
+      .site-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        width: min(100% - 40px, 1320px);
+        margin: 0 auto;
+        padding: 28px 0;
+      }
+
+      .brand {
+        color: var(--ink);
+        font: 500 11px/1 "DM Mono", monospace;
+        letter-spacing: 0.16em;
+        text-decoration: none;
+        text-transform: uppercase;
+      }
+      .brand span { color: var(--accent); }
+      .site-header nav { display: flex; align-items: center; gap: 23px; }
+      .site-header nav a {
+        color: var(--muted);
+        font: 500 10px/1 "DM Mono", monospace;
+        letter-spacing: 0.13em;
+        text-decoration: none;
+        text-transform: uppercase;
+        transition: color .2s ease;
+      }
+      .site-header nav a:hover { color: var(--ink); }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(250px, 330px);
+        align-items: end;
+        gap: 48px;
+        min-height: calc(100vh - 86px);
+        width: min(100% - 40px, 1320px);
+        margin: 0 auto;
+        padding: clamp(80px, 14vh, 150px) 0 12vh;
+      }
+
+      .eyebrow, .kicker, .meta-label {
+        color: var(--accent);
+        font: 500 10px/1.4 "DM Mono", monospace;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+      }
+      .hero h1 {
+        max-width: 830px;
+        margin: 20px 0 24px -16px;
+        padding: 9px 16px 13px;
+        background: linear-gradient(90deg, rgba(7, 10, 18, .93) 0%, rgba(7, 10, 18, .82) 76%, rgba(7, 10, 18, 0) 100%);
+        font-size: clamp(48px, 7.6vw, 116px);
+        font-weight: 500;
+        letter-spacing: -0.075em;
+        line-height: 0.91;
+      }
+      .hero h1 em { color: #c5dbff; font-style: normal; }
+      .hero-copy {
+        max-width: 490px;
+        margin: 0 0 0 -12px;
+        padding: 10px 12px;
+        background: rgba(7, 10, 18, .74);
+        color: #c2cbd8;
+        font-size: 16px;
+        line-height: 1.7;
+      }
+      .hero-note {
+        align-self: end;
+        border-top: 1px solid var(--line);
+        padding-top: 17px;
+      }
+      .hero-note p {
+        margin: 10px 0 0;
+        color: #c7d1df;
+        font-size: 13px;
+        line-height: 1.65;
+      }
+      .scroll-prompt {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 34px;
+        color: var(--ink);
+        font: 500 10px/1 "DM Mono", monospace;
+        letter-spacing: 0.15em;
+        text-decoration: none;
+        text-transform: uppercase;
+      }
+      .scroll-prompt::before {
+        width: 28px;
+        height: 1px;
+        background: var(--accent);
+        content: "";
+      }
+
+      .story {
+        display: grid;
+        grid-template-columns: 1fr minmax(300px, 520px);
+        gap: 32px;
+        align-items: start;
+        width: min(100% - 40px, 1320px);
+        margin: 0 auto;
+        padding: 24vh 0;
+      }
+      .story-index {
+        position: sticky;
+        top: 40px;
+        color: var(--muted);
+        font: 400 10px/1.5 "DM Mono", monospace;
+        letter-spacing: .15em;
+        text-transform: uppercase;
+      }
+      .story-panel {
+        backdrop-filter: blur(18px);
+        background: linear-gradient(135deg, rgba(10, 16, 28, .81), rgba(6, 10, 20, .48));
+        border: 1px solid var(--line);
+        border-radius: 2px;
+        box-shadow: 0 20px 80px rgba(0, 0, 0, .23);
+        padding: clamp(27px, 4vw, 52px);
+      }
+      .story-panel h2 {
+        max-width: 490px;
+        margin: 14px 0 22px;
+        font-size: clamp(32px, 4vw, 58px);
+        font-weight: 500;
+        letter-spacing: -.06em;
+        line-height: 1.03;
+      }
+      .story-panel p {
+        max-width: 500px;
+        color: #b8c3d3;
+        font-size: 15px;
+        line-height: 1.8;
+      }
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        margin-top: 35px;
+        background: var(--line);
+      }
+      .metric { min-height: 115px; background: rgba(6, 11, 20, .75); padding: 18px; }
+      .metric strong { display: block; margin-bottom: 8px; color: var(--ink); font-size: 24px; font-weight: 500; letter-spacing: -.05em; }
+      .metric span { color: var(--muted); font: 400 9px/1.4 "DM Mono", monospace; letter-spacing: .12em; text-transform: uppercase; }
+
+      .focus {
+        display: flex;
+        align-items: center;
+        min-height: 115vh;
+        width: min(100% - 40px, 1320px);
+        margin: 0 auto;
+      }
+      .focus-card {
+        width: min(100%, 440px);
+        margin-left: auto;
+        padding: 29px;
+        border-left: 2px solid var(--blue);
+        background: rgba(7, 11, 20, .71);
+        box-shadow: 0 16px 60px rgba(0,0,0,.3);
+      }
+      .focus-card h2 { margin: 14px 0 15px; font-size: 32px; font-weight: 500; letter-spacing: -.05em; line-height: 1.07; }
+      .focus-card p { margin: 0; color: #b6c3d6; font-size: 14px; line-height: 1.75; }
+
+      .closing {
+        display: grid;
+        place-items: center;
+        min-height: 105vh;
+        padding: 80px 20px;
+        text-align: center;
+      }
+      .closing > div { max-width: 760px; }
+      .closing h2 { margin: 17px 0; font-size: clamp(40px, 6vw, 87px); font-weight: 500; letter-spacing: -.075em; line-height: .95; }
+      .closing p { max-width: 500px; margin: 0 auto; color: #b5c1d1; font-size: 15px; line-height: 1.75; }
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 30px;
+        padding: 10px 13px;
+        border: 1px solid var(--line);
+        color: #d3e4ff;
+        font: 400 10px/1 "DM Mono", monospace;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+      }
+      .status::before { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 14px var(--accent); content: ""; }
+
+      .progress-wrap {
+        position: fixed;
+        right: 20px;
+        bottom: 23px;
+        z-index: 3;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--muted);
+        font: 400 9px/1 "DM Mono", monospace;
+        letter-spacing: .11em;
+      }
+      .progress-track { width: 84px; height: 1px; overflow: hidden; background: rgba(214, 233, 255, .24); }
+      .progress-fill { width: 100%; height: 100%; transform: scaleX(0); transform-origin: left center; background: var(--accent); }
+
+      .footer { padding: 24px 20px; color: #8190a2; text-align: center; font: 400 9px/1.5 "DM Mono", monospace; letter-spacing: .11em; text-transform: uppercase; }
+
+      @media (max-width: 700px) {
+        .site-header { width: min(100% - 28px, 1320px); padding: 20px 0; }
+        .site-header nav { gap: 14px; }
+        .site-header nav a:last-child { display: none; }
+        .hero { grid-template-columns: 1fr; gap: 42px; width: min(100% - 28px, 1320px); min-height: calc(100vh - 64px); padding-top: 12vh; }
+        .hero h1 { max-width: 510px; }
+        .story { grid-template-columns: 1fr; width: min(100% - 28px, 1320px); padding: 17vh 0; }
+        .story-index { position: static; }
+        .metric-grid { grid-template-columns: 1fr; }
+        .metric { min-height: 82px; }
+        .focus { width: min(100% - 28px, 1320px); min-height: 95vh; }
+        .focus-card { margin-left: 0; }
+        .progress-wrap { right: 14px; bottom: 16px; }
+        .progress-track { width: 58px; }
+      }
+      @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    </style>
+  </head>
+  <body>
+    <canvas id="particle-canvas" aria-hidden="true"></canvas>
+    <img id="resolved-image" src="../outputs/brats_training_analysis/sample_slices_with_tumor.png" alt="" aria-hidden="true" />
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand" href="#top">Neural <span>/</span> Slice</a>
+      <nav aria-label="Primary navigation">
+        <a href="#method">Method</a>
+        <a href="#focus">Focus</a>
+        <a href="#result">Result</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div>
+          <p class="eyebrow">Multimodal imaging / 2026</p>
+          <h1 id="hero-title">From scattered <em>signals</em> to a clearer view.</h1>
+          <p class="hero-copy">A scroll-led exploration of the model’s output. As you move through the story, individual volumetric signals resolve into a project-generated brain-tumour visualization.</p>
+          <a class="scroll-prompt" href="#method">Begin the scan</a>
+        </div>
+        <aside class="hero-note">
+          <span class="meta-label">Interactive layer</span>
+          <p>Each cube samples a pixel from <strong>sample_slices_with_tumor.png</strong> in the repository’s outputs directory.</p>
+        </aside>
+      </section>
+
+      <section class="story" id="method" aria-labelledby="method-title">
+        <div class="story-index">01 — Encode</div>
+        <div class="story-panel">
+          <p class="kicker">Signal composition</p>
+          <h2 id="method-title">Structure is built one observation at a time.</h2>
+          <p>The visual begins as dispersed, depth-shifted particles. Their color data is sampled directly from an existing project output, turning a generated analytical image into an immersive, inspectable surface.</p>
+          <div class="metric-grid" aria-label="Visual effect properties">
+            <div class="metric"><strong id="particle-count">—</strong><span>Color samples</span></div>
+            <div class="metric"><strong>3D</strong><span>Depth field</span></div>
+            <div class="metric"><strong>01</strong><span>Source artifact</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="focus" id="focus" aria-labelledby="focus-title">
+        <div class="focus-card">
+          <p class="kicker">02 — Resolve</p>
+          <h2 id="focus-title">Scroll to bring the image into focus.</h2>
+          <p>The camera advances through the particle field. In the final portion of the scroll, the cubes dissolve and reveal the original full-resolution output image; scroll upward and the image returns to a blocky three-dimensional field.</p>
+        </div>
+      </section>
+
+      <section class="closing" id="result" aria-labelledby="result-title">
+        <div>
+          <p class="eyebrow">03 — Interpret</p>
+          <h2 id="result-title">Evidence comes into view.</h2>
+          <p>At full scroll, you see the original project-generated output asset at its native visual fidelity—no remote stock imagery, no generic placeholder. Scroll upward to deconstruct it into individual evidence blocks again.</p>
+          <div class="status">Output asset connected</div>
+        </div>
+      </section>
+    </main>
+
+    <div class="progress-wrap" aria-hidden="true">
+      <span id="progress-label">00%</span>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+    <footer class="footer">Interactive three-dimensional visualization · project output image</footer>
+
+    <script type="module">
+      import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+      import { gsap } from 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/+esm';
+
+      const canvas = document.querySelector('#particle-canvas');
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setClearColor(0x000000, 0);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, 1, 0.5, 1000);
+      const targetCameraZ = 180;
+      const initialCameraZ = 70;
+      const particleSize = 0.9;
+      const group = new THREE.Group();
+      scene.add(group);
+      camera.position.z = initialCameraZ;
+
+      const imageUrl = '../outputs/brats_training_analysis/sample_slices_with_tumor.png';
+      const resolvedImage = document.querySelector('#resolved-image');
+      const isCompact = window.matchMedia('(max-width: 700px)').matches;
+      const rows = isCompact ? 126 : 200;
+      const resolveStart = 0.82;
+      let mesh;
+      let scrollProgress = 0;
+      let desiredRotationY = 0;
+      let desiredRotationX = 0;
+
+      function projectAtDepth(x, y, depth) {
+        const scale = (targetCameraZ - depth) / targetCameraZ;
+        return { scale, position: new THREE.Vector3(x * scale, y * scale, depth) };
+      }
+
+      function buildImageParticles(image) {
+        const imageRatio = image.width / image.height;
+        const cols = Math.floor(rows * imageRatio);
+        const geometry = new THREE.BoxGeometry(particleSize, particleSize, particleSize).translate(0, 0, -particleSize * 0.5);
+        const material = new THREE.MeshBasicMaterial({ toneMapped: false, transparent: true, opacity: 0.82 });
+        mesh = new THREE.InstancedMesh(geometry, material, rows * cols);
+        mesh.instanceMatrix.setUsage(THREE.StaticDrawUsage);
+
+        const sampler = document.createElement('canvas');
+        sampler.width = cols;
+        sampler.height = rows;
+        const context = sampler.getContext('2d', { willReadFrequently: true });
+        context.drawImage(image, 0, 0, image.width, image.height, 0, 0, cols, rows);
+        const pixels = context.getImageData(0, 0, cols, rows).data;
+        const color = new THREE.Color();
+        const matrix = new THREE.Matrix4();
+        const depthRange = targetCameraZ * 1.96;
+
+        let index = 0;
+        for (let row = 0; row < rows; row += 1) {
+          for (let col = 0; col < cols; col += 1) {
+            const x = (col - cols / 2 + 0.5) * particleSize;
+            const y = (rows / 2 - row - 0.5) * particleSize;
+            const depth = THREE.MathUtils.randFloatSpread(depthRange);
+            const { scale, position } = projectAtDepth(x, y, depth);
+            matrix.compose(position, new THREE.Quaternion(), new THREE.Vector3(scale, scale, scale));
+            mesh.setMatrixAt(index, matrix);
+            const pixel = index * 4;
+            color.setRGB(pixels[pixel] / 255, pixels[pixel + 1] / 255, pixels[pixel + 2] / 255);
+            mesh.setColorAt(index, color);
+            index += 1;
+          }
+        }
+
+        mesh.instanceMatrix.needsUpdate = true;
+        mesh.instanceColor.needsUpdate = true;
+        mesh.material.opacity = 0.82 * (1 - THREE.MathUtils.smoothstep(scrollProgress, resolveStart, 1));
+        group.add(mesh);
+        document.querySelector('#particle-count').textContent = new Intl.NumberFormat().format(rows * cols);
+      }
+
+      const sourceImage = new Image();
+      sourceImage.addEventListener('load', () => buildImageParticles(sourceImage));
+      sourceImage.addEventListener('error', () => {
+        document.querySelector('.status').textContent = 'Output image unavailable';
+      });
+      sourceImage.src = imageUrl;
+
+      function resize() {
+        const { innerWidth: width, innerHeight: height } = window;
+        renderer.setSize(width, height, false);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+      }
+
+      const progressFill = document.querySelector('#progress-fill');
+      const progressLabel = document.querySelector('#progress-label');
+      function updateScroll() {
+        const maximum = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+        const progress = THREE.MathUtils.clamp(window.scrollY / maximum, 0, 1);
+        scrollProgress = progress;
+        const nextCameraZ = THREE.MathUtils.lerp(initialCameraZ, targetCameraZ, progress);
+        const resolveProgress = THREE.MathUtils.smoothstep(progress, resolveStart, 1);
+        gsap.to(camera.position, { z: nextCameraZ, duration: 0.48, ease: 'power3.out', overwrite: true });
+        resolvedImage.style.opacity = String(resolveProgress);
+        resolvedImage.style.transform = `scale(${1 + (1 - resolveProgress) * 0.035})`;
+        if (mesh) {
+          mesh.material.opacity = 0.82 * (1 - resolveProgress);
+        }
+        progressFill.style.transform = `scaleX(${progress})`;
+        progressLabel.textContent = `${String(Math.round(progress * 100)).padStart(2, '0')}%`;
+      }
+
+      window.addEventListener('pointermove', (event) => {
+        desiredRotationY = ((event.clientX / window.innerWidth) - 0.5) * 0.07;
+        desiredRotationX = ((event.clientY / window.innerHeight) - 0.5) * 0.025;
+      }, { passive: true });
+      window.addEventListener('resize', resize);
+      window.addEventListener('scroll', updateScroll, { passive: true });
+      resize();
+      updateScroll();
+
+      renderer.setAnimationLoop(() => {
+        const resolveProgress = THREE.MathUtils.smoothstep(scrollProgress, resolveStart, 1);
+        group.rotation.y += (desiredRotationY * (1 - resolveProgress) - group.rotation.y) * 0.025;
+        group.rotation.x += (desiredRotationX * (1 - resolveProgress) - group.rotation.x) * 0.025;
+        renderer.render(scene, camera);
+      });
+    </script>
+  </body>
+</html>

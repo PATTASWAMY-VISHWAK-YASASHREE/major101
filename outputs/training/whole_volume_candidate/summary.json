@@ -1,0 +1,7 @@
+{
+  "best_epoch": 9,
+  "best_validation_balanced_accuracy": 0.6579365079365079,
+  "checkpoint": "outputs\\training\\whole_volume_candidate\\best_checkpoint.pth",
+  "validation_predictions": "outputs\\training\\whole_volume_candidate\\best_validation_predictions.csv",
+  "test_evaluated": false
+}

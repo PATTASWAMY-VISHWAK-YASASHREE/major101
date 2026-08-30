@@ -1,0 +1,90 @@
+# .agentignore — quarantine map for AI agents working this repo
+# Human-readable rationale lives in AGENTS.md §7b. This file = quick machine reference.
+# Syntax: path prefix per line. Comments start with #. "!" prefix = explicit DO-READ exception.
+# Convention: ignoring here means "do not load into context by default" — not "delete".
+
+# ── POISON: fabricated PMIDs (never cite; see research/bibtex/citation_verification_audit.md) ──
+research/bibtex/cat4_references.bib
+research/bibtex/cat5_references.bib
+research/bibtex/cat8_references.bib
+research/cat8_ct_mri_multimodal_fusion.md   # cites fabricated PMIDs (29300604, 32181591, 34146000...)
+
+# ── HISTORICAL: Phase-0 literature survey (superseded by consolidated_verified_references.bib) ──
+research/cat*.md
+research/TIMELINE.md
+research/TRENDMAP.md
+research/MINDMAP.md
+research/CROSSREF.md
+
+# ── SUPERSEDED: pre-Phase-2 vision docs (describe never-implemented CT+MRI fusion / 4-class plans) ──
+research/06_final_report.md
+research/23_research_direction_decision.md
+research/21_multimodal_fusion_and_dataset_integration.md
+research/22_code_alignment_fusion_gap.md
+research/20_implemented_mri_grade_pipeline.md
+presentation_plan_of_action_12_weeks.md
+
+# ── SUPERSEDED: strategy-pivot artifacts (grants rejected 2026-08-30; council is history) ──
+research/grant_project_summary_draft.md
+research/grant_specific_aims_draft.md
+research/council_strategy_report.md
+research/council_strategy_brief.md
+research/phase1_action_plan.md
+research/paper_scope_and_structure.md
+research/WHAT_WERE_DOING.md
+research/UPDATED_DELIVERABLES.md
+research/DELIVERABLES_SUMMARY.md
+
+# ── HISTORICAL: pre-repair metrics & old EDA (current truth = outputs/repaired_final + MANUSCRIPT) ──
+FINAL_REPORT.md
+outputs/brats_training_analysis/
+outputs/brats_analysis/
+outputs/training/repaired_candidate/
+outputs/training/whole_volume_candidate/
+outputs/training/M1*
+outputs/training/M3_*
+outputs/training/ultra_light_*
+outputs/cv/repaired_baseline_3ep/
+outputs/cv/ensemble_5member_2ep_16steps/
+outputs/cv/full_epoch_baseline_5fold_5ep/one_fold*
+outputs/search/
+outputs/explainability/repaired_validation/
+outputs/explainability/repaired_locked_test_final/
+
+# ── SATISFIED GATE (provenance only, not a to-do) ──
+plan/process-brats-classification-next-steps-1.md
+
+# ── BINARY/CACHE NOISE (never load into context) ──
+.git/
+.codegraph/
+__pycache__/
+*.pth
+*.pt
+*.npy
+*.nii
+*.nii.gz
+*.zip
+*.xlsx
+
+# ── DO-READ exceptions (current sources of truth — always safe) ──
+!AGENTS.md
+!research/paper/MANUSCRIPT.md
+!research/RESEARCH_DIRECTION_LONGITUDINAL.md
+!research/data_sweep/DATASET_SWEEP_REPORT.md
+!research/data_sweep/DATASET_ACQUISITION_GUIDE.md
+!research/data_sweep/ULTRA9_MISSION_KIT/README_RUNBOOK.md
+!research/data_sweep/ULTRA9_MISSION_KIT/download_proteas.py
+!research/data_sweep/ULTRA9_MISSION_KIT/audit_proteas.py
+!research/consolidated_verified_references.bib
+!research/BraTS_MRI_Grade_Classification_Panel_Report.md
+!research/PHASE1_WRITE_THE_PAPER.md
+!HANDOVER.md
+!src/grade_data.py
+!src/grade_model.py
+!outputs/evaluation/repaired_final/summary.json
+!outputs/cv/full_epoch_baseline_5fold_5ep/summary.json
+!outputs/cv/full_epoch_baseline_5fold_5ep/out_of_fold_predictions.csv
+!outputs/calibration/repaired/calibration.json
+!outputs/data_quality/preprocessed_data_report.json
+!outputs/analysis/within_subject_consistency_report.json
+!outputs/mri_completion_gate.json

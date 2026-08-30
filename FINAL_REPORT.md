@@ -1,5 +1,60 @@
 # BraTS 2024 3D CNN Glioma Grade Classification - Final Report
 
+> **Repair update (2026-08-12):** The historical results below were produced by
+> the old full-volume/case-split pipeline and are not the current result. The
+> repaired pipeline uses the verified 882-file dataset, 876 unique labelled
+> cases, subject-disjoint splits, memory-mapped 96³ crops, CUDA AMP, and a
+> validation-only threshold. The selected repaired checkpoint is
+> `outputs/training/repaired_candidate/best_checkpoint.pth`.
+
+### Repaired pipeline result
+
+Source of truth for the repaired run:
+
+- Checkpoint: `outputs/training/repaired_candidate/best_checkpoint.pth` (epoch 8)
+- Validation history: `outputs/training/repaired_candidate/history.csv`
+- Locked test: `outputs/evaluation/repaired_test/summary.json`
+- Input mode: center 96³ crop (not whole-volume)
+- Decision threshold: **0.46**, selected on validation only
+- Split: subject-disjoint StratifiedGroupKFold, seed 42
+
+| Split | Cases | Balanced accuracy | Accuracy | AUROC | F1 | Sensitivity | Specificity |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Validation, best epoch 8 | 88 | 0.7571 | 0.6136 | 0.7675 | 0.6792 | 0.5143 | 1.0000 |
+| Locked test, threshold from validation | 88 | 0.5853 | 0.5114 | 0.7121 | 0.6055 | 0.4648 | 0.7059 |
+
+Locked-test confusion matrix: **TN=12, FP=5, FN=38, TP=33**.
+
+A whole-volume comparison run
+(`outputs/training/whole_volume_candidate/`) reached validation balanced
+accuracy **0.6579** and was weaker than the crop candidate on validation, so
+it was retained only as a comparison artifact. The crop checkpoint remains the
+selected research checkpoint.
+
+The repaired classifier is **not** a validated improvement over the majority
+baseline on locked test (accuracy 0.5114 vs majority ~0.80). Ranking signal is
+present (AUROC 0.7121), but thresholded operating-point performance is modest.
+Results are retained as an honest research outcome, not a deployment claim.
+
+For the full judge-panel presentation, method rationale, citations, visual
+interpretation, and best/medium/worst case comparison, see
+[`research/BraTS_MRI_Grade_Classification_Panel_Report.md`](research/BraTS_MRI_Grade_Classification_Panel_Report.md).
+
+The target is a `grade_proxy` derived from enhancing-tumour presence, not an
+independent WHO-grade annotation. The feature model is excluded because its
+ET-volume inputs reproduce that label-construction rule.
+
+Research visuals (qualitative only):
+
+- `outputs/explainability/repaired_validation/`
+- `outputs/explainability/repaired_locked_test_final/` (clean manifest for the locked-test run)
+
+## Historical, superseded run — retained for audit context only
+
+The following section records the earlier pipeline and must not be used as the
+current repaired result. Use the repair update and the consolidated panel
+report above for current claims.
+
 ## Executive Summary
 Successfully trained a 3D CNN classifier for glioma grade prediction (HIGH/GBM vs LOW/LGG) on BraTS 2024 data. The model **breaks the 0.8046 majority-class plateau** and achieves **0.8506 validation accuracy** (epoch 13) with **0.8658 test AUROC**.
 

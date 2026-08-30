@@ -1,0 +1,846 @@
+{
+  "analysis": "within_subject_consistency_of_oof_predictions",
+  "scope_note": "Descriptive analysis of existing out-of-fold predictions only. NOT longitudinal/progression analysis: the checkout has no timestamps, treatment records, or survival endpoints. Suffix ordering is unverified as temporal.",
+  "input": "outputs/cv/full_epoch_baseline_5fold_5ep/out_of_fold_predictions.csv",
+  "cases": 788,
+  "unique_subjects": 337,
+  "subjects_with_repeated_acquisitions": 227,
+  "acquisition_count_histogram": {
+    "2": 135,
+    "3": 29,
+    "4": 26,
+    "5": 19,
+    "6": 10,
+    "7": 4,
+    "8": 3,
+    "10": 1
+  },
+  "global_std_p_high": 0.1903,
+  "within_subject_std_p_high": {
+    "mean": 0.0553,
+    "median": 0.0372
+  },
+  "stability_ratio_global_over_within": 3.44,
+  "predicted_label_agreement_within_subject": {
+    "agree": 173,
+    "total": 227,
+    "rate": 0.7621
+  },
+  "true_label_agreement_within_subject": {
+    "agree": 194,
+    "total": 227,
+    "rate": 0.8546
+  },
+  "suffix_ordered_trend_descriptive": {
+    "monotonic_increase": 50,
+    "monotonic_decrease": 36,
+    "mixed_or_reversal": 61,
+    "near_flat_lt_0.05": 80
+  },
+  "discordant_subjects_p_spread_gt_0.30": {
+    "count": 25,
+    "subjects": [
+      {
+        "subject": "BraTS-GLI-00491",
+        "n_acquisitions": 2,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-00491-100",
+            "suffix": 100,
+            "p_high": 0.4353,
+            "predicted": 0,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-00491-101",
+            "suffix": 101,
+            "p_high": 0.835,
+            "predicted": 1,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-00556",
+        "n_acquisitions": 2,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-00556-100",
+            "suffix": 100,
+            "p_high": 0.3015,
+            "predicted": 0,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-00556-101",
+            "suffix": 101,
+            "p_high": 0.6465,
+            "predicted": 1,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-02124",
+        "n_acquisitions": 2,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-02124-100",
+            "suffix": 100,
+            "p_high": 0.3777,
+            "predicted": 0,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02124-101",
+            "suffix": 101,
+            "p_high": 0.9556,
+            "predicted": 1,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-02152",
+        "n_acquisitions": 5,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-02152-100",
+            "suffix": 100,
+            "p_high": 0.4224,
+            "predicted": 0,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02152-101",
+            "suffix": 101,
+            "p_high": 0.7021,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02152-102",
+            "suffix": 102,
+            "p_high": 0.3059,
+            "predicted": 0,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02152-103",
+            "suffix": 103,
+            "p_high": 0.3176,
+            "predicted": 0,
+            "true": 0
+          },
+          {
+            "case": "BraTS-GLI-02152-104",
+            "suffix": 104,
+            "p_high": 0.439,
+            "predicted": 0,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-02169",
+        "n_acquisitions": 3,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-02169-100",
+            "suffix": 100,
+            "p_high": 0.8691,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02169-101",
+            "suffix": 101,
+            "p_high": 0.9849,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02169-102",
+            "suffix": 102,
+            "p_high": 0.6035,
+            "predicted": 1,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-02245",
+        "n_acquisitions": 5,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-02245-100",
+            "suffix": 100,
+            "p_high": 0.2556,
+            "predicted": 0,
+            "true": 0
+          },
+          {
+            "case": "BraTS-GLI-02245-101",
+            "suffix": 101,
+            "p_high": 0.4758,
+            "predicted": 0,
+            "true": 0
+          },
+          {
+            "case": "BraTS-GLI-02245-102",
+            "suffix": 102,
+            "p_high": 0.6665,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02245-103",
+            "suffix": 103,
+            "p_high": 0.4204,
+            "predicted": 0,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02245-104",
+            "suffix": 104,
+            "p_high": 0.3474,
+            "predicted": 0,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-02755",
+        "n_acquisitions": 2,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-02755-100",
+            "suffix": 100,
+            "p_high": 0.3906,
+            "predicted": 0,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02755-101",
+            "suffix": 101,
+            "p_high": 0.6934,
+            "predicted": 1,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-02123",
+        "n_acquisitions": 4,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-02123-100",
+            "suffix": 100,
+            "p_high": 0.3086,
+            "predicted": 0,
+            "true": 0
+          },
+          {
+            "case": "BraTS-GLI-02123-101",
+            "suffix": 101,
+            "p_high": 0.2803,
+            "predicted": 0,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02123-102",
+            "suffix": 102,
+            "p_high": 0.623,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02123-103",
+            "suffix": 103,
+            "p_high": 0.6655,
+            "predicted": 1,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-02083",
+        "n_acquisitions": 4,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-02083-100",
+            "suffix": 100,
+            "p_high": 0.4519,
+            "predicted": 0,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02083-101",
+            "suffix": 101,
+            "p_high": 0.4612,
+            "predicted": 0,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02083-102",
+            "suffix": 102,
+            "p_high": 0.689,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02083-103",
+            "suffix": 103,
+            "p_high": 0.7749,
+            "predicted": 1,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-02216",
+        "n_acquisitions": 5,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-02216-100",
+            "suffix": 100,
+            "p_high": 0.5942,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02216-101",
+            "suffix": 101,
+            "p_high": 0.5234,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02216-102",
+            "suffix": 102,
+            "p_high": 0.4988,
+            "predicted": 0,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02216-103",
+            "suffix": 103,
+            "p_high": 0.583,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02216-104",
+            "suffix": 104,
+            "p_high": 0.8389,
+            "predicted": 1,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-02066",
+        "n_acquisitions": 6,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-02066-100",
+            "suffix": 100,
+            "p_high": 0.894,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02066-101",
+            "suffix": 101,
+            "p_high": 0.5317,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02066-102",
+            "suffix": 102,
+            "p_high": 0.4832,
+            "predicted": 0,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02066-103",
+            "suffix": 103,
+            "p_high": 0.8892,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02066-104",
+            "suffix": 104,
+            "p_high": 0.9043,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02066-105",
+            "suffix": 105,
+            "p_high": 0.9478,
+            "predicted": 1,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-02547",
+        "n_acquisitions": 3,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-02547-100",
+            "suffix": 100,
+            "p_high": 0.3521,
+            "predicted": 0,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02547-101",
+            "suffix": 101,
+            "p_high": 0.6455,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02547-102",
+            "suffix": 102,
+            "p_high": 0.874,
+            "predicted": 1,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-02548",
+        "n_acquisitions": 3,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-02548-100",
+            "suffix": 100,
+            "p_high": 0.4465,
+            "predicted": 0,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02548-101",
+            "suffix": 101,
+            "p_high": 0.8149,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02548-102",
+            "suffix": 102,
+            "p_high": 0.7769,
+            "predicted": 1,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-02632",
+        "n_acquisitions": 5,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-02632-100",
+            "suffix": 100,
+            "p_high": 0.3752,
+            "predicted": 0,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02632-101",
+            "suffix": 101,
+            "p_high": 0.5171,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02632-102",
+            "suffix": 102,
+            "p_high": 0.521,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02632-103",
+            "suffix": 103,
+            "p_high": 0.3735,
+            "predicted": 0,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02632-104",
+            "suffix": 104,
+            "p_high": 0.9326,
+            "predicted": 1,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-00080",
+        "n_acquisitions": 2,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-00080-100",
+            "suffix": 100,
+            "p_high": 0.5835,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-00080-101",
+            "suffix": 101,
+            "p_high": 0.9468,
+            "predicted": 1,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-00498",
+        "n_acquisitions": 2,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-00498-100",
+            "suffix": 100,
+            "p_high": 0.4097,
+            "predicted": 0,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-00498-101",
+            "suffix": 101,
+            "p_high": 0.7676,
+            "predicted": 1,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-02061",
+        "n_acquisitions": 4,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-02061-100",
+            "suffix": 100,
+            "p_high": 0.5449,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02061-101",
+            "suffix": 101,
+            "p_high": 0.5557,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02061-102",
+            "suffix": 102,
+            "p_high": 0.8149,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02061-103",
+            "suffix": 103,
+            "p_high": 0.9814,
+            "predicted": 1,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-02084",
+        "n_acquisitions": 4,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-02084-100",
+            "suffix": 100,
+            "p_high": 0.6475,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02084-101",
+            "suffix": 101,
+            "p_high": 0.9321,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02084-102",
+            "suffix": 102,
+            "p_high": 0.9595,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02084-103",
+            "suffix": 103,
+            "p_high": 0.9688,
+            "predicted": 1,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-02170",
+        "n_acquisitions": 3,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-02170-100",
+            "suffix": 100,
+            "p_high": 0.4414,
+            "predicted": 0,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02170-101",
+            "suffix": 101,
+            "p_high": 0.9375,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02170-102",
+            "suffix": 102,
+            "p_high": 0.958,
+            "predicted": 1,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-02193",
+        "n_acquisitions": 6,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-02193-100",
+            "suffix": 100,
+            "p_high": 0.8281,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02193-101",
+            "suffix": 101,
+            "p_high": 0.832,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02193-102",
+            "suffix": 102,
+            "p_high": 0.8047,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02193-103",
+            "suffix": 103,
+            "p_high": 0.813,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02193-104",
+            "suffix": 104,
+            "p_high": 0.5054,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02193-105",
+            "suffix": 105,
+            "p_high": 0.8262,
+            "predicted": 1,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-02194",
+        "n_acquisitions": 8,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-02194-100",
+            "suffix": 100,
+            "p_high": 0.5532,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02194-101",
+            "suffix": 101,
+            "p_high": 0.6509,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02194-102",
+            "suffix": 102,
+            "p_high": 0.7407,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02194-103",
+            "suffix": 103,
+            "p_high": 0.9697,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02194-104",
+            "suffix": 104,
+            "p_high": 0.5122,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02194-105",
+            "suffix": 105,
+            "p_high": 0.7622,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02194-106",
+            "suffix": 106,
+            "p_high": 0.7817,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02194-107",
+            "suffix": 107,
+            "p_high": 0.7612,
+            "predicted": 1,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-02218",
+        "n_acquisitions": 5,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-02218-100",
+            "suffix": 100,
+            "p_high": 0.8311,
+            "predicted": 1,
+            "true": 0
+          },
+          {
+            "case": "BraTS-GLI-02218-101",
+            "suffix": 101,
+            "p_high": 0.4236,
+            "predicted": 0,
+            "true": 0
+          },
+          {
+            "case": "BraTS-GLI-02218-102",
+            "suffix": 102,
+            "p_high": 0.439,
+            "predicted": 0,
+            "true": 0
+          },
+          {
+            "case": "BraTS-GLI-02218-103",
+            "suffix": 103,
+            "p_high": 0.4209,
+            "predicted": 0,
+            "true": 0
+          },
+          {
+            "case": "BraTS-GLI-02218-104",
+            "suffix": 104,
+            "p_high": 0.3838,
+            "predicted": 0,
+            "true": 0
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-02220",
+        "n_acquisitions": 3,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-02220-100",
+            "suffix": 100,
+            "p_high": 0.9463,
+            "predicted": 1,
+            "true": 0
+          },
+          {
+            "case": "BraTS-GLI-02220-101",
+            "suffix": 101,
+            "p_high": 0.5098,
+            "predicted": 1,
+            "true": 0
+          },
+          {
+            "case": "BraTS-GLI-02220-102",
+            "suffix": 102,
+            "p_high": 0.4802,
+            "predicted": 0,
+            "true": 0
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-02558",
+        "n_acquisitions": 2,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-02558-100",
+            "suffix": 100,
+            "p_high": 0.9219,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02558-101",
+            "suffix": 101,
+            "p_high": 0.6157,
+            "predicted": 1,
+            "true": 1
+          }
+        ]
+      },
+      {
+        "subject": "BraTS-GLI-02598",
+        "n_acquisitions": 3,
+        "acquisitions": [
+          {
+            "case": "BraTS-GLI-02598-100",
+            "suffix": 100,
+            "p_high": 0.8267,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02598-101",
+            "suffix": 101,
+            "p_high": 0.7334,
+            "predicted": 1,
+            "true": 1
+          },
+          {
+            "case": "BraTS-GLI-02598-102",
+            "suffix": 102,
+            "p_high": 0.457,
+            "predicted": 0,
+            "true": 1
+          }
+        ]
+      }
+    ]
+  }
+}

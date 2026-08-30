@@ -1,0 +1,37 @@
+{
+  "npy_dir": "data\\brats_preprocessed\\train",
+  "labels_csv": "data\\brats_preprocessed\\labels.csv",
+  "expected_shape": [
+    4,
+    182,
+    218,
+    182
+  ],
+  "inspected_file_count": 882,
+  "invalid_file_count": 0,
+  "invalid_files": [],
+  "label_report": {
+    "row_count": 994,
+    "errors": [],
+    "empty_case_count": 0,
+    "invalid_label_count": 0,
+    "duplicate_row_count": 236,
+    "conflicting_label_cases": [],
+    "unique_case_count": 876,
+    "class_counts": {
+      "0": 172,
+      "1": 704
+    },
+    "missing_labelled_files": [],
+    "orphan_files": [
+      "BraTS-GLI-02775-101",
+      "BraTS-GLI-02776-100",
+      "BraTS-GLI-02776-101",
+      "BraTS-GLI-02777-100",
+      "BraTS-GLI-02777-101",
+      "BraTS-GLI-02778-100"
+    ]
+  },
+  "elapsed_seconds": 172.34232540000812,
+  "complete_scan": true
+}

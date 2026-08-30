@@ -1,0 +1,27 @@
+{
+  "checkpoint": "outputs\\training\\repaired_final\\best_checkpoint.pth",
+  "split_strategy": "development-only subject-disjoint StratifiedGroupKFold",
+  "seed": 42,
+  "case_count": 88,
+  "loss": 0.4389666765081612,
+  "metrics": {
+    "threshold": 0.5299999999999999,
+    "accuracy": 0.7045454545454546,
+    "balanced_accuracy": 0.5260977630488816,
+    "f1": 0.8169014084507042,
+    "sensitivity": 0.8169014084507042,
+    "specificity": 0.23529411764705882,
+    "precision": 0.8169014084507042,
+    "predicted_positive_rate": 0.8068181818181818,
+    "tn": 4,
+    "fp": 13,
+    "fn": 13,
+    "tp": 58,
+    "auroc": 0.7671913835956918,
+    "average_precision": 0.9431280823385791,
+    "loss": 0.4389666765081612
+  },
+  "temperature": 0.8010662460543239,
+  "calibration": "outputs\\calibration\\repaired\\calibration.json",
+  "predictions": "outputs\\evaluation\\repaired_final\\test_predictions.csv"
+}

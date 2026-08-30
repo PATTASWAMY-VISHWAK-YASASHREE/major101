@@ -1,0 +1,14 @@
+{
+  "cv_dir": "outputs\\cv\\full_epoch_baseline_5fold_5ep",
+  "output_dir": "outputs\\cv\\full_epoch_baseline_5fold_5ep_views5",
+  "npy_dir": "data\\brats_preprocessed\\train",
+  "labels_csv": "data\\brats_preprocessed\\labels.csv",
+  "data_report": "outputs\\data_quality\\preprocessed_data_report.json",
+  "folds": 5,
+  "views": 5,
+  "patch_size": 96,
+  "batch_size": 2,
+  "seed": 42,
+  "target_vram_gib": 2.0,
+  "target_ram_gib": 3.0
+}

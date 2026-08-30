@@ -1,0 +1,12 @@
+{
+  "checkpoint": "outputs\\training\\repaired_candidate\\best_checkpoint.pth",
+  "predictions": "outputs\\training\\repaired_candidate\\best_validation_predictions.csv",
+  "threshold": 0.4599999999999999,
+  "architecture": {
+    "base_channels": 12,
+    "dropout": 0.25,
+    "patch_size": 96
+  },
+  "split_strategy": "subject-disjoint StratifiedGroupKFold",
+  "interpretation": "Qualitative research evidence only; Grad-CAM and saliency are not clinical validation."
+}

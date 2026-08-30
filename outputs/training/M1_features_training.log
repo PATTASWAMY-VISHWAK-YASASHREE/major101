@@ -47,3 +47,20 @@
 2026-08-07 23:21:47,893 INFO Epoch  12 | Train: loss=0.0006 acc=1.0000 | Val: loss=0.0023 acc=0.9885 f1=0.9928 sens=0.9857 spec=1.0000
 2026-08-07 23:28:35,926 INFO Epoch  13 | Train: loss=0.0011 acc=1.0000 | Val: loss=0.0003 acc=1.0000 f1=1.0000 sens=1.0000 spec=1.0000
 2026-08-07 23:35:07,395 INFO Epoch  14 | Train: loss=0.0006 acc=0.9986 | Val: loss=0.0001 acc=1.0000 f1=1.0000 sens=1.0000 spec=1.0000
+2026-08-07 23:41:53,387 INFO Epoch  15 | Train: loss=0.0004 acc=1.0000 | Val: loss=0.0008 acc=1.0000 f1=1.0000 sens=1.0000 spec=1.0000
+2026-08-07 23:48:56,997 INFO Epoch  16 | Train: loss=0.0009 acc=0.9986 | Val: loss=0.0001 acc=1.0000 f1=1.0000 sens=1.0000 spec=1.0000
+2026-08-07 23:55:45,721 INFO Epoch  17 | Train: loss=0.0002 acc=1.0000 | Val: loss=0.0001 acc=1.0000 f1=1.0000 sens=1.0000 spec=1.0000
+2026-08-08 00:03:04,497 INFO Epoch  18 | Train: loss=0.0001 acc=1.0000 | Val: loss=0.0001 acc=1.0000 f1=1.0000 sens=1.0000 spec=1.0000
+2026-08-08 00:10:02,665 INFO Epoch  19 | Train: loss=0.0002 acc=1.0000 | Val: loss=0.0001 acc=1.0000 f1=1.0000 sens=1.0000 spec=1.0000
+2026-08-08 00:16:57,864 INFO Epoch  20 | Train: loss=0.0001 acc=1.0000 | Val: loss=0.0000 acc=1.0000 f1=1.0000 sens=1.0000 spec=1.0000
+2026-08-08 00:23:58,375 INFO Epoch  21 | Train: loss=0.0001 acc=1.0000 | Val: loss=0.0001 acc=1.0000 f1=1.0000 sens=1.0000 spec=1.0000
+2026-08-08 00:32:02,122 INFO Epoch  22 | Train: loss=0.0001 acc=1.0000 | Val: loss=0.0001 acc=1.0000 f1=1.0000 sens=1.0000 spec=1.0000
+2026-08-08 00:39:43,763 INFO Epoch  23 | Train: loss=0.0002 acc=1.0000 | Val: loss=0.0001 acc=1.0000 f1=1.0000 sens=1.0000 spec=1.0000
+2026-08-08 00:46:24,508 INFO Epoch  24 | Train: loss=0.0001 acc=1.0000 | Val: loss=0.0001 acc=1.0000 f1=1.0000 sens=1.0000 spec=1.0000
+2026-08-08 00:53:09,682 INFO Epoch  25 | Train: loss=0.0000 acc=1.0000 | Val: loss=0.0001 acc=1.0000 f1=1.0000 sens=1.0000 spec=1.0000
+2026-08-08 00:59:51,067 INFO Epoch  26 | Train: loss=0.0000 acc=1.0000 | Val: loss=0.0001 acc=1.0000 f1=1.0000 sens=1.0000 spec=1.0000
+2026-08-08 01:06:32,688 INFO Epoch  27 | Train: loss=0.0000 acc=1.0000 | Val: loss=0.0001 acc=1.0000 f1=1.0000 sens=1.0000 spec=1.0000
+2026-08-08 01:13:16,759 INFO Epoch  28 | Train: loss=0.0001 acc=1.0000 | Val: loss=0.0000 acc=1.0000 f1=1.0000 sens=1.0000 spec=1.0000
+2026-08-08 01:19:54,572 INFO Epoch  29 | Train: loss=0.0000 acc=1.0000 | Val: loss=0.0000 acc=1.0000 f1=1.0000 sens=1.0000 spec=1.0000
+2026-08-08 01:26:32,618 INFO Epoch  30 | Train: loss=0.0000 acc=1.0000 | Val: loss=0.0001 acc=1.0000 f1=1.0000 sens=1.0000 spec=1.0000
+2026-08-08 01:26:32,660 INFO Training complete. Best val_acc: 1.0000 at epoch 11

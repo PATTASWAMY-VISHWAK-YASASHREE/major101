@@ -143,3 +143,31 @@ A model with 94% accuracy is meaningless if it misclassifies the cases that matt
 3. **Report RANO 2.0-compatible metrics** for any temporal model — PD/SD/PR/CR categories
 4. **Flag pseudoprogression cases** for radiologist review — do not make autonomous calls
 5. **Do not claim longitudinal capability** until trained and validated on longitudinal data
+
+
+---
+
+## Implementation Alignment: Current Evaluation Contract
+
+The metric tables above describe the broader four-class, segmentation, and longitudinal research agenda. The implemented experiment is instead a **binary MRI-only grade-proxy classifier**. Its evaluation must therefore be reported with binary operating-point metrics and ranking metrics, not with four-class macro-F1 or segmentation Dice targets that the active model does not produce.[1]
+
+The canonical evidence package records a subject-disjoint seed-42 split of 700 training cases, 88 validation cases, and 88 locked-test cases. The 788-case development pool is used for cross-validation; the locked test is reserved for a frozen-candidate estimate. The trainer defaults to validation-only operation and requires an explicit test-evaluation flag before touching the locked partition.[2] [3]
+
+| Metric family | Required current report | Why it matters here |
+|---|---|---|
+| Ranking | AUROC and average precision | Measures ordering independently of one threshold |
+| Operating point | Threshold, balanced accuracy, sensitivity, specificity, precision, and F1 | Shows the chosen low/high decision trade-off |
+| Error accounting | TN, FP, FN, TP and class counts | Makes minority-class failure visible |
+| Reliability | Calibration curve, Brier score, and calibration error when available | Separates ranking quality from probability quality |
+| Stability | Fold-level means, spread, and out-of-fold predictions | Prevents overinterpreting one split |
+
+The last completed locked-test candidate recorded in the repository reported balanced accuracy 0.5853, accuracy 0.5114, AUROC 0.7121, F1 0.6055, sensitivity 0.4648, specificity 0.7059, and confusion counts TN=12, FP=5, FN=38, TP=33 on 88 unseen cases.[1] The result is a baseline for the current proxy-label experiment, not a clinical benchmark. In particular, its sensitivity shows that the selected operating point misses many positive cases, so AUROC must not be presented as if it were sensitivity or safe deployment performance.
+
+The current implementation does not yet support RANO progression categories, WT/TC/ET Dice, HD95, or pseudoprogression detection. Those metrics remain appropriate only after a longitudinal or segmentation model is actually trained and evaluated on the required data. The next acceptance gate for the active classifier is a completed subject-disjoint five-fold development evaluation, followed by a frozen MRI checkpoint, calibration analysis, independent proxy-label review, and one locked-test evaluation.[1]
+
+The implementation-specific methods and evidence boundary are documented in [`20_implemented_mri_grade_pipeline.md`](20_implemented_mri_grade_pipeline.md).
+
+[1]: [`BraTS_MRI_Grade_Classification_Panel_Report.md`](BraTS_MRI_Grade_Classification_Panel_Report.md)
+[2]: [`src/grade_data.py`](../src/grade_data.py)
+[3]: [`scripts/train_ultra_light.py`](../scripts/train_ultra_light.py)
+[4]: [`20_implemented_mri_grade_pipeline.md`](20_implemented_mri_grade_pipeline.md)

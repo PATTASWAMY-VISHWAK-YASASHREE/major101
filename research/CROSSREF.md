@@ -24,6 +24,10 @@
 | `04_multimodal_fusion.md` | cat8_ct_mri_multimodal_fusion.md | Late fusion selected | PMID:31457211 |
 | `05_longitudinal_analysis.md` | cat2_tumour_progression_monitoring.md | Temporal architecture for future | PMID:32503147 |
 | `06_final_report.md` | All files | Comprehensive decision | All 36 PMIDs |
+| `20_implemented_mri_grade_pipeline.md` | `src/grade_data.py`, `src/grade_model.py`, `scripts/train_ultra_light.py`, `cat17_evaluation_metrics_progression.md`, `16f_preprocessing_pipelines.md` | Code-grounded scope and evidence boundary for the active MRI-only baseline | — |
+| `21_multimodal_fusion_and_dataset_integration.md` | `20_implemented_mri_grade_pipeline.md`, `04_multimodal_fusion.md`, `16f_preprocessing_pipelines.md`, `cat17_evaluation_metrics_progression.md` | Web-researched options for model, modality, missing-modality, and multi-dataset integration | External URLs listed in file |
+| `22_code_alignment_fusion_gap.md` | `src/grade_data.py`, `src/grade_model.py`, `scripts/train_ultra_light.py`, `scripts/cross_validate_repaired.py`, `scripts/verify_preprocessed_data.py`, `scripts/evaluate_repaired.py`, `21_multimodal_fusion_and_dataset_integration.md` | Code-grounded comparison of research options and implementation gaps | — |
+| `23_research_direction_decision.md` | `20_implemented_mri_grade_pipeline.md`, `21_multimodal_fusion_and_dataset_integration.md`, `22_code_alignment_fusion_gap.md` | Decision on grade-proxy baseline versus clinically meaningful research endpoint | External URLs listed in file |
 
 ## Data & Preprocessing
 
@@ -57,7 +61,8 @@
 | `16a_dataset_inventory.md` | 16b, 16d, 16f | PMID:32503147 |
 | `16b_key_dataset_profiles.md` | 16a, 16d | PMID:32503147 |
 | `16d_longitudinal_datasets.md` | cat2, 16b | PMID:32503147 |
-| `16f_preprocessing_pipelines.md` | 16a, cat7 | PMID:32503147 |
+| `16f_preprocessing_pipelines.md` | 16a, cat7, `20_implemented_mri_grade_pipeline.md` | PMID:32503147 |
+| `cat17_evaluation_metrics_progression.md` | `20_implemented_mri_grade_pipeline.md` | Active binary evaluation contract and current evidence boundary | — |
 | `16g_dataset_gap_analysis.md` | 16a, 16b | PMID:32503147 |
 | `16h_access_licensing_ethics.md` | 16a | PMID:32503147 |
 

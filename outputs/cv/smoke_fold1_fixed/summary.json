@@ -1,0 +1,56 @@
+{
+  "split_strategy": "development-only subject-disjoint StratifiedGroupKFold",
+  "seed": 42,
+  "folds_requested": 5,
+  "folds_run": [
+    1
+  ],
+  "development_case_count": 788,
+  "out_of_fold_case_count": 159,
+  "locked_test_case_count": 88,
+  "folds": [
+    {
+      "fold": 1,
+      "train_case_count": 629,
+      "validation_case_count": 159,
+      "best_epoch": 2,
+      "best_balanced_accuracy": 0.6457913306451613,
+      "best_validation_metrics": {
+        "threshold": 0.9199999999999999,
+        "accuracy": 0.6855345911949685,
+        "balanced_accuracy": 0.6457913306451613,
+        "f1": 0.7844827586206896,
+        "sensitivity": 0.7109375,
+        "specificity": 0.5806451612903226,
+        "precision": 0.875,
+        "predicted_positive_rate": 0.6540880503144654,
+        "tn": 18,
+        "fp": 13,
+        "fn": 37,
+        "tp": 91,
+        "auroc": 0.671875,
+        "average_precision": 0.8994689809845563
+      },
+      "checkpoint": "outputs\\cv\\smoke_fold1_fixed\\fold_01\\best_checkpoint.pth"
+    }
+  ],
+  "mean_best_balanced_accuracy": 0.6457913306451613,
+  "mean_best_auroc": 0.671875,
+  "out_of_fold_metrics_at_threshold_0_5": {
+    "threshold": 0.5,
+    "accuracy": 0.8050314465408805,
+    "balanced_accuracy": 0.5,
+    "f1": 0.89198606271777,
+    "sensitivity": 1.0,
+    "specificity": 0.0,
+    "precision": 0.8050314465408805,
+    "predicted_positive_rate": 1.0,
+    "tn": 0,
+    "fp": 31,
+    "fn": 0,
+    "tp": 128,
+    "auroc": 0.671875,
+    "average_precision": 0.8994689809845563
+  },
+  "locked_test_evaluated": false
+}

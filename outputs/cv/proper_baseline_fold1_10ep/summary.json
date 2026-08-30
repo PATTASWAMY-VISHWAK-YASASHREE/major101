@@ -1,0 +1,56 @@
+{
+  "split_strategy": "development-only subject-disjoint StratifiedGroupKFold",
+  "seed": 42,
+  "folds_requested": 5,
+  "folds_run": [
+    1
+  ],
+  "development_case_count": 788,
+  "out_of_fold_case_count": 159,
+  "locked_test_case_count": 88,
+  "folds": [
+    {
+      "fold": 1,
+      "train_case_count": 629,
+      "validation_case_count": 159,
+      "best_epoch": 10,
+      "best_balanced_accuracy": 0.6654485887096775,
+      "best_validation_metrics": {
+        "threshold": 0.4799999999999999,
+        "accuracy": 0.559748427672956,
+        "balanced_accuracy": 0.6654485887096775,
+        "f1": 0.6428571428571428,
+        "sensitivity": 0.4921875,
+        "specificity": 0.8387096774193549,
+        "precision": 0.9264705882352942,
+        "predicted_positive_rate": 0.4276729559748428,
+        "tn": 26,
+        "fp": 5,
+        "fn": 65,
+        "tp": 63,
+        "auroc": 0.66015625,
+        "average_precision": 0.9073351479804319
+      },
+      "checkpoint": "outputs\\cv\\proper_baseline_fold1_10ep\\fold_01\\best_checkpoint.pth"
+    }
+  ],
+  "mean_best_balanced_accuracy": 0.6654485887096775,
+  "mean_best_auroc": 0.66015625,
+  "out_of_fold_metrics_at_threshold_0_5": {
+    "threshold": 0.5,
+    "accuracy": 0.4339622641509434,
+    "balanced_accuracy": 0.6484375,
+    "f1": 0.4578313253012048,
+    "sensitivity": 0.296875,
+    "specificity": 1.0,
+    "precision": 1.0,
+    "predicted_positive_rate": 0.2389937106918239,
+    "tn": 31,
+    "fp": 0,
+    "fn": 90,
+    "tp": 38,
+    "auroc": 0.66015625,
+    "average_precision": 0.9073351479804319
+  },
+  "locked_test_evaluated": false
+}

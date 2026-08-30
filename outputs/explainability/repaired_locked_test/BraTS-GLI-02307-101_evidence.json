@@ -1,0 +1,20 @@
+{
+  "case": "BraTS-GLI-02307-101",
+  "true_label": 1,
+  "recorded_probability_high": 0.59472656,
+  "recomputed_model_input_probability_high": 0.5948379635810852,
+  "predicted_label": 1,
+  "crop_start": [
+    0,
+    0,
+    0
+  ],
+  "whole_volume_input": false,
+  "attention_peak": [
+    20,
+    20,
+    27
+  ],
+  "modalities_figure": "BraTS-GLI-02307-101_modalities.png",
+  "attention_figure": "BraTS-GLI-02307-101_attention.png"
+}

@@ -5,9 +5,376 @@
 **Session:** 5f06e56e-c030-42dc-b55d-81c23c1e782a  
 **Dates:** 2026-08-01 to 2026-08-08 (8 days, ~84.5h estimated human effort on this project)  
 **AI Credits:** ~41,486 total (across all projects this period)  
-**Last Updated:** 2026-08-08
+**Last Updated:** 2026-08-14
+
+## Repair status — 2026-08-12
+
+The old metrics in this document are historical. The repaired path is
+`scripts/train_ultra_light.py` with `src/grade_data.py` and
+`src/grade_model.py`: it verifies all 882 preprocessed files, deduplicates the
+994-row label CSV to 876 cases, keeps repeated acquisitions subject-disjoint,
+uses mmap/crop-first loading, and enforces 2 GiB VRAM / 3 GiB process-RAM
+guards.
+
+### Selected repaired result
+
+| Item | Value |
+|------|-------|
+| Checkpoint | `outputs/training/repaired_candidate/best_checkpoint.pth` |
+| Best validation epoch | 8 |
+| Validation balanced accuracy | **0.7571** |
+| Validation accuracy @ thr 0.46 | 0.6136 |
+| Validation AUROC | 0.7675 |
+| Locked test balanced accuracy | **0.5853** |
+| Locked test accuracy | 0.5114 |
+| Locked test AUROC | **0.7121** |
+| Locked test F1 / sens / spec | 0.6055 / 0.4648 / 0.7059 |
+| Locked test confusion | TN=12, FP=5, FN=38, TP=33 |
+| Threshold | 0.46 (validation-only) |
+| Eval summary | `outputs/evaluation/repaired_test/summary.json` |
+
+Whole-volume comparison (`outputs/training/whole_volume_candidate/`): best
+validation balanced accuracy **0.6579** — weaker than the crop candidate on
+validation; kept as a comparison artifact only.
+
+Research visuals are under `outputs/explainability/repaired_validation/` and
+`outputs/explainability/repaired_locked_test_final/`. The label remains the
+ET-derived `grade_proxy`, so these results are not independent clinical-grade
+classification evidence.
+
+The presentation-ready consolidated report is
+`research/BraTS_MRI_Grade_Classification_Panel_Report.md`.
+
+CT+MRI is a later, gated research track. BraTS 2024 in this checkout is
+MRI-only; no CT loader, fusion model, or CT experiment should be added until
+the MRI completion gate in `plan/process-brats-classification-next-steps-1.md`
+is satisfied and a separate paired CT+MRI dataset passes its own integrity
+checks.
+
+## Final MRI validation status — 2026-08-14
+
+The MRI completion gate is now satisfied. The final development-only protocol
+completed five subject-disjoint folds on all 788 development cases, calibrated
+the pooled out-of-fold predictions, trained one final checkpoint on the 788
+development cases, evaluated the locked 88-case test exactly once, and
+generated final qualitative evidence.
+
+### Final artifacts and results
+
+| Artifact or metric | Final value |
+|---|---|
+| Data report | `outputs/data_quality/preprocessed_data_report.json` — 882/882 valid |
+| CV summary | `outputs/cv/full_epoch_baseline_5fold_5ep/summary.json` |
+| CV mean best AUROC | **0.7987** across five folds |
+| CV mean best balanced accuracy | **0.7592** across five folds |
+| Pooled OOF AUROC | **0.7641**, bootstrap 95% CI 0.7261–0.8018 |
+| Pooled OOF balanced accuracy | **0.7288**, bootstrap 95% CI 0.6936–0.7631 |
+| Calibration | temperature **0.8011**, development threshold **0.53** |
+| Calibration change | Brier 0.1973 → 0.1960; ECE 0.2366 → 0.2279 |
+| Final checkpoint | `outputs/training/repaired_final/best_checkpoint.pth` |
+| Final fit | 788 development cases, five complete balanced epochs, test not read |
+| Locked test | 88 cases; evaluated once from the final checkpoint |
+| Locked-test accuracy / balanced accuracy | **0.7045 / 0.5261** |
+| Locked-test AUROC / AP | **0.7672 / 0.9431** |
+| Locked-test F1 / sensitivity / specificity | **0.8169 / 0.8169 / 0.2353** |
+| Locked-test confusion | TN=4, FP=13, FN=13, TP=58 |
+| Final visuals | `outputs/explainability/repaired_final/` — four cases |
+| Completion gate | `outputs/mri_completion_gate.json` |
+
+The final thresholded result remains weak against the majority-HIGH accuracy
+baseline and is not clinical-grade evidence. The target is still the
+ET-derived `grade_proxy`, not independent pathology or WHO-grade annotation.
+The MRI-only gate is complete; independent clinical labels, external
+validation, and qualitative explanation review remain research limitations.
+
+### Final verification
+
+- `python -m unittest discover -s tests -v` — **10/10 passed**.
+- `python -m compileall -q src scripts tests` — passed.
+- Final smoke — three epochs, peak reserved VRAM 1.02 GiB, peak process RAM
+  1.35 GiB.
+- Full CV and final fit stayed below the 2 GiB VRAM / 3 GiB process-RAM
+  guards; no parallel training jobs were used.
+- The locked-test evaluator was run once for the final checkpoint. Do not run
+  it again for tuning.
+
+CT/MRI remains deferred. The next research step is independent clinical-label
+validation or a separately audited segmentation/molecular endpoint, not more
+unbounded proxy tuning.
+
+## Improvement controls and blind raw validation — 2026-08-14
+
+The post-gate extension is implemented without reopening the consumed locked
+test. `scripts/cross_validate_repaired.py` now supports deterministic
+1–8-view validation, AUROC-based bounded early stopping, per-fold run summaries,
+VRAM/RAM guards, and `--allow-incomplete` for explicitly incomplete smoke runs.
+The one-fold five-view smoke completed with `complete_oof: false`; its metrics
+must not be reported as a five-fold estimate.
+
+The separate raw BraTS validation cohort was verified as 188 four-modality cases
+with no labels and no case overlap with the supervised data. The frozen final
+development checkpoint was run once through
+`scripts/infer_raw_validation_stream.py`:
+
+- predictions: `outputs/external_validation/predictions.csv` — 188 rows
+- manifest: `outputs/external_validation/validation_manifest.json` — zero failures
+- metrics: intentionally absent because the cohort is unlabeled
+- persistent processed cache: none created
+- peak reserved VRAM / process RAM: 0.221 / 0.484 GiB
+
+The `ensemble_methods_research_brief.pdf` was read once. It supports a future
+compute-matched independent probability ensemble with development-only OOF
+calibration and diversity/error-correlation checks; it does not justify
+weight-averaging or MoE as the first experiment. That follow-up remains pending
+and does not alter the locked-test result.
+
+### Multi-view decision
+
+The bounded five-view training comparison completed all five folds and all 788
+development cases, but it was intentionally short (`3` epochs maximum,
+`16` steps per epoch): pooled OOF AUROC **0.5134** and balanced accuracy
+**0.5268**. It is not a candidate model. To isolate inference-time crop
+aggregation from under-training, `scripts/evaluate_cv_views.py` re-evaluated
+the mature single-view fold checkpoints with five views. That also declined:
+
+| Evaluation | Pooled OOF AUROC | Pooled OOF balanced accuracy |
+|---|---:|---:|
+| Mature checkpoints, one view | 0.7641 | 0.7288 |
+| Same checkpoints, five views | 0.6058 | 0.5962 |
+
+The five-view option remains available for future experiments, but it is not
+selected for the final checkpoint or any locked-test evaluation.
+
+### Compute-matched ensemble decision
+
+`scripts/cross_validate_ensemble.py` completed a leakage-safe five-member OOF
+pilot: five independent members, fixed folds, two epochs and 16 steps per
+epoch, with probability averaging and diversity diagnostics. Its pooled OOF
+AUROC was **0.5463** and balanced accuracy **0.5715**. A compute-matched single
+member trained for ten epochs and 16 steps reached AUROC **0.5622** and
+balanced accuracy **0.5585**. Both are far below the mature single-view
+baseline (AUROC **0.7641**, balanced accuracy **0.7288**), so the ensemble is
+rejected and no checkpoint or threshold changed.
+
+The member predictions, logs, and summary are under
+`outputs/cv/ensemble_5member_2ep_16steps/`. The run covered all 788 development
+cases and recorded `locked_test_evaluated: false`.
+
+### Bounded BA75 search runner — implemented, not launched
+
+The requested long-running improvement attempt is now implemented in
+`scripts/background_search.py`. It uses the fixed seed-42 88-case test split
+only to exclude it, then divides the remaining 788 development cases into a
+709-case search pool and a 79-case independent confirmation split. Three
+subject-disjoint folds produce pooled search OOF metrics; a configuration is
+accepted only if pooled search balanced accuracy and the separately trained
+confirmation balanced accuracy are both at least **0.75**. The search is
+bounded to 100 deterministic configurations or 30 hours, whichever comes
+first, and writes `status.json`, per-attempt summaries, OOF predictions,
+confirmation predictions, and `winner.json` without overwriting the selected
+checkpoint.
+
+The hidden Windows launcher is
+`scripts/start_background_search.ps1`. It runs one CUDA process with
+`num_workers=0`, batch size 2, 96³ patches, and 2 GiB VRAM / 3 GiB process-RAM
+guards. Start it from the repository root only when desired:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/start_background_search.ps1
+```
+
+Resume the same output directory after interruption with:
+
+```powershell
+python scripts/background_search.py --output-dir outputs/search/ba75 --resume
+```
+
+Verification completed before handoff:
+
+- Dry run: 709 search / 79 confirmation / 88 locked-test cases; 108 candidate
+  configurations; `locked_test_evaluated: false`.
+- GPU smoke: `outputs/search/ba75_smoke2/`, one short attempt, complete 709-case
+  OOF, balanced accuracy **0.5036**, AUROC **0.4805**, locked test false.
+- Contract suite: **12/12 passed**; Python compilation passed.
+
+The 30-hour search was intentionally not auto-started by this implementation
+turn. Do not run `scripts/evaluate_repaired.py` or any locked-test evaluator
+while the search is active.
+
+## Previous MRI improvement handoff — 2026-08-12
+
+### Executive state
+
+The MRI pipeline is repaired and runnable, but the requested “10–20 better”
+target has not been proven. The current label is an ET-derived `grade_proxy`,
+not an independent clinical grade annotation, so published results are not
+directly comparable unless the dataset, label definition, split, and metric
+match. The correct next acceptance gate is a completed subject-disjoint
+five-fold development evaluation followed by one final locked-test evaluation.
+
+The last completed locked-test result remains the repaired candidate:
+
+| Metric | Locked test result |
+|---|---:|
+| Cases | 88 |
+| Balanced accuracy | **0.5853** |
+| Accuracy | 0.5114 |
+| AUROC | **0.7121** |
+| F1 | 0.6055 |
+| Sensitivity / specificity | 0.4648 / 0.7059 |
+| Confusion | TN=12, FP=5, FN=38, TP=33 |
+
+This test result must not be used for tuning. Its predictions are reproducible
+and were evaluated only after the earlier candidate was frozen.
+
+### Data and split facts
+
+- `outputs/data_quality/preprocessed_data_report.json` is complete: 882 files
+  inspected, zero invalid files, expected shape `(4,182,218,182)`, finite
+  float32 data, and no missing labelled files.
+- The labels CSV has 994 rows but 876 unique cases after deduplication; there
+  are no conflicting duplicate labels. The six unlabelled orphan volumes are
+  not used for training.
+- The canonical seed-42 split is subject-disjoint: 700 train cases, 88
+  validation cases, and 88 locked-test cases. Repeated acquisitions remain in
+  one partition.
+- The development set for cross-validation is train+validation only: 788 cases.
+  The locked 88-case test partition is excluded from every CV run.
+
+### Code now considered canonical
+
+- `src/grade_data.py`: verified case table, subject grouping, stratified split,
+  `build_cross_validation_folds`, mmap/crop-first dataset, and balanced sampler.
+- `src/grade_model.py`: tiny GroupNorm 3D CNN, corrected per-sample binary loss,
+  metrics, and validation-only threshold selection.
+- `scripts/train_ultra_light.py`: single-process CUDA trainer with AMP,
+  `num_workers=0`, bounded crops, and 2 GiB VRAM / 3 GiB process-RAM guards.
+- `scripts/cross_validate_repaired.py`: development-only five-fold runner;
+  default `--steps-per-epoch 0` now means a complete balanced epoch, supports
+  deterministic multi-view validation and bounded early stopping, and selects
+  checkpoints by AUROC while balanced accuracy is still reported at a
+  validation-only threshold.
+- `scripts/infer_raw_validation_stream.py`: one-case-at-a-time inference for
+  the unlabeled raw validation cohort; it never writes processed case arrays.
+- `scripts/evaluate_cv_views.py`: development-only re-evaluation of completed
+  fold checkpoints under deterministic multi-view crops.
+- `scripts/cross_validate_ensemble.py`: fixed-fold independent-member OOF
+  ensemble runner with compute-matched controls and diversity diagnostics.
+- `scripts/evaluate_repaired.py`: locked-test evaluator; do not run it for
+  tuning.
+- `scripts/generate_research_visuals.py`: MRI slice, modality, saliency, and
+  Grad-CAM evidence generation.
+
+### What was changed and measured in this phase
+
+1. Added a shared `subject_id` helper and deterministic
+   `build_cross_validation_folds` with leakage assertions.
+2. Added seven fast contract tests covering duplicate labels, conflicting
+   labels, subject-disjoint splitting, balanced sampling, loss weighting, and
+   multi-crop aggregation. Latest result: **7/7 passed**.
+3. Added optional deterministic multi-crop validation aggregation. It is safe
+   but is not promoted as a gain: one-fold tests did not consistently improve
+   AUROC or thresholded balanced accuracy.
+4. Tested `base_channels=16`; it stayed within memory but learned worse in the
+   short smoke test, so the default remains 12.
+5. Tested and removed a residual-block branch after it produced weaker
+   one-fold AUROC. No dead residual option remains in the canonical model.
+6. Corrected the CV runner’s short-smoke bookkeeping and changed checkpoint
+   selection from validation balanced accuracy to AUROC to reduce threshold
+   overfitting.
+
+### Results from completed development experiments
+
+The earlier three-epoch, 64-step-per-epoch five-fold run completed all folds,
+but was underpowered: gradient accumulation made it only about 16 optimizer
+updates per epoch. It is retained as a baseline artifact, not a final result:
+
+| Run | Mean best balanced accuracy | Mean best AUROC | Test evaluated |
+|---|---:|---:|---|
+| `outputs/cv/repaired_baseline_3ep/` | 0.6338 | 0.6118 | No |
+
+The corrected full-balanced-epoch run was intentionally interrupted after the
+user stopped the turn. Its partial artifact is:
+`outputs/cv/full_epoch_baseline_5fold_5ep/`.
+
+| Fold | Epochs completed | Best AUROC | Balanced accuracy at best AUROC |
+|---|---:|---:|---:|
+| 1 | 5/5 | 0.7635 | 0.7300 |
+| 2 | 5/5 | 0.8031 | 0.7472 |
+| 3 | 2/5 | 0.7772 | 0.7147 |
+| 4 | 0/5 | not run | not run |
+| 5 | 0/5 | not run | not run |
+
+There is deliberately no aggregate summary or out-of-fold prediction file
+for this interrupted run. Do not average the three partial folds and call it a
+five-fold result. The completed fold evidence stayed inside the safety budget:
+peak VRAM was about 1.02 GiB on the first epoch and about 0.55–0.56 GiB after
+that; process RAM was about 0.14–0.15 GiB in the recorded folds.
+
+### Windows and memory safety
+
+- The long run used one Python process, CUDA AMP, batch size 2, mmap/crop-first
+  reads, `num_workers=0`, and no multiprocessing DataLoader workers.
+- The active CV process left behind by the interrupted turn was verified and
+  stopped. No unattended training process should be assumed to be running.
+- Do not launch parallel Python training jobs, increase DataLoader workers, or
+  target the entire Python process tree. If stopping a future run, identify the
+  exact training PID first and stop only that PID.
+- Do not use `--evaluate-test` during experiments. It is reserved for the final
+  frozen candidate.
+
+### Next session procedure
+
+1. Add a small fold-selection/resume option before restarting the expensive CV
+   run, or run the remaining folds in separate output directories. Avoid
+   repeating folds 1–2 unnecessarily.
+2. Complete five epochs of full balanced training for folds 3–5 using the
+   default tiny model (`base_channels=12`, patch 96, batch 2, AMP,
+   `num_workers=0`, `--steps-per-epoch 0`). Produce one aggregate mean/std and
+   pooled out-of-fold AUROC, average precision, balanced accuracy, and
+   confusion matrix.
+3. If the aggregate result is stable, train one final MRI checkpoint on the
+   development cases only, select its threshold/calibration using development
+   data, then run `scripts/evaluate_repaired.py` once on the locked 88-case
+   test split.
+4. Regenerate the locked-test visual evidence and update
+   `research/BraTS_MRI_Grade_Classification_Panel_Report.md` with the final
+   fold table, confidence intervals, best/medium/worst cases, and limitations.
+5. Keep CT out of scope until the MRI gate is complete and paired CT data gets
+   a separate integrity report.
+
+### Useful commands
+
+```powershell
+# Fast contract and syntax checks
+python -m unittest discover -s tests -v
+python -m compileall -q src scripts
+
+# Continue CV only after adding resume/fold selection, or run a fresh full CV
+python scripts/cross_validate_repaired.py --epochs 5 --steps-per-epoch 0 --output-dir outputs/cv/full_epoch_next
+
+# Locked test: final candidate only
+python scripts/evaluate_repaired.py --checkpoint <frozen-checkpoint>
+```
+
+### Canonical commands
+
+```bash
+python scripts/verify_preprocessed_data.py
+python scripts/train_ultra_light.py --output-dir outputs/training/repaired_candidate --epochs 10 --steps-per-epoch 64
+python scripts/evaluate_repaired.py --checkpoint outputs/training/repaired_candidate/best_checkpoint.pth
+python scripts/generate_research_visuals.py --checkpoint outputs/training/repaired_candidate/best_checkpoint.pth --predictions outputs/evaluation/repaired_test/test_predictions.csv
+python scripts/inference.py --case-id BraTS-GLI-02720-100
+```
 
 ---
+
+## Historical, superseded handoff notes
+
+The following notes describe the pre-repair pipeline and old metrics. They are
+retained to explain why the repair was necessary. Use the repair status above
+and `research/BraTS_MRI_Grade_Classification_Panel_Report.md` for current
+results.
 
 ## Executive Summary
 

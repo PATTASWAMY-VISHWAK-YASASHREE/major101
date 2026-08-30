@@ -1,0 +1,11 @@
+{
+  "checkpoint": "outputs\\training\\repaired_final\\best_checkpoint.pth",
+  "development_case_count": 788,
+  "locked_test_case_count": 88,
+  "epochs_completed": 5,
+  "temperature": 0.8010662460543239,
+  "threshold": 0.5299999999999999,
+  "development_manifest": "outputs\\training\\repaired_final\\development_manifest.json",
+  "calibration": "outputs\\calibration\\repaired\\calibration.json",
+  "test_evaluated": false
+}

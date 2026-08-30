@@ -17,9 +17,11 @@
 | **Secondary modality** | CT — strong for bone, calcification, acute haemorrhage |
 | **Dataset** | BraTS 2024 (2,000 patients) + IBSR (80, with CT) + TCGA-GBM/LGG (clinical) |
 | **Approach** | Late fusion of per-modality 3D CNN features, evaluated on classification performance |
-| **Status** | Research only — no implementation yet |
+| **Status** | Broader multimodal design; current checkout implements an MRI-only binary grade-proxy baseline |
 
 ---
+
+> **Implementation alignment:** The research direction below remains broader than the current code. The active implementation is a four-channel MRI-only binary classifier with subject-disjoint splitting, memory-bounded patch loading, and a locked-test evaluation path. CT+MRI fusion, four-class WHO-grade prediction, segmentation, and longitudinal progression are not implemented in the active trainer; see [`20_implemented_mri_grade_pipeline.md`](20_implemented_mri_grade_pipeline.md) for the code-grounded scope.
 
 ## 6.2 What We Know (Key Research Findings)
 

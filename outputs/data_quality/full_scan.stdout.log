@@ -1,0 +1,43 @@
+checked 25/882 files
+checked 50/882 files
+checked 75/882 files
+checked 100/882 files
+checked 125/882 files
+checked 150/882 files
+checked 175/882 files
+checked 200/882 files
+checked 225/882 files
+checked 250/882 files
+checked 275/882 files
+checked 300/882 files
+checked 325/882 files
+checked 350/882 files
+checked 375/882 files
+checked 400/882 files
+checked 425/882 files
+checked 450/882 files
+checked 475/882 files
+checked 500/882 files
+checked 525/882 files
+checked 550/882 files
+checked 575/882 files
+checked 600/882 files
+checked 625/882 files
+checked 650/882 files
+checked 675/882 files
+checked 700/882 files
+checked 725/882 files
+checked 750/882 files
+checked 775/882 files
+checked 800/882 files
+checked 825/882 files
+checked 850/882 files
+checked 875/882 files
+checked 882/882 files
+{
+  "inspected_file_count": 882,
+  "invalid_file_count": 0,
+  "elapsed_seconds": 181.90129120000347,
+  "complete_scan": true
+}
+report: outputs\data_quality\preprocessed_data_report.json

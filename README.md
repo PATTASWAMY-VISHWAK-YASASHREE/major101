@@ -1,5 +1,42 @@
 # Major101 — Brain Tumour Classification via CT+MRI Multimodal Fusion
 
+## Current runnable BraTS repair
+
+The currently runnable experiment is MRI-only BraTS 2024 GLI grade-proxy
+classification. Verify data, train under the VRAM/RAM guards, and evaluate the
+locked test only after selecting a checkpoint:
+
+```bash
+python scripts/verify_preprocessed_data.py
+python scripts/train_ultra_light.py --epochs 3 --steps-per-epoch 64
+python scripts/evaluate_repaired.py --checkpoint outputs/training/repaired_candidate/best_checkpoint.pth
+python scripts/generate_research_visuals.py --checkpoint outputs/training/repaired_candidate/best_checkpoint.pth --predictions outputs/evaluation/repaired_test/test_predictions.csv
+python scripts/inference.py --case-id BraTS-GLI-02720-100
+```
+
+**Selected repaired checkpoint** (crop mode, epoch 8, threshold 0.46):
+
+| Split | Balanced acc | Acc | AUROC |
+|-------|-------------:|----:|------:|
+| Validation | 0.7571 | 0.6136 | 0.7675 |
+| Locked test | 0.5853 | 0.5114 | 0.7121 |
+
+Details: [`research/BraTS_MRI_Grade_Classification_Panel_Report.md`](research/BraTS_MRI_Grade_Classification_Panel_Report.md), `FINAL_REPORT.md` (repair banner), and `HANDOVER.md` (Repair status).
+The label is an ET-derived proxy, not an independent WHO-grade annotation.
+The CT+MRI, segmentation, and longitudinal sections below remain research
+directions rather than implemented claims.
+
+The completed MRI gate artifacts are under `outputs/cv/full_epoch_baseline_5fold_5ep/`,
+`outputs/calibration/repaired/`, and `outputs/training/repaired_final/`. The
+separate unlabeled raw validation cohort was processed once, case by case, with:
+
+```bash
+python scripts/infer_raw_validation_stream.py --views 5
+```
+
+Its blind predictions are in `outputs/external_validation/`; no ground-truth
+metrics are produced for that cohort.
+
 **Global Goal:** Build a longitudinal volumetric deep learning pipeline that fuses
 MRI and CT brain scans for tumour detection, grading, progression tracking, and
 survival prediction — addressing three documented gaps:

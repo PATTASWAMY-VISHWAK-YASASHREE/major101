@@ -1,0 +1,24 @@
+{
+  "checkpoint": "outputs\\training\\whole_volume_candidate\\best_checkpoint.pth",
+  "split_strategy": "subject-disjoint StratifiedGroupKFold",
+  "seed": 42,
+  "case_count": 88,
+  "loss": 0.6890524639324709,
+  "metrics": {
+    "threshold": 0.5199999999999999,
+    "accuracy": 0.5,
+    "balanced_accuracy": 0.6454018227009113,
+    "f1": 0.5686274509803921,
+    "sensitivity": 0.4084507042253521,
+    "specificity": 0.8823529411764706,
+    "precision": 0.9354838709677419,
+    "predicted_positive_rate": 0.3522727272727273,
+    "tn": 15,
+    "fp": 2,
+    "fn": 42,
+    "tp": 29,
+    "auroc": 0.6404308202154101,
+    "average_precision": 0.9059914141934993
+  },
+  "predictions": "outputs\\evaluation\\whole_volume_test\\test_predictions.csv"
+}

@@ -1,0 +1,11 @@
+{
+  "raw_dir": "data\\raw\\brats2024\\validation\\validation_data",
+  "checkpoint": "outputs\\training\\repaired_final\\best_checkpoint.pth",
+  "calibration": "outputs\\calibration\\repaired\\calibration.json",
+  "output_dir": "outputs\\external_validation_smoke",
+  "patch_size": 96,
+  "views": 5,
+  "max_cases": 2,
+  "max_vram_gib": 2.5,
+  "max_ram_gib": 3.0
+}

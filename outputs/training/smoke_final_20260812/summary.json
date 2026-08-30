@@ -1,0 +1,7 @@
+{
+  "best_epoch": 2,
+  "best_validation_balanced_accuracy": 0.6055555555555556,
+  "checkpoint": "outputs\\training\\smoke_final_20260812\\best_checkpoint.pth",
+  "validation_predictions": "outputs\\training\\smoke_final_20260812\\best_validation_predictions.csv",
+  "test_evaluated": false
+}

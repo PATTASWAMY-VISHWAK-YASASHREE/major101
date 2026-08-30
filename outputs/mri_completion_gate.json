@@ -1,0 +1,89 @@
+{
+  "status": "complete",
+  "completed_at": "2026-08-14",
+  "scope": "BraTS 2024 MRI-only binary grade_proxy research pipeline",
+  "label_caveat": "grade_proxy is ET-derived and is not an independent pathology or WHO-grade annotation",
+  "data_quality": {
+    "report": "outputs/data_quality/preprocessed_data_report.json",
+    "complete_scan": true,
+    "inspected_files": 882,
+    "invalid_files": 0,
+    "label_rows": 994,
+    "unique_labelled_cases": 876,
+    "conflicting_duplicate_labels": 0
+  },
+  "cross_validation": {
+    "summary": "outputs/cv/full_epoch_baseline_5fold_5ep/summary.json",
+    "fold_manifest": "outputs/cv/full_epoch_baseline_5fold_5ep/fold_manifest.json",
+    "out_of_fold_predictions": "outputs/cv/full_epoch_baseline_5fold_5ep/out_of_fold_predictions.csv",
+    "fold_count": 5,
+    "development_cases": 788,
+    "locked_test_cases_excluded": 88,
+    "mean_best_balanced_accuracy": 0.7592180827446973,
+    "mean_best_auroc": 0.7986615455074164,
+    "pooled_oof_auroc": 0.7640982520511644,
+    "pooled_oof_balanced_accuracy_at_threshold_0.52": 0.728792743209499,
+    "pooled_oof_bootstrap_95ci": {
+      "auroc": [0.7260709324863326, 0.8017738535038273],
+      "balanced_accuracy": [0.6936496995495247, 0.7630906313178764]
+    }
+  },
+  "calibration": {
+    "metadata": "outputs/calibration/repaired/calibration.json",
+    "reliability_plot": "outputs/calibration/repaired/reliability.png",
+    "fit_scope": "development out-of-fold predictions only",
+    "temperature": 0.8010662460543239,
+    "threshold": 0.5299999999999999,
+    "brier_raw": 0.19732237295210234,
+    "brier_calibrated": 0.19601907320851122,
+    "ece_raw": 0.2366291175253807,
+    "ece_calibrated": 0.22793860540943464
+  },
+  "final_training": {
+    "summary": "outputs/training/repaired_final/summary.json",
+    "checkpoint": "outputs/training/repaired_final/best_checkpoint.pth",
+    "development_manifest": "outputs/training/repaired_final/development_manifest.json",
+    "history": "outputs/training/repaired_final/history.csv",
+    "development_cases": 788,
+    "epochs": 5,
+    "locked_test_read": false
+  },
+  "locked_test": {
+    "summary": "outputs/evaluation/repaired_final/summary.json",
+    "predictions": "outputs/evaluation/repaired_final/test_predictions.csv",
+    "evaluated_once": true,
+    "cases": 88,
+    "threshold": 0.5299999999999999,
+    "accuracy": 0.7045454545454546,
+    "balanced_accuracy": 0.5260977630488816,
+    "f1": 0.8169014084507042,
+    "sensitivity": 0.8169014084507042,
+    "specificity": 0.23529411764705882,
+    "auroc": 0.7671913835956918,
+    "average_precision": 0.9431280823385791,
+    "confusion_matrix": {
+      "tn": 4,
+      "fp": 13,
+      "fn": 13,
+      "tp": 58
+    }
+  },
+  "visual_evidence": {
+    "directory": "outputs/explainability/repaired_final",
+    "manifest": "outputs/explainability/repaired_final/visual_evidence_manifest.json",
+    "case_count": 4,
+    "review": "All final maps were finite and visually inspectable; saliency is noisy and maps are qualitative model evidence, not tumour masks."
+  },
+  "verification": {
+    "unit_tests": "9/9 passed",
+    "compileall": "passed",
+    "artifact_assertions": "passed",
+    "memory_guard": "final smoke and full runs stayed below 2 GiB reserved VRAM and 3 GiB process RAM"
+  },
+  "deferred": [
+    "independent pathology or WHO-grade label validation",
+    "external MRI cohort validation",
+    "expert segmentation comparison and explanation faithfulness testing",
+    "CT/MRI fusion until a paired, registered, independently labelled dataset is verified"
+  ]
+}

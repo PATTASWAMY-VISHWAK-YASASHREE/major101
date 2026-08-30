@@ -1,0 +1,20 @@
+{
+  "raw_dir": "data\\raw\\brats2024\\validation\\validation_data",
+  "checkpoint": "outputs\\training\\repaired_final\\best_checkpoint.pth",
+  "calibration": "outputs\\calibration\\repaired\\calibration.json",
+  "processed_cases": 188,
+  "requested_cases": 188,
+  "failed_cases": [],
+  "views": 5,
+  "patch_size": 96,
+  "temperature": 0.8010662460543239,
+  "threshold": 0.5299999999999999,
+  "peak_memory": {
+    "process_ram_gib": 0.4843635559082031,
+    "reserved_vram_gib": 0.220703125
+  },
+  "elapsed_seconds": 459.4011546999973,
+  "labels_available": false,
+  "metrics_available": false,
+  "persistent_processed_cache_created": false
+}
